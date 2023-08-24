@@ -178,7 +178,7 @@ export default function Create(props) {
                   </div>
                   <div className="col col-12 col-lg-6">
                     <Form.Group className="mb-3" controlId="attendeeAffiliation">
-                      <Form.Label>Vinculado a Qual Órgão? (se for o caso)</Form.Label>
+                      <Form.Label>Vinculado a qual Órgão (se for o caso)</Form.Label>
                       <Form.Control type="text" value={values.attendeeAffiliation} onChange={(evt) => { handleChange(evt) }} isValid={touched.attendeeOccupationId && !errors.attendeeAffiliation} isInvalid={touched.attendeeOccupationId && errors.attendeeAffiliation} />
                       <Form.Control.Feedback type="invalid">{errors.attendeeAffiliation}</Form.Control.Feedback>
                     </Form.Group>
