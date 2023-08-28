@@ -88,10 +88,10 @@ export default function Create(props) {
       <h1 className='mb-4'>Inscrição</h1>
 
       {created
-        ? <p className='alert alert-success'>Inscrição realizada com sucesso. Consulte o email "{attendeeEmail}" para ver a confirmação.</p>
+        ? <p className='alert alert-success'>Solicitação de inscrição realizada com sucesso. Consulte o email "{attendeeEmail}" para ver a confirmação.</p>
         : <>
           <p>
-            Faça sua incrição e sugira um, dois ou três enunciados para serem debatidos.
+            Solicite sua incrição e sugira um, dois ou três enunciados para serem debatidos.
           </p>
 
           <Formik

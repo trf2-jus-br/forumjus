@@ -101,6 +101,27 @@ Seu voto sigiloso foi registrado para a eleição "${electionName}".` + this.foo
 
 A votação "${electionName}" foi encerrada.` + this.footer(electionId)
         })
-    }
+    },
+
+    forumFooter(forumName) {
+        return `
+
+Atenciosamente,
+
+Equipe ${forumName}.`
+    },
+
+    sendRegistered(email, forumId, forumName, attendeeName) {
+        this.send({
+            from: this.from,
+            to: email.trim(),
+            subject: `${forumName}: Solicitação de Inscrição Recebida`,
+            text: `Prezado(a) ${attendeeName},
+
+Sua solicitação de inscrição em '${forumName}' foi recebida pelo sistema.
+
+Após avaliação, será enviado um novo email informando se a inscrição foi aceita.` + this.footer(electionId)
+        })
+    },
 
 }
