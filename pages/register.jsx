@@ -85,10 +85,10 @@ export default function Create(props) {
 
   return (
     <Layout errorMessage={errorMessage} setErrorMessage={setErrorMessage}>
-      <h1 className='mb-4'>Inscrição</h1>
+      <h1 className='mb-4'>Formulário de inscrição preliminar e de proposta(s) de enunciado(s)</h1>
 
       {created
-        ? <p className='alert alert-success'>Solicitação de inscrição realizada com sucesso. Consulte o email "{attendeeEmail}" para ver a confirmação.</p>
+        ? <p className='alert alert-success'>Sua(s) proposta(s) de enunciado(s) foi/foram recebida(s) com sucesso. Consulte o email "{attendeeEmail}" para ver a confirmação.</p>
         : <>
           <p>
             Solicite sua incrição e sugira um, dois ou três enunciados para serem debatidos.

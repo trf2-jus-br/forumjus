@@ -34,14 +34,16 @@ const handler = async function (req, res) {
         if (!valid) throw `Dados inválidos`
 
         const forumId = 1
-        const forumName = 'I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da Segunda Região'
 
         // Add to the database
         const attendeeId = await mysql.register(forumId, data)
         console.log(attendeeId)
 
         // Send email
-        mailer.sendRegistered(data.attendeeEmail, forumId, forumName, data.attendeeName)
+        const forumContants = await mysql.loadForumConstants(forumId)
+        console.log('contants')
+        console.log(forumContants)
+        mailer.sendRegistered(data.attendeeEmail, forumContants, data)
 
         return res.send({ response: "Successful" });
     } catch (error) {

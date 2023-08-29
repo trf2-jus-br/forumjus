@@ -22,13 +22,13 @@ export default {
         conn.beginTransaction()
         try {
             const resultEmail = await conn.query('SELECT * FROM attendee WHERE attendee_email = ?;', [data.attendeeEmail])
-            if (resultEmail[0].length)  throw `E-mail ${data.attendeeEmail} já consta na base de inscritos`
+            if (resultEmail[0].length) throw `E-mail ${data.attendeeEmail} já consta na base de inscritos`
 
             const resultDocument = await conn.query('SELECT * FROM attendee WHERE attendee_document = ?;', [data.attendeeDocument])
-            if (resultDocument[0].length)  throw `CPF ${data.attendeeDocument} já consta na base de inscritos`
+            if (resultDocument[0].length) throw `CPF ${data.attendeeDocument} já consta na base de inscritos`
 
-            const result = await conn.query('INSERT INTO attendee(forum_id,occupation_id,attendee_name,attendee_email,attendee_document,attendee_affiliation) VALUES (?,?,?,?,?,?);',
-                [forumId, data.attendeeOccupationId, data.attendeeName, data.attendeeEmail, data.attendeeDocument, data.attendeeAffiliation])
+            const result = await conn.query('INSERT INTO attendee(forum_id,occupation_id,attendee_name,attendee_chosen_name,attendee_email,attendee_phone,attendee_document,attendee_affiliation,attendee_disability) VALUES (?,?,?,?,?,?,?,?,?);',
+                [forumId, data.attendeeOccupationId, data.attendeeName, data.attendeeChosenName, data.attendeeEmail, data.attendeePhone, data.attendeeDocument, data.attendeeAffiliation, data.attendeeDisability])
             const attendeeId = result[0].insertId
             data.statement.forEach(async (statement) => {
                 const result = await conn.query('INSERT INTO statement(forum_id,attendee_id,committee_id,statement_text,statement_justification) VALUES (?,?,?,?,?);',
@@ -42,6 +42,39 @@ export default {
         } finally {
             conn.release()
         }
+    },
+
+    async loadForumConstants(forumId) {
+        const conn = await this.getConnection()
+        const r = {
+            occupation: {},
+            committee: {},
+        }
+        {
+            const result = await conn.query('SELECT * FROM forum WHERE forum_id = ?;', [forumId])
+            if (!result[0].length) throw `Fórum ${forumId} não localizado na base de dados`
+            r.forumId = forumId
+            r.forumName = result[0][0].forum_name
+        }
+        {
+            const result = await conn.query('SELECT * FROM occupation WHERE forum_id = ?;', [forumId])
+            for (let i = 0; i < result[0].length; i++) {
+                r.occupation[result[0][i].occupation_id] = {
+                    name: result[0][i].occupation_name
+                }
+            }
+        }
+        {
+            const result = await conn.query('SELECT * FROM committee WHERE forum_id = ?;', [forumId])
+            for (let i = 0; i < result[0].length; i++) {
+                r.committee[result[0][i].committee_id] = {
+                    name: result[0][i].committee_name,
+                    chairName: result[0][i].committee_chair_name,
+                    chairDocument: result[0][i].committee_chair_document
+                }
+            }
+        }
+        return r
     },
 
     async createElection(electionName, administratorEmail, voters, candidates) {

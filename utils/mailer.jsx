@@ -111,16 +111,41 @@ Atenciosamente,
 Equipe ${forumName}.`
     },
 
-    sendRegistered(email, forumId, forumName, attendeeName) {
+    sendRegistered(email, forumConstants, data) {
+        let text = `Prezado(a) ${data.attendeeName},
+
+Sua solicitação de inscrição em '${forumConstants.forumName}' foi recebida pelo sistema.
+
+Após avaliação, será enviado um novo email informando se a inscrição foi aceita.
+
+Dados recebidos:
+- Nome Completo: ${data.attendeeName}
+- Nome Social: ${data.attendeeChosenName ? data.attendeeChosenName : ''}
+- E-Mail: ${data.attendeeEmail}
+- Telefone: ${data.attendeePhone}
+- CPF: ${data.attendeeDocument}
+- Profissão: ${forumConstants.occupation[data.attendeeOccupationId].name}
+- Vinculado a qual Órgão: ${data.attendeeAffiliation}
+- Pessoa com Deficiência: ${data.attendeeDisabilityYN === true || data.attendeeDisabilityYN === 'true' ? 'Sim' : 'Não'}${data.attendeeDisabilityYN === true || data.attendeeDisabilityYN === 'true' ? '\n- Descrever a Necessidade de Atendimento Especial: ' + data.attendeeDisability : ''}`
+
+        let i = 0
+        data.statement.forEach(s => {
+            i++
+            text += `
+
+Enunciado ${i}
+- Comissão: ${forumConstants.committee[s.committeeId].name}
+- Enunciado: "${s.text}"
+- Justificativa: "${s.justification}"`
+        })
+
+        text += this.forumFooter(forumConstants.forumName)
+
         this.send({
             from: this.from,
             to: email.trim(),
-            subject: `${forumName}: Solicitação de Inscrição Recebida`,
-            text: `Prezado(a) ${attendeeName},
-
-Sua solicitação de inscrição em '${forumName}' foi recebida pelo sistema.
-
-Após avaliação, será enviado um novo email informando se a inscrição foi aceita.` + this.forumFooter(forumName)
+            subject: `${forumConstants.forumName}: Solicitação de Inscrição Recebida`,
+            text: text
         })
     },
 
