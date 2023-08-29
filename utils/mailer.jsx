@@ -120,7 +120,7 @@ Equipe ${forumName}.`
 
 Sua solicitação de inscrição em '${forumName}' foi recebida pelo sistema.
 
-Após avaliação, será enviado um novo email informando se a inscrição foi aceita.` + this.footer(electionId)
+Após avaliação, será enviado um novo email informando se a inscrição foi aceita.` + this.forumFooter(forumName)
         })
     },
 
