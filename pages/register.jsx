@@ -9,13 +9,15 @@ import Layout from '../components/layout'
 import ReCAPTCHA from "react-google-recaptcha";
 import * as formik from 'formik';
 import { registerSchema } from '../utils/schema';
+import mysql from "../utils/mysql"
 
 const recaptchaRef = React.createRef();
 
 export async function getServerSideProps({ params }) {
   return {
     props: {
-      API_URL_BROWSER: process.env.API_URL_BROWSER
+      API_URL_BROWSER: process.env.API_URL_BROWSER,
+      forumConstants: await mysql.loadForumConstants(1)
     },
   };
 }
@@ -84,7 +86,7 @@ export default function Create(props) {
   }
 
   return (
-    <Layout errorMessage={errorMessage} setErrorMessage={setErrorMessage}>
+    <Layout forumName={props.forumConstants.forumName} errorMessage={errorMessage} setErrorMessage={setErrorMessage}>
       <h1 className='mb-4'>Formulário de inscrição preliminar e de proposta(s) de enunciado(s)</h1>
 
       {created
@@ -166,12 +168,7 @@ export default function Create(props) {
                       <Form.Label>Profissão</Form.Label>
                       <Form.Control as="select" value={values.attendeeOccupationId} onChange={handleChange} isValid={touched.attendeeOccupationId && !errors.attendeeOccupationId} isInvalid={touched.attendeeOccupationId && errors.attendeeOccupationId} >
                         <option value hidden={values.attendeeOccupationId}>[Selecione]</option>
-                        <option value="1">Magistrado(a)</option>
-                        <option value="2">Procurador(a)</option>
-                        <option value="3">Integrante da Administração Pública</option>
-                        <option value="4">Advogado(a)</option>
-                        <option value="5">Acadêmico(a)</option>
-                        <option value="6">Outros</option>
+                        {Object.keys(props.forumConstants.occupation).map((ci) => (<option value={ci}>{props.forumConstants.occupation[ci].name}</option>))}
                       </Form.Control>
                       <Form.Control.Feedback type="invalid">{errors.attendeeOccupationId}</Form.Control.Feedback>
                     </Form.Group>
@@ -229,9 +226,7 @@ export default function Create(props) {
                               <Form.Label>Comissão</Form.Label>
                               <Form.Control as="select" value={values.statement[i].committeeId} onChange={(evt, i) => handleChange(evt, i)} isValid={touched.attendeeName && !(errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId)} isInvalid={touched.attendeeName && errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId}  >
                                 <option value hidden={values.statement[i].committeeId}>[Selecione]</option>
-                                <option value="1">Assuntos Fundiários</option>
-                                <option value="2">Enfrentamento ao Assédio Moral e Sexual</option>
-                                <option value="3">Saúde</option>
+                                {Object.keys(props.forumConstants.committee).map((ci) => (<option value={ci}>{props.forumConstants.committee[ci].name}</option>))}
                               </Form.Control>
                               <Form.Control.Feedback type="invalid">{errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId}</Form.Control.Feedback>
                             </Form.Group>

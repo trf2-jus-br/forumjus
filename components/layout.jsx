@@ -8,7 +8,7 @@ import ModalError from './modalError'
 
 export const siteTitle = 'FórumJus';
 
-export default function Layout({ children, errorMessage, setErrorMessage }) {
+export default function Layout({ children, forumName, errorMessage, setErrorMessage }) {
     return (<>
         <Head>
             <link rel="icon" href="/favicon.ico" />
@@ -32,7 +32,7 @@ export default function Layout({ children, errorMessage, setErrorMessage }) {
                 <div className="container">
                     <div className="navbar-brand d-flex align-items-center" style={{whiteSpace: 'normal'}}>
                         <span className="text-success font-weight-bold" style={{ fontSize: "150%" }}><FontAwesomeIcon icon={faBuildingColumns} /></span>&nbsp;&nbsp;
-                        <strong>I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da Segunda Região</strong>
+                        <strong>{forumName}</strong>
                     </div>
                 </div>
             </div>

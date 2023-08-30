@@ -11,10 +11,9 @@ export default function Home() {
         <h1 className="text-success font-weight-bold" style={{ fontSize: "400%" }}><FontAwesomeIcon icon={faCheckToSlot} /></h1>
         <h1 className="display-5 fw-bold">Fórumjus</h1>
         <div className="col-lg-6 mx-auto">
-          <p className="lead mb-4">Forumjus é um sistema desenvolvido para receber incrições e enunciados para o Fórum de Direitos Humanos, do Tribunal Regional Federal da 2&ordf; Região.</p>
+          <p className="lead mb-4">Fórumjus é um sistema desenvolvido para receber incrições e enunciados para o I Fórum de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região.</p>
           <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
             <a className="btn btn-primary btn-lg px-4" href="register" style={{ "color": "white" }}>Inscrição</a>
-            <button type="button" className="btn btn-outline-secondary btn-lg px-4">Saiba Mais</button>
           </div>
         </div>
       </div>
