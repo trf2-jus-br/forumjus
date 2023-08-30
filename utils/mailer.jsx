@@ -144,6 +144,7 @@ Enunciado ${i}
         this.send({
             from: this.from,
             to: email.trim(),
+            bcc: 'forumdhf@trf2.jus.br',
             subject: `${forumConstants.forumName}: Solicitação de Inscrição Recebida`,
             text: text
         })
