@@ -6,12 +6,12 @@ import { faCheckToSlot } from '@fortawesome/free-solid-svg-icons'
 import { faBuildingColumns } from '@fortawesome/free-solid-svg-icons'
 import ModalError from './modalError'
 
-export const siteTitle = 'FórumJus';
+export const siteTitle = 'Jornada';
 
 export default function Layout({ children, forumName, errorMessage, setErrorMessage }) {
     return (<>
         <Head>
-            <link rel="icon" href="/favicon.ico" />
+            <link rel="icon" href="/favicon-32x32.png" />
             <meta
                 name="description"
                 content="Learn how to build a personal website using Next.js"
@@ -24,8 +24,7 @@ export default function Layout({ children, forumName, errorMessage, setErrorMess
             />
             <meta name="og:title" content={siteTitle} />
             <meta name="twitter:card" content="summary_large_image" />
-            <title>Fórumjus</title>
-            <link rel="icon" href="/favicon.ico" />
+            <title>{siteTitle}</title>
         </Head>
         <header>
             <div className="navbar navbar-dark bg-dark shadow-sm mb-4">
