@@ -149,7 +149,7 @@ Enunciado ${i}
 - Justificativa: "${s.justification}"`
         })
 
-        // text += this.forumFooter(forumConstants.forumName)
+        text += this.forumFooter(forumConstants.forumName)
 
         this.send({
             from: this.from,
