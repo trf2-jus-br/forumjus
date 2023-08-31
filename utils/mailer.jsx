@@ -112,7 +112,7 @@ Equipe ${forumName}.`
     },
 
     sendRegistered(email, forumConstants, data) {
-        let text = `Prezado(a) ${data.attendeeChosenName ? data.attendeeChosenName : data.attendeeName},
+        let text = `Prezado(a),
 
 Confirmamos o recebimento da(s) sua(s) proposta(s) de enunciado(s). Essa(s) será(ão) analisada(s) pelo(a) Relator(a) da Comissão Temática pertinente.
 
