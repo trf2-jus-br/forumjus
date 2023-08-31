@@ -155,7 +155,7 @@ Enunciado ${i}
             from: this.from,
             to: email.trim(),
             bcc: 'forumdhf@trf2.jus.br',
-            subject: `${forumConstants.forumName},
+            subject: `${forumConstants.forumName}`,
             text: text
         })
     },
