@@ -18,6 +18,10 @@ export default {
 
     async register(forumId, data) {
         console.log(data)
+        if (data.attendeeChosenName) {
+            data.attendeeChosenName = data.attendeeChosenName.trim()
+            if (data.attendeeChosenName === '') delete data.attendeeChosenName
+        }
         const conn = await this.getConnection()
         conn.beginTransaction()
         try {
