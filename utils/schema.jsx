@@ -6,7 +6,7 @@ export const registerSchema = yup.object().shape({
     attendeeChosenName: yup.string().max(255, 'Deve respeitar o limite máximo de 255 caracteres'),
     attendeeEmail: yup.string().required('E-mail deve ser preenchido').email('E-mail inválido').max(255, 'Deve respeitar o limite máximo de 255 caracteres'),
     attendeeEmailConfirmation: yup.string().required('Confirmação de e-mail deve ser preenchido').oneOf([yup.ref('attendeeEmail'), null], 'Confirmação de e-mail deve ser igual ao e-mail'),
-    attendeePhone: yup.string().required('Telefone deve ser preenchido').max(32, 'Deve respeitar o limite máximo de 32 caracteres'),
+    attendeePhone: yup.string().required('Telefone deve ser preenchido').max(32, 'Deve respeitar o limite máximo de 32 caracteres').min(14, 'Telefone inválido'),
     attendeeOccupationId: yup.number().required('Profissão deve ser selecionada'),
     attendeeOccupationOther: yup.string().max(255, 'Deve respeitar o limite máximo de 255 caracteres')
         .when('attendeeOccupation', {
