@@ -50,29 +50,33 @@ export default {
             occupation: {},
             committee: {},
         }
-        {
-            const result = await conn.query('SELECT * FROM forum WHERE forum_id = ?;', [forumId])
-            if (!result[0].length) throw `Fórum ${forumId} não localizado na base de dados`
-            r.forumId = forumId
-            r.forumName = result[0][0].forum_name
-        }
-        {
-            const result = await conn.query('SELECT * FROM occupation WHERE forum_id = ?;', [forumId])
-            for (let i = 0; i < result[0].length; i++) {
-                r.occupation[result[0][i].occupation_id] = {
-                    name: result[0][i].occupation_name
+        try {
+            {
+                const result = await conn.query('SELECT * FROM forum WHERE forum_id = ?;', [forumId])
+                if (!result[0].length) throw `Fórum ${forumId} não localizado na base de dados`
+                r.forumId = forumId
+                r.forumName = result[0][0].forum_name
+            }
+            {
+                const result = await conn.query('SELECT * FROM occupation WHERE forum_id = ?;', [forumId])
+                for (let i = 0; i < result[0].length; i++) {
+                    r.occupation[result[0][i].occupation_id] = {
+                        name: result[0][i].occupation_name
+                    }
                 }
             }
-        }
-        {
-            const result = await conn.query('SELECT * FROM committee WHERE forum_id = ?;', [forumId])
-            for (let i = 0; i < result[0].length; i++) {
-                r.committee[result[0][i].committee_id] = {
-                    name: result[0][i].committee_name,
-                    chairName: result[0][i].committee_chair_name,
-                    chairDocument: result[0][i].committee_chair_document
+            {
+                const result = await conn.query('SELECT * FROM committee WHERE forum_id = ?;', [forumId])
+                for (let i = 0; i < result[0].length; i++) {
+                    r.committee[result[0][i].committee_id] = {
+                        name: result[0][i].committee_name,
+                        chairName: result[0][i].committee_chair_name,
+                        chairDocument: result[0][i].committee_chair_document
+                    }
                 }
             }
+        } finally {
+            conn.release()
         }
         return r
     },

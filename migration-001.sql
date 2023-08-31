@@ -29,7 +29,7 @@ CREATE TABLE `forumjus`.`forum` (
   `forum_name` VARCHAR(255) NOT NULL,
   PRIMARY KEY (`forum_id`));
 
-INSERT INTO `forumjus`.`forum` VALUES(1, 'I Fórum de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região');
+INSERT INTO `forumjus`.`forum` VALUES(1, 'I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região');
 
 CREATE TABLE `forumjus`.`occupation` (
   `occupation_id` INT NOT NULL AUTO_INCREMENT,
