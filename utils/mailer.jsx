@@ -114,9 +114,19 @@ Equipe ${forumName}.`
     sendRegistered(email, forumConstants, data) {
         let text = `Prezado(a) ${data.attendeeName},
 
-Sua solicitação de inscrição em '${forumConstants.forumName}' foi recebida pelo sistema.
+Confirmamos o recebimento da(s) sua(s) proposta(s) de enunciado(s). Essa(s) será(ão) analisada(s) pelo(a) Relator(a) da Comissão Temática pertinente.
 
-Após avaliação, será enviado um novo email informando se a inscrição foi aceita.
+Caso sua proposta seja admitida, sua inscrição na Jornada será automaticamente deferida, assim como sua participação na Comissão Temática objeto daquela.
+
+Na hipótese de mais de uma proposta de enunciado de sua autoria ter sido admitida, mas essas pertencerem a Comissões Temáticas diferentes, caberá a Vossa Senhoria optar por apenas uma Comissão, conforme estabelecido no regulamento da Jornada.
+
+Nesse último caso, a organização da Jornada entrará em contato, para que Vossa Senhoria faça a opção pela Comissão na qual deseja se inscrever.
+
+No caso da sua proposta de enunciado não ser admitida, sua inscrição será automaticamente indeferida.
+
+O deferimento ou indeferimento da(s) proposta(s) de enunciado(s) será comunicado através do e-mail cadastrado.
+
+Em caso de dúvida, entre em contato através do e-mail forumdhf@trf2.jus.br.
 
 Dados recebidos:
 - Nome Completo: ${data.attendeeName}
