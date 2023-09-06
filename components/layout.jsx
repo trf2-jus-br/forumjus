@@ -33,6 +33,10 @@ export default function Layout({ children, forumName, errorMessage, setErrorMess
                         <span className="text-success font-weight-bold" style={{ fontSize: "150%" }}><FontAwesomeIcon icon={faBuildingColumns} /></span>&nbsp;&nbsp;
                         <strong>{forumName}</strong>
                     </div>
+                    <div>
+                        <a href="/inscricoes">Inscrições</a>
+                        <a href="/votar" className='m-2'>Votar</a>
+                    </div>
                 </div>
             </div>
         </header>

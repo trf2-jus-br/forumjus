@@ -205,6 +205,47 @@ export default {
         } finally {
             conn.release()
         }
-    }
+    },
 
+    async carregarInscricoes(){
+        const conn = await pool.getConnection();
+
+        const [result] = await conn.query( `SELECT * FROM statement join attendee on statement.attendee_id = attendee.attendee_id;`)
+
+        conn.release();
+
+        return result;
+    },
+
+    async aprovar(id){
+        console.log("id", id)
+
+        const conn = await pool.getConnection();
+
+        await conn.query( 
+            `UPDATE statement 
+                SET statement_acceptance_datetime = now(),
+                statement_rejection_datetime = NULL 
+                WHERE statement_id = ?;`, 
+        [id])
+
+        conn.release();
+    },
+
+    async rejeitar(id){
+        const conn = await pool.getConnection();
+
+        console.log(id)
+
+        const [result] = await conn.query( 
+            `UPDATE statement 
+                SET statement_acceptance_datetime = NULL,
+                statement_rejection_datetime = now() 
+                WHERE statement_id = ?;`, 
+        [id])
+
+        conn.release();
+
+        return result;
+    },
 }

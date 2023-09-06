@@ -25,5 +25,9 @@
         "request": "^2.88.2",
         "swr": "^2.0.0",
         "yup": "^0.32.11"
+    },
+    "devDependencies": {
+        "@types/node": "20.5.9",
+        "typescript": "5.2.2"
     }
 }
