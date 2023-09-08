@@ -1,0 +1,10 @@
+.custom-option:hover {
+    background: #0d6efd;
+    color: white;
+    cursor: pointer;
+}
+
+.custom-select {
+    cursor: pointer;
+    border-color: #0d6efd;
+}

@@ -2,7 +2,7 @@ import Head from 'next/head'
 import styles from '../styles/Home.module.css';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Fetcher from '../utils/fetcher'
 import Validate from '../utils/validate'
 import Layout from '../components/layout'
@@ -10,6 +10,8 @@ import ReCAPTCHA from "react-google-recaptcha";
 import * as formik from 'formik';
 import { registerSchema } from '../utils/schema';
 import mysql from "../utils/mysql"
+import { Dropdown, Modal } from 'react-bootstrap';
+import PrivacyPolicy from '../components/modalPrivacyPolice';
 
 const recaptchaRef = React.createRef();
 
@@ -22,11 +24,15 @@ export async function getServerSideProps({ params }) {
   };
 }
 
+
 export default function Create(props) {
   const [attendeeEmail, setAttendeeEmail] = useState(undefined)
   const [created, setCreated] = useState(false)
   const [errorMessage, setErrorMessage] = useState(undefined)
+  const [editingCommittee, setEdittingCommittee] = useState(null)
   const { Formik, FieldArray } = formik;
+
+  const privacyPolicyRef = useRef()
 
   const handleChangeAttendeePhone = (evt) => {
     let data = event.target.value.replace(/\D/g, "");
@@ -85,6 +91,23 @@ export default function Create(props) {
 
   }
 
+  function selectCommittee(committee_id, setFieldValue){
+    setFieldValue(`statement.${editingCommittee}.committeeId`, committee_id)
+    setEdittingCommittee(null)
+  }
+
+  function renderCommittee(id){
+    if(id === undefined)
+      return  <div>[Selecione]</div>;
+
+    const committee = props.forumConstants.committee[id]
+    
+    return <div className='p-1'>
+      <h6>{committee.name}</h6>
+      <div style={{paddingLeft: "20px"}}>{committee.description}</div>
+    </div>
+  }
+
   return (
     <Layout forumName={props.forumConstants.forumName} errorMessage={errorMessage} setErrorMessage={setErrorMessage}>
       <h1 className='mb-4'>Formulário de inscrição preliminar e de proposta(s) de enunciado(s)</h1>
@@ -97,9 +120,11 @@ export default function Create(props) {
           </p>
 
           <Formik
+            validateOnBlur={false}
             validationSchema={registerSchema}
             onSubmit={(values, actions) => { handleSubmit(values, actions) }}
             initialValues={{
+              privacyPolice: false,
               attendeeName: '',
               attendeeChosenName: '',
               attendeeEmail: '',
@@ -118,7 +143,7 @@ export default function Create(props) {
               }]
             }}
           >
-            {({ handleSubmit, handleChange, values, touched, errors, isSubmitting }) => (
+            {({ handleSubmit, handleChange, values, touched, errors, isSubmitting, setFieldValue  }) => (
               <Form noValidate onSubmit={handleSubmit}>
                 <div className="row">
                   <div className="col col-12 col-lg-6">
@@ -168,7 +193,7 @@ export default function Create(props) {
                       <Form.Label>Profissão</Form.Label>
                       <Form.Control as="select" value={values.attendeeOccupationId} onChange={handleChange} isValid={touched.attendeeOccupationId && !errors.attendeeOccupationId} isInvalid={touched.attendeeOccupationId && errors.attendeeOccupationId} >
                         <option value hidden={values.attendeeOccupationId}>[Selecione]</option>
-                        {Object.keys(props.forumConstants.occupation).map((ci) => (<option value={ci}>{props.forumConstants.occupation[ci].name}</option>))}
+                        {Object.keys(props.forumConstants.occupation).map((ci) => (<option key={ci} value={ci}>{props.forumConstants.occupation[ci].name}</option>))}
                       </Form.Control>
                       <Form.Control.Feedback type="invalid">{errors.attendeeOccupationId}</Form.Control.Feedback>
                     </Form.Group>
@@ -221,12 +246,17 @@ export default function Create(props) {
                             <h3>Enunciado {values.statement.length > 1 ? i + 1 : ''}</h3>
                           </div>
 
-                          <div className="col col-12 col-lg-6">
+                          <div className="col col-12 col-lg-12">
                             <Form.Group className="mb-3" controlId={`statement[${i}].committeeId`}>
                               <Form.Label>Comissão</Form.Label>
-                              <Form.Control as="select" value={values.statement[i].committeeId} onChange={(evt, i) => handleChange(evt, i)} isValid={touched.attendeeName && !(errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId)} isInvalid={touched.attendeeName && errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId}  >
+                              <div className="custom-select" onClick={()=> setEdittingCommittee(i)}>
+                                <div className={`form-control ${touched.statement && touched.statement[i] && errors.statement && errors.statement[i] && errors.statement[i].committeeId && 'border-danger'}`}>
+                                  {renderCommittee(values.statement[i].committeeId)}
+                                </div>
+                              </div>
+                              <Form.Control className="d-none" as="select" value={values.statement[i].committeeId} onChange={(evt, i) => handleChange(evt, i)} isValid={touched.attendeeName && !(errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId)} isInvalid={touched.attendeeName && errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId}  >
                                 <option value hidden={values.statement[i].committeeId}>[Selecione]</option>
-                                {Object.keys(props.forumConstants.committee).map((ci) => (<option value={ci}>{props.forumConstants.committee[ci].name}</option>))}
+                                {Object.keys(props.forumConstants.committee).map((ci) => (<option key={ci} value={ci}>{props.forumConstants.committee[ci].name}</option>))}
                               </Form.Control>
                               <Form.Control.Feedback type="invalid">{errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId}</Form.Control.Feedback>
                             </Form.Group>
@@ -273,8 +303,37 @@ export default function Create(props) {
                     </div>
                   )}
                 </FieldArray>
+
+                  <Modal show={editingCommittee != null} size='xl' scrollable onHide={()=> setEdittingCommittee(null)}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Comissões</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body className='form-control p-0 custom-select-container'>
+                      {
+                        Object.keys(props.forumConstants.committee).map( (committee_id) => (
+                              <div key={committee_id} className='p-3 custom-option' onClick={() => selectCommittee(committee_id, setFieldValue)}>
+                                <h6>{props.forumConstants.committee[committee_id].name}</h6>
+                                <div style={{paddingLeft: "20px"}}>{props.forumConstants.committee[committee_id].description}</div>
+                              </div>
+                            ))}
+                    </Modal.Body>
+                </Modal>
                 <div className="row" style={{ marginBottom: '6em' }}>
-                  <div className="col"></div>
+                  <div className="col">
+                    <Form.Check>
+                      <Form.Check.Input 
+                        checked={values.privacyPolice} 
+                        type="checkbox" 
+                        isInvalid={touched.privacyPolice && errors.privacyPolice}
+                        onChange={e => setFieldValue('privacyPolice', e.target.checked)}
+                      />
+                      <Form.Check.Label id="privacyPolicy">
+                        Declaro que li e concordo com os <a role='button' href='#privacyPolicy' onClick={() => privacyPolicyRef.current.show()}>Termos de Uso</a> e a <a role='button' href='#privacyPolicy' onClick={() => privacyPolicyRef.current.show()}>Política de Privacidade</a>
+                      </Form.Check.Label>
+                      <Form.Control.Feedback type="invalid">{errors.privacyPolice != undefined}</Form.Control.Feedback>
+                    </Form.Check>
+                    
+                  </div>
                   <div className="col col-auto">
                     <Button type="submit" variant="primary" className="ml-auto" disabled={false}>
                       Enviar
@@ -287,6 +346,7 @@ export default function Create(props) {
             )}</Formik>
         </>
       }
+      <PrivacyPolicy ref={privacyPolicyRef}/>
     </Layout >
   )
 }
