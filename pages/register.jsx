@@ -243,7 +243,18 @@ export default function Create(props) {
                       (
                         <div className="row" key={i}>
                           <div className="col col-12">
-                            <h3>Enunciado {values.statement.length > 1 ? i + 1 : ''}</h3>
+                            <h3>
+                              Enunciado {values.statement.length > 1 ? i + 1 : ''}
+                              
+                              {i > 0 && i == (values.statement.length - 1) ?
+                              <Button variant="secondary" onClick={() => pop()} className="ml-3 btn btn-sm" style={{ marginRight: '1em', marginLeft: '1em' }}>
+                                Remover
+                              </Button>
+                              : <></>}
+                            </h3>
+
+                           
+
                           </div>
 
                           <div className="col col-12 col-lg-12">
@@ -260,23 +271,6 @@ export default function Create(props) {
                               </Form.Control>
                               <Form.Control.Feedback type="invalid">{errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId}</Form.Control.Feedback>
                             </Form.Group>
-                          </div>
-
-                          <div className="col align-self-end">
-                            {i > 0 && i == (values.statement.length - 1) ?
-                              <Button variant="secondary" onClick={() => pop()} className="mb-3" style={{ marginRight: '1em' }}>
-                                Remover Enunciado {i + 1}
-                              </Button>
-                              : <></>}
-                            {i == (values.statement.length - 1) && i < 2 ?
-                              <Button variant="secondary" onClick={() => push({
-                                text: '',
-                                justification: '',
-                                committeeId: undefined
-                              })} className="mb-3">
-                                Adicionar Enunciado {i + 2}
-                              </Button>
-                              : <></>}
                           </div>
 
                           <div className="w-100 d-none d-md-block"></div>
@@ -296,6 +290,20 @@ export default function Create(props) {
                               <Form.Text className="text-muted">Escreva uma justificativa para o enunciado de no máximo 1600 caracteres.</Form.Text>
                             </Form.Group>
                           </div>
+
+
+                          <div className="col text-center">
+                            {i == (values.statement.length - 1) && i < 2 ?
+                              <Button variant="secondary" onClick={() => push({
+                                text: '',
+                                justification: '',
+                                committeeId: undefined
+                              })} className="mb-3">
+                                Adicionar Enunciado {i + 2}
+                              </Button>
+                              : <></>}
+                          </div>
+
                         </div>
                       )
 
