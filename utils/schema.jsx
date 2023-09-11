@@ -2,6 +2,7 @@ import Validate from './validate'
 import * as yup from 'yup';
 
 export const registerSchema = yup.object().shape({
+    privacyPolice: yup.bool().oneOf([true], 'É necessário ler e concordar com os termos de uso'),
     attendeeName: yup.string().required('Nome deve ser preenchido').max(255, 'Deve respeitar o limite máximo de 255 caracteres'),
     attendeeChosenName: yup.string().max(255, 'Deve respeitar o limite máximo de 255 caracteres'),
     attendeeEmail: yup.string().required('E-mail deve ser preenchido').email('E-mail inválido').max(255, 'Deve respeitar o limite máximo de 255 caracteres'),

@@ -74,6 +74,7 @@ export default {
                 for (let i = 0; i < result[0].length; i++) {
                     r.committee[result[0][i].committee_id] = {
                         name: result[0][i].committee_name,
+                        description: result[0][i].committee_description,
                         chairName: result[0][i].committee_chair_name,
                         chairDocument: result[0][i].committee_chair_document
                     }
