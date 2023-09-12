@@ -12,7 +12,7 @@ interface Inscricao {
     statement_id: number,
     forum_id: number,
     attendee_id: number,
-    committee_id: null,
+    committee_id: number,
     statement_text: string,
     statement_justification: string,
     statement_acceptance_datetime: null,
@@ -126,8 +126,8 @@ function Inscricoes ({forumConstants}){
         </table>
 
 
-        <Modal show={exibirModalDetalhes} size='xl' onHide={ocultarDetalhes}>
-            <Nav variant='tabs' className='mb-3' activeKey={aba} onSelect={(aba: Aba) => setAba(aba)}>
+        <Modal show={exibirModalDetalhes} size='xl' onHide={ocultarDetalhes} scrollable>
+            <Nav variant='tabs' activeKey={aba} onSelect={(aba: Aba) => setAba(aba)}>
                 <Nav.Item>
                     <Nav.Link eventKey="enunciado">Enunciado</Nav.Link>
                 </Nav.Item>
@@ -137,21 +137,9 @@ function Inscricoes ({forumConstants}){
                 <Nav.Item>
                     <Nav.Link eventKey="registro">Registro</Nav.Link>
                 </Nav.Item>
-                <CloseButton onClick={ocultarDetalhes} />
+                <CloseButton style={{ position: "absolute", top: "10px", right: "10px"}} onClick={ocultarDetalhes} />
             </Nav>
             <Modal.Body>
-                <Nav variant='tabs' className='mb-3' activeKey={aba} onSelect={(aba: Aba) => setAba(aba)}>
-                    <Nav.Item>
-                        <Nav.Link eventKey="enunciado">Enunciado</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link eventKey="autor">Autor</Nav.Link>
-                    </Nav.Item>
-                    <Nav.Item>
-                        <Nav.Link eventKey="registro">Registro</Nav.Link>
-                    </Nav.Item>
-                </Nav>
-
                 {detalhes && <Formik 
                     enableReinitialize={true} 
                     initialValues={{
@@ -166,9 +154,9 @@ function Inscricoes ({forumConstants}){
                         attendeeDisability: detalhes.attendee_disability,
                         attendeeAffiliation: detalhes.attendee_affiliation,
                         statement: [{
-                            text: '',
-                            justification: '',
-                            committeeId: undefined
+                            text: detalhes.statement_text,
+                            justification: detalhes.statement_justification,
+                            committeeId: detalhes.committee_id
                         }]
                     }} 
                     onSubmit={()=> console.log("oi")} 
@@ -189,6 +177,8 @@ function Inscricoes ({forumConstants}){
             </Modal.Body>
 
             <Modal.Footer>
+                <Button style={{marginRight: "auto"}} onClick={()=> aprovar(detalhes)}>Salvar alterações</Button>
+
                 <Button variant='danger' onClick={()=> aprovar(detalhes, false)}>Rejeitar</Button>
                 <Button onClick={()=> aprovar(detalhes)}>Aprovar</Button>
             </Modal.Footer>

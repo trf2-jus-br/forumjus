@@ -211,7 +211,17 @@ export default {
     async carregarInscricoes(){
         const conn = await pool.getConnection();
 
-        const [result] = await conn.query( `SELECT * FROM statement join attendee on statement.attendee_id = attendee.attendee_id;`)
+        const [result] = await conn.query( 
+            `SELECT 
+                attendee_acceptance_datetime, attendee_affiliation,
+                attendee_chosen_name, attendee_disability, attendee_document
+                attendee_email, statement.attendee_id, attendee_name,
+                attendee_phone, attendee_rejection_datetime, statement.committee_id, occupation_id,
+                statement_acceptance_datetime, statement_id, statement_justification,
+                statement_rejection_datetime, statement_text
+            FROM 
+                statement join attendee on statement.attendee_id = attendee.attendee_id;`
+        )
 
         conn.release();
 
