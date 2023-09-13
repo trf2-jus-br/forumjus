@@ -208,6 +208,104 @@ export default {
         }
     },
 
+
+    async carregarComites(){
+        const conn = await pool.getConnection();
+
+        const [result] = await conn.query( `SELECT * FROM committee`)
+
+        conn.release();
+
+        return result;
+    },
+    async carregarEnunciado(){
+        const conn = await pool.getConnection();
+
+        const [result] = await conn.query( `SELECT * FROM statement`)
+
+        conn.release();
+
+        return result;
+    },
+    async carregarForum(){
+        const conn = await pool.getConnection();
+
+        const [result] = await conn.query( `SELECT * FROM forum`)
+
+        conn.release();
+
+        return result;
+    },
+    async carregarParticipante(){
+        const conn = await pool.getConnection();
+
+        const [result] = await conn.query( `SELECT * FROM attendee`)
+
+        conn.release();
+
+        return result;
+    },
+    async carregarOcupacao(){
+        const conn = await pool.getConnection();
+
+        const [result] = await conn.query( `SELECT * FROM occupation`)
+
+        conn.release();
+
+        return result;
+    },
+    async protegerSqlInjection(...campos){
+        const regex = /^[a-zA-Z_]*$/;
+
+        const injection = campos.some( txt => !txt.match(regex))
+
+        if(injection)
+            throw "Possível Injection";
+    },
+    async atualizarBanco({tabela, nome_id, coluna, valor, id, usuario}){
+        const conn = await pool.getConnection();
+
+       this.protegerSqlInjection(tabela, coluna, nome_id);
+
+        const [result] = await conn.query(`update ${tabela} set ${coluna} = ? where ${nome_id} = ?`, [valor, id]);
+
+        conn.release();
+
+        return result;
+    },
+    async deletarLinha({tabela, nome_id, id, usuario}){
+        const conn = await pool.getConnection();
+
+        this.protegerSqlInjection(tabela, nome_id);
+
+        const [result] = await conn.query(`DELETE FROM ${tabela} WHERE ${nome_id} = ?;`, [id]);
+
+        conn.release();
+
+        return result;
+    },
+    async criarLinha({tabela, linha, usuario}){
+
+        console.log({tabela, linha});
+
+        this.protegerSqlInjection(tabela, ...Object.keys(linha));
+        
+        const conn = await pool.getConnection();
+
+        const campos = Object.keys(linha).join(',');
+        const valores = Object.keys(linha).map( e => '?').join(',');
+
+        console.log(
+            `INSERT INTO ${tabela} (${campos}) VALUES (${valores});`
+        )
+
+        const [result] = await conn.query(`INSERT INTO ${tabela} (${campos}) VALUES (${valores});`, [ ...Object.values(linha) ]);
+
+        conn.release();
+
+        return result;
+    },
+
     async carregarInscricoes(){
         const conn = await pool.getConnection();
 

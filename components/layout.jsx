@@ -1,14 +1,15 @@
 import Head from 'next/head';
-import Link from 'next/link';
-import Container from 'react-bootstrap/Container';
+import { usePathname } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckToSlot } from '@fortawesome/free-solid-svg-icons'
 import { faBuildingColumns } from '@fortawesome/free-solid-svg-icons'
 import ModalError from './modalError'
 
 export const siteTitle = 'Jornada';
 
 export default function Layout({ children, forumName, errorMessage, setErrorMessage }) {
+
+    const admin = usePathname().startsWith('/admin/')
+
     return (<>
         <Head>
             <link rel="icon" href="/favicon-32x32.png" />
@@ -27,6 +28,8 @@ export default function Layout({ children, forumName, errorMessage, setErrorMess
             <title>{siteTitle}</title>
         </Head>
         <header>
+            <input type="hidden" id="USUARIO_TEMP" />
+
             <div className="navbar navbar-dark bg-dark shadow-sm mb-4">
                 <div className="container">
                     <div className="navbar-brand d-flex align-items-center" style={{whiteSpace: 'normal'}}>
@@ -36,6 +39,16 @@ export default function Layout({ children, forumName, errorMessage, setErrorMess
                     <div>
                         <a href="/inscricoes">Inscrições</a>
                         <a href="/votar" className='m-2'>Votar</a>
+
+                        {
+                            admin && <>
+                                <a href="/admin/ocupacao" className='m-2'>Ocupação</a>
+                                <a href="/admin/enunciado" className='m-2'>Enunciado</a>
+                                <a href="/admin/comite" className='m-2'>Comitê</a>
+                                <a href="/admin/participante" className='m-2'>Participante</a>
+                                <a href="/admin/forum" className='m-2'>Fórum</a>
+                            </>
+                        }
                     </div>
                 </div>
             </div>
