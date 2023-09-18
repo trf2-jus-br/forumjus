@@ -12,7 +12,7 @@ function Comissao (props: Props){
             {nome: "ID", banco: "forum_id", largura: 1, exibir: true},
             {nome: "nome", banco: "forum_name", largura: 8, exibir: true},
         ]}
-        api="/api/forum"
+        api="/api/crud?tabela=forum&nome_id=forum_id"
     />
 }
 

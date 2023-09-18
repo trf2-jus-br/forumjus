@@ -3,12 +3,13 @@ import { usePathname } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBuildingColumns } from '@fortawesome/free-solid-svg-icons'
 import ModalError from './modalError'
+import { Permissao, usuario } from '../context/usuario';
+import { Dropdown, DropdownButton } from 'react-bootstrap';
 
 export const siteTitle = 'Jornada';
 
 export default function Layout({ children, forumName, errorMessage, setErrorMessage }) {
-
-    const admin = usePathname().startsWith('/admin/')
+    const usuario_logado = usuario();
 
     return (<>
         <Head>
@@ -41,13 +42,14 @@ export default function Layout({ children, forumName, errorMessage, setErrorMess
                         <a href="/votar" className='m-2'>Votar</a>
 
                         {
-                            admin && <>
-                                <a href="/admin/ocupacao" className='m-2'>Ocupação</a>
-                                <a href="/admin/enunciado" className='m-2'>Enunciado</a>
-                                <a href="/admin/comite" className='m-2'>Comitê</a>
-                                <a href="/admin/participante" className='m-2'>Participante</a>
-                                <a href="/admin/forum" className='m-2'>Fórum</a>
-                            </>
+                            usuario_logado?.permissoes?.crud && <DropdownButton title="CRUD">
+                                <Dropdown.Item href="/admin/ocupacao" >Ocupações</Dropdown.Item>
+                                <Dropdown.Item href="/admin/enunciado" >Enunciados</Dropdown.Item>
+                                <Dropdown.Item href="/admin/comite" >Comitês</Dropdown.Item>
+                                <Dropdown.Item href="/admin/participante" >Participantes</Dropdown.Item>
+                                <Dropdown.Item href="/admin/forum" >Fóruns</Dropdown.Item>
+                                <Dropdown.Item href="/admin/permissao" >Permissões</Dropdown.Item>
+                            </DropdownButton>
                         }
                     </div>
                 </div>

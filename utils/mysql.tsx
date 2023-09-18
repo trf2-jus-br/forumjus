@@ -207,8 +207,66 @@ export default {
             conn.release()
         }
     },
+    
+    async carregarPermissoes(doc: string){
+        const conn = await pool.getConnection();
 
+        try{
+            const [result ] = await conn.query( `select comissoes, crud from permissao where JSON_CONTAINS(usuarios, ?, '$');`, [`"${doc}"`])
+    
+            if(result.length === 0)
+                return [];
 
+            return {
+                comissoes: JSON.parse(result[0].comissoes),
+                crud: result[0].crud
+            }
+        }catch(err){
+            throw err;
+        } finally {
+            conn.release();
+        }
+    },
+
+    async carregarVotacaoComites(usuario: string){
+        const conn = await pool.getConnection();
+
+        try{
+            const [result] = await conn.query( 
+                `SELECT	* 
+                FROM committee, permissao
+                WHERE
+                    JSON_CONTAINS(usuarios, ?) and
+                    JSON_CONTAINS(comissoes,  concat(committee_id));`
+            , 
+            [`"${usuario}"`]);
+    
+            return result;
+        }catch(err){
+            throw err;
+        } finally {
+            conn.release();
+        }
+    },
+
+    async carregar({tabela}){
+        if(tabela == null)
+            throw "tabela nula"
+
+        const conn = await pool.getConnection();
+
+        try{
+            this.protegerSqlInjection(tabela)
+    
+            const [result] = await conn.query( `SELECT * FROM ${tabela};`)
+    
+            return result;
+        }catch(err){
+            throw err;
+        } finally {
+            conn.release();
+        }
+    },
     async carregarComites(){
         const conn = await pool.getConnection();
 

@@ -97,9 +97,6 @@ function Inscricoes ({forumConstants}){
         }
     }
 
-    console.log(forumConstants)
-
-
     return <Layout errorMessage={undefined} setErrorMessage={undefined}>
         <h3>Inscrições</h3>
         <table className='table table-hover table-light table-striped text-center'>

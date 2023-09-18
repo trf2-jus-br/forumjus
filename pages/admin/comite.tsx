@@ -16,7 +16,7 @@ function Comite (props: Props){
             {nome: "Documento Presidente", banco: "committee_chair_document", largura: 1},
             {nome: "Descrição", banco: "committee_description", largura: 6, exibir: true},
         ]}
-        api="/api/comite"
+        api="/api/crud?tabela=committee&nome_id=committee_id"
     />
 }
 

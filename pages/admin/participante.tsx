@@ -23,7 +23,7 @@ function Comissao (props: Props){
             {nome: "Aceito", banco: "attendee_acceptance_datetime", largura: 1, exibir: true},
             {nome: "Rejeitado", banco: "attendee_rejection_datetime", largura: 1, exibir: true},
         ]}
-        api="/api/participante"
+        api="/api/crud?tabela=attendee&nome_id=attendee_id"
     />
 }
 

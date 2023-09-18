@@ -18,7 +18,7 @@ function Comissao (props: Props){
             {nome: "Aceito", banco: "statement_acceptance_datetime", largura: 3, exibir: true},
             {nome: "Rejeitado", banco: "statement_rejection_datetime", largura: 3, exibir: true},
         ]}
-        api="/api/enunciado"
+        api="/api/crud?tabela=statement&nome_id=statement_id"
     />
 }
 
