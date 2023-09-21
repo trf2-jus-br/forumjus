@@ -10,7 +10,7 @@ function Comissao (props: Props){
         nome='Enunciados' 
         colunas={[
             {nome: "ID", banco: "statement_id", largura: 1, exibir: true},
-            {nome: "Fórum", banco: "forum_id", largura: 1, exibir: true},
+            {nome: "Jornada", banco: "forum_id", largura: 1, exibir: true},
             {nome: "Participante", banco: "attendee_id", largura: 1, exibir: true},
             {nome: "Comitê", banco: "committee_id", largura: 1, exibir: true},
             {nome: "Título", banco: "statement_text", largura: 4, exibir: true},

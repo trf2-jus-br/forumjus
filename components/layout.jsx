@@ -29,8 +29,6 @@ export default function Layout({ children, forumName, errorMessage, setErrorMess
             <title>{siteTitle}</title>
         </Head>
         <header>
-            <input type="hidden" id="USUARIO_TEMP" />
-
             <div className="navbar navbar-dark bg-dark shadow-sm mb-4">
                 <div className="container">
                     <div className="navbar-brand d-flex align-items-center" style={{whiteSpace: 'normal'}}>
@@ -38,9 +36,6 @@ export default function Layout({ children, forumName, errorMessage, setErrorMess
                         <strong>{forumName}</strong>
                     </div>
                     <div>
-                        <a href="/inscricoes">Inscrições</a>
-                        <a href="/votar" className='m-2'>Votar</a>
-
                         {
                             usuario_logado?.permissoes?.crud && <DropdownButton title="CRUD">
                                 <Dropdown.Item href="/admin/ocupacao" >Ocupações</Dropdown.Item>

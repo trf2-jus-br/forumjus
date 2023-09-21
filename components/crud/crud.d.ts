@@ -30,7 +30,7 @@ export namespace CRUD {
         committee_id: number;
         statement_text: string;
         statement_justification: string;
-        statement_acceptance_datetime: string | null;
-        statement_rejection_datetime: string | null;
+        statement_acceptance: number;
+        statement_rejection: number;
     }
 }

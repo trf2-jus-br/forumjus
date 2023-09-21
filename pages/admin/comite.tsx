@@ -10,7 +10,7 @@ function Comite (props: Props){
         nome='Comitês' 
         colunas={[
             {nome: "ID", banco: "committee_id", largura: 1, exibir: true},
-            {nome: "Fórum", banco: "forum_id", largura: 1},
+            {nome: "Jornada", banco: "forum_id", largura: 1},
             {nome: "Nome", banco: "committee_name", largura: 3, exibir: true},
             {nome: "Presidente", banco: "committee_chair_name", largura: 1},
             {nome: "Documento Presidente", banco: "committee_chair_document", largura: 1},

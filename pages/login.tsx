@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 
 function Login(props){
-    const [doc, setDoc] = useState("T212000");
-    const [nome, setNome] = useState("João da Silva");
+    const [doc, setDoc] = useState("");
+    const [nome, setNome] = useState("");
 
     function logar(){
-        document.cookie=`doc=${doc.trim()}`
-        document.cookie=`nome=${nome.trim()}`
+        //document.cookie=`doc=${doc.trim()}`
+        //document.cookie=`nome=${nome.trim()}`
 
-        window.location.href = '/votacao'
+        //window.location.href = '/votacao'
     }
 
     return (
@@ -20,10 +20,7 @@ function Login(props){
             }}>
                 <Form.Control className='w-25 text-center' type='input' value={nome} onChange={e => setNome(e.target.value)}></Form.Control>
                 <Form.Control className='w-25 text-center' type='input' value={doc} onChange={e => setDoc(e.target.value)}></Form.Control>
-                <Button className="mt-2 w-25" onClick={logar}>Simular GOV.BR</Button>
-
-                <div>T212000 - COADM</div>
-                <div>T212500 - MEMBRO COMISSAO</div>
+                <Button className="mt-2 w-25" onClick={logar}>Login</Button>
             </Form.Group>
         </div>
     )

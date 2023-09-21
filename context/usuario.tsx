@@ -3,7 +3,10 @@ import React, { useEffect, useState, useContext } from 'react';
 interface Usuario {
     nome: string,
     doc: string,
-    permissoes: number[]
+    permissoes: {
+        comissoes: number [],
+        crud?: number
+    }
 }
 
 const UsuarioContext = React.createContext<Usuario>(null);
@@ -13,9 +16,13 @@ export function UsuarioProvider({children}){
     const [carregando, setCarregando] = useState(true);
 
     useEffect(()=>{
-        const pagina_login = window.location.pathname.indexOf("/login") !== -1;
+        const paginas_publicas = [
+            "/login", '/', '/register'
+        ]
 
-        if(usuario === null && !pagina_login){
+        const eh_pagina_publica = paginas_publicas.some( p =>  window.location.pathname === p );
+
+        if(usuario === null && !eh_pagina_publica){
             fetch('/api/login')
             .then(async res => {
                 if(!res.ok)

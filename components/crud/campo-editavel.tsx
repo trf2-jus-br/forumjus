@@ -22,15 +22,12 @@ function CampoEditavel<R> (props: Props<R>){
     const [valor, setValor] = useState(linha[coluna.banco]);
 
     function confirmar(){
-        const usuario = document.getElementById("USUARIO_TEMP").value
-
         fetch(api, { 
             method: "PATCH",
             body: JSON.stringify({
                 linha,
                 coluna: coluna.banco,
                 valor,
-                usuario,
             })
         }).then(response => {
             if( !response.ok)

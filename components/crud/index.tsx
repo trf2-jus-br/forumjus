@@ -7,7 +7,7 @@ import { Button, Dropdown, DropdownButton, Form, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Formik } from 'formik';
-import { Permissao, usuario } from '../../context/usuario';
+import { usuario } from '../../context/usuario';
 
 
 function CRUD<R> (props : CRUD.Props<R>){
@@ -25,7 +25,7 @@ function CRUD<R> (props : CRUD.Props<R>){
 
 
     const usuario_logado = usuario();
-    const possui_permissao = usuario_logado?.permissoes?.includes(Permissao.CRUD);  
+    const possui_permissao = usuario_logado?.permissoes?.crud;  
 
 
     function carregar(){
