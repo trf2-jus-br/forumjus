@@ -26,24 +26,18 @@ const handler = async function (req, res) {
         if (!r.success) throw `Captcha inválido`
 
         // Validate registration data
-        console.log('will validate');
         const data = req.body.values
-        console.log(req.body.values);
         const valid = await registerSchema.isValid(data)
-        console.log(valid)
         if (!valid) throw `Dados inválidos`
 
         const forumId = 1
 
         // Add to the database
-        const attendeeId = await mysql.register(forumId, data)
-        console.log(attendeeId)
+        await mysql.register(forumId, data)
 
         // Send email
         const forumContants = await mysql.loadForumConstants(forumId)
-        console.log('contants')
-        console.log(forumContants)
-        mailer.sendRegistered(data.attendeeEmail, forumContants, data)
+        mailer.enviarConfirmacaoCadastros(data.attendeeEmail, forumContants, data)
 
         return res.send({ response: "Successful" });
     } catch (error) {

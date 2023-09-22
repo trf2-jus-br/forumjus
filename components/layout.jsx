@@ -1,14 +1,16 @@
 import Head from 'next/head';
-import Link from 'next/link';
-import Container from 'react-bootstrap/Container';
+import { usePathname } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckToSlot } from '@fortawesome/free-solid-svg-icons'
 import { faBuildingColumns } from '@fortawesome/free-solid-svg-icons'
 import ModalError from './modalError'
+import { Permissao, usuario } from '../context/usuario';
+import { Dropdown, DropdownButton } from 'react-bootstrap';
 
 export const siteTitle = 'Jornada';
 
 export default function Layout({ children, forumName, errorMessage, setErrorMessage }) {
+    const usuario_logado = usuario();
+
     return (<>
         <Head>
             <link rel="icon" href="/favicon-32x32.png" />
@@ -32,6 +34,18 @@ export default function Layout({ children, forumName, errorMessage, setErrorMess
                     <div className="navbar-brand d-flex align-items-center" style={{whiteSpace: 'normal'}}>
                         <span className="text-success font-weight-bold" style={{ fontSize: "150%" }}><FontAwesomeIcon icon={faBuildingColumns} /></span>&nbsp;&nbsp;
                         <strong>{forumName}</strong>
+                    </div>
+                    <div>
+                        {
+                            usuario_logado?.permissoes?.crud && <DropdownButton title="CRUD">
+                                <Dropdown.Item href="/admin/ocupacao" >Ocupações</Dropdown.Item>
+                                <Dropdown.Item href="/admin/enunciado" >Enunciados</Dropdown.Item>
+                                <Dropdown.Item href="/admin/comite" >Comitês</Dropdown.Item>
+                                <Dropdown.Item href="/admin/participante" >Participantes</Dropdown.Item>
+                                <Dropdown.Item href="/admin/forum" >Fóruns</Dropdown.Item>
+                                <Dropdown.Item href="/admin/permissao" >Permissões</Dropdown.Item>
+                            </DropdownButton>
+                        }
                     </div>
                 </div>
             </div>

@@ -3,6 +3,7 @@ import * as yup from 'yup';
 
 export const registerSchema = yup.object().shape({
     privacyPolice: yup.bool().oneOf([true], 'É necessário ler e concordar com os termos de uso'),
+    regimento: yup.bool().oneOf([true], 'É necessário ler e concordar com o Regimento da Jornada'),
     attendeeName: yup.string().required('Nome deve ser preenchido').max(255, 'Deve respeitar o limite máximo de 255 caracteres'),
     attendeeChosenName: yup.string().max(255, 'Deve respeitar o limite máximo de 255 caracteres'),
     attendeeEmail: yup.string().required('E-mail deve ser preenchido').email('E-mail inválido').max(255, 'Deve respeitar o limite máximo de 255 caracteres'),
@@ -20,10 +21,10 @@ export const registerSchema = yup.object().shape({
             is: (attendeeDisabilityYN) => attendeeDisabilityYN,
             then: yup.string().required('Descrição da necessidade de atendimento especial deve ser preenchida').max(255, 'Deve respeitar o limite máximo de 255 caracteres')
         }),
-    attendeeDocument: yup.string().required('CPF deve ser preenchido').test(
+    /*attendeeDocument: yup.string().required('CPF deve ser preenchido').test(
         'test-invalid-cpf',
         'CPF inválido',
-        (cpf) => Validate.validateCPF(cpf)),
+        (cpf) => Validate.validateCPF(cpf)),*/
     statement: yup.array().of(
         yup.object().shape({
             text: yup.string().required('Texto do enunciado deve ser preenchido').max(800, 'Deve respeitar o limite máximo de 800 caracteres'),

@@ -19,7 +19,7 @@ function PrivacyPolicy(props, ref){
             
             <h6>Fórumjus</h6>
             <p style={{marginLeft:20}}>
-                Sistema desenvolvido para receber incrições e enunciados para o I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região.
+                Sistema desenvolvido para receber incrições e enunciados para a I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região.
             </p>
             <h6>Dados pessoais</h6>
             <p style={{marginLeft:20}}>
