@@ -110,7 +110,7 @@ export default function Create(props) {
 
   return (
     <Layout forumName={props.forumConstants.forumName} errorMessage={errorMessage} setErrorMessage={setErrorMessage}>
-      <h1 className='mb-4'>Formulário de inscrições de propostas de enunciados</h1>
+      <h1 className='mb-4'>Formulário de inscrição de proposta(s) de enunciado(s)</h1>
 
       {created
         ? <p className='alert alert-success'>Sua(s) proposta(s) de enunciado(s) foi/foram recebida(s) com sucesso. Consulte o email "{attendeeEmail}" para ver a confirmação.</p>
