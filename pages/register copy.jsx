@@ -174,7 +174,7 @@ export default function Create(props) {
         ? <p className='alert alert-success'>Inscrição realizada com sucesso. Consulte o email "{attendeeEmail}" para ver a confirmação.</p>
         : <>
           <p>
-            Faça sua incrição e sugira um ou mais enunciados para serem debatidos.
+            Faça sua inscrição e sugira um ou mais enunciados para serem debatidos.
           </p>
 
           <Form noValidate validated={validated} onSubmit={handleSubmit}>

@@ -32,20 +32,23 @@ const EmailConfirmacaoCadastro = (data, forumConstants) => `
             </div>
 
             <div style="margin-top: 25px;">
-                    Dados recebidos:
-                    <ul>
-                        <li><strong>Nome Completo</strong>: ${data.attendeeName}</li>
-                        <li><strong>Nome Social:</strong> ${data.attendeeChosenName ? data.attendeeChosenName : ''}</li>
-                        <li><strong>E-Mail:</strong> ${data.attendeeEmail}</li>
-                        <li><strong>Telefone:</strong> ${data.attendeePhone}</li>
-                        <li><strong>Profissão:</strong> ${forumConstants.occupation[data.attendeeOccupationId].name}</li>
-                        <li><strong>Vinculado a qual Órgão:</strong> ${data.attendeeAffiliation}</li>
-                        <li><strong>Pessoa com Deficiência:</strong> ${data.attendeeDisabilityYN === true || data.attendeeDisabilityYN === 'true' ? 'Sim' : 'Não'}${data.attendeeDisabilityYN === true || data.attendeeDisabilityYN === 'true' ? '\n- Descrever a Necessidade de Atendimento Especial: ' + data.attendeeDisability : ''}</li>
-                    </ul>
-                </div>
+                Dados recebidos:
+                <ul>
+                    <li><strong>Nome Completo</strong>: ${data.attendeeName}</li>
+                    <li><strong>Nome Social:</strong> ${data.attendeeChosenName ? data.attendeeChosenName : ''}</li>
+                    <li><strong>E-Mail:</strong> ${data.attendeeEmail}</li>
+                    <li><strong>Telefone:</strong> ${data.attendeePhone}</li>
+                    <li><strong>Profissão:</strong> ${forumConstants.occupation[data.attendeeOccupationId].name}</li>
+                    <li><strong>Vinculado a qual Órgão:</strong> ${data.attendeeAffiliation}</li>
+                    <li><strong>Pessoa com Deficiência:</strong> ${data.attendeeDisabilityYN === true || data.attendeeDisabilityYN === 'true' ? 'Sim' : 'Não'}${data.attendeeDisabilityYN === true || data.attendeeDisabilityYN === 'true' ? '\n- Descrever a Necessidade de Atendimento Especial: ' + data.attendeeDisability : ''}</li>
+                </ul>
+            </div>
 
             ${enunciados(data, forumConstants)}
-        <div>
+
+            <div style="margin-top: 25px;">Atenciosamente,</div>
+            <div style="margin-top: 25px;">Equipe ${forumConstants.forumName}.</div>
+        </div>
     </body>
 </html>
 `;

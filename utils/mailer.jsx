@@ -167,6 +167,7 @@ Enunciado ${i}
         this.send({
             from: this.from,
             to: email.trim(),
+            bcc: 'forumdhf@trf2.jus.br',
             subject: `I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região`,
             html: EmailConfirmacaoCadastro(data, forumConstants),
             attachments: [{
