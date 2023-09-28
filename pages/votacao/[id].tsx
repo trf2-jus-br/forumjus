@@ -1,17 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Layout from '../../components/layout';
-import Comite from './comite';
 import Enunciado from './enunciado';
-import { CRUD } from '../../components/crud/crud';
 import { Breadcrumb } from 'react-bootstrap';
 import { useRouter } from 'next/router';
 
 function Votacao(props){
-    const [enunciados, setEnunciados] = useState<CRUD.Enunciado[]>([]);
+    const [enunciados, setEnunciados] = useState<Enunciado[]>([]);
+    const [atualizador, setAtualizador] = useState(true);
     const router = useRouter();
 
-    function atualizar(){
-        console.log("atualizar")
+    useEffect(()=>{
+        if(router.query.id === undefined)
+            return
+
         fetch(`/api/votacao/${router.query.id}`)
         .then(async res => {
             if(!res.ok)
@@ -19,15 +20,11 @@ function Votacao(props){
 
             setEnunciados(await res.json());
         })
-        .catch(err => alert(err));
-    }
+        .catch(err => console.log(err));
 
-    useEffect(()=>{
-        atualizar();
-        const interval = setInterval(atualizar, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
+        const timeout = setTimeout(() => setAtualizador(a => !a), 4000)
+        return () => clearTimeout(timeout);
+    }, [router, atualizador]);
 
     return <Layout>
         <Breadcrumb>

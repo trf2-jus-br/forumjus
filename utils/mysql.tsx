@@ -47,6 +47,19 @@ export default {
         }
     },
 
+    async carregarForum(){
+        const conn = await pool.getConnection();
+
+        try{
+            const [result] = await conn.query( 'SELECT * FROM forum ORDER BY forum_id DESC LIMIT 1;')
+            return result[0]
+        }catch(err){
+            throw err;
+        } finally {
+            conn.release();
+        }
+    },
+
     async loadForumConstants(forumId) {
         const conn = await this.getConnection()
         const r = {
@@ -89,14 +102,11 @@ export default {
         const conn = await pool.getConnection();
 
         try{
-            const [result ] = await conn.query( `select comissoes, crud from permissao where JSON_CONTAINS(usuarios, ?, '$');`, [`"${doc}"`])
+            const [result ] = await conn.query( `select administrar_comissoes, votar_comissoes, crud, estatistica from permissao where JSON_CONTAINS(usuarios, ?, '$');`, [`"${doc}"`])
     
-            if(result.length === 0)
-                return [];
-
             return {
-                comissoes: JSON.parse(result[0].comissoes),
-                crud: result[0].crud
+                administrar_comissoes: JSON.parse(result[0]?.administrar_comissoes || '[]'),
+                crud: result[0]?.crud === 1
             }
         }catch(err){
             throw err;
@@ -105,17 +115,13 @@ export default {
         }
     },
 
-    async votar({usuario, statement_id, committee_id, contra}){
+    async votar({matricula, statement_id, committee_id, contra}){
         const conn = await pool.getConnection();
 
         try{
-            const permissao = await this.carregarPermissoes(usuario);
+            const permissao = await this.carregarPermissoes(matricula);
 
-            console.log(
-                permissao.comissoes, usuario, statement_id, committee_id, contra
-            )
-
-            if(permissao.comissoes.indexOf(committee_id) === -1){
+            if(permissao.administrar_comissoes.indexOf(committee_id) === -1){
                 throw "Usuário sem permissão para votar."
             }
 
@@ -135,19 +141,20 @@ export default {
         }
     },
 
-    async carregarVotacaoComites(usuario: string){
+    async carregarVotacaoComites(commites: string){
         const conn = await pool.getConnection();
 
         try{
             const [result] = await conn.query( 
-                `SELECT	* 
-                FROM committee, permissao
-                WHERE
-                    JSON_CONTAINS(usuarios, ?) and
-                    JSON_CONTAINS(comissoes,  concat(committee_id));`
-            , 
-            [`"${usuario}"`]);
-    
+                `select committee.*, count(*) as enunciados
+                from committee
+                inner join statement on committee.committee_id = statement.committee_id
+                where committee.committee_id in (?)
+                group by committee_id
+                `, [commites]);
+
+            console.log(result)
+
             return result;
         }catch(err){
             throw err;
@@ -155,12 +162,12 @@ export default {
             conn.release();
         }
     },
-    async carregarEnunciados({ comite, usuario }){
+    async carregarEnunciados({ comite, matricula }){
         const conn = await pool.getConnection();
 
         try{
             let filtro_comite = '';
-            let params = [`"${usuario}"`];
+            let params = [`"${matricula}"`];
             
             if(comite != null){
                 filtro_comite = ' and committee_id = ?';
@@ -172,7 +179,7 @@ export default {
                 FROM statement, permissao
                 WHERE
                     JSON_CONTAINS(usuarios, ?) and
-                    JSON_CONTAINS(comissoes,  concat(committee_id)) ${filtro_comite};`
+                    JSON_CONTAINS(administrar_comissoes, concat(committee_id)) ${filtro_comite};`
             , 
             params);
     

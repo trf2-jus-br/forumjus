@@ -1,8 +1,5 @@
 import createHttpError from "http-errors";
-
 import { NextApiHandler, NextApiRequest, NextApiResponse } from "next";
-// import { ErrorResponse, Method } from "types/api";
-import { ValidationError } from "yup";
 
 type Method =
   |'GET'

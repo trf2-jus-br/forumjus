@@ -1,31 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { apiHandler } from "../../../utils/apis";
 import mysql from "../../../utils/mysql";
-import mailer from '../../../utils/mailer';
-
-async function validarPermissao(req: NextApiRequest){
-    const doc = req.cookies['doc'];
-
-    if(!doc)
-        throw "Usuário não está logado no gov.br"
-
-    return doc;
-}
+import { carregarUsuario } from "../../../middleware";
 
 async function listar(req: NextApiRequest, res: NextApiResponse){
-    const doc = await validarPermissao(req);
-
-    
-    const result = await mysql.carregarVotacaoComites(doc);
+    const { matricula } = await carregarUsuario(req);
+    const permissao = await mysql.carregarPermissoes(matricula);
+    const result = await mysql.carregarVotacaoComites(permissao.administrar_comissoes);
     res.send(result)
 }
 
 async function votar(req: NextApiRequest, res: NextApiResponse){
-    const usuario = await validarPermissao(req);
+    const {matricula} = await carregarUsuario(req);
 
     const { statement_id, committee_id, contra } = JSON.parse(req.body);
     
-    const result = await mysql.votar({usuario, statement_id, contra, committee_id});
+    const result = await mysql.votar({matricula, statement_id, contra, committee_id});
     res.send(result)
 }
 

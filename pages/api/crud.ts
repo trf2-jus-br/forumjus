@@ -1,19 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { apiHandler } from "../../utils/apis";
 import mysql from "../../utils/mysql";
+import { carregarUsuario } from "../../middleware";
 
 async function validarPermissao(req: NextApiRequest){
-    const doc = req.cookies['doc'];
+    const usuario = await carregarUsuario(req);
 
-    if(!doc)
-        throw "Usuário não está logado no gov.br"
-
-    const permissoes = await mysql.carregarPermissoes(doc);
+    const permissoes = await mysql.carregarPermissoes(usuario.matricula);
 
     if(!permissoes.crud)
         throw "Usuário sem permissão";
 
-    return doc;
+    return usuario;
 }
 
 async function listar(req: NextApiRequest, res: NextApiResponse){

@@ -5,8 +5,10 @@ create table permissao(
 	id bigint not null auto_increment,
 	nome varchar(100) not null,
     usuarios text not null,
-    comissoes text not null,
+    administrar_comissoes text not null,
+    votar_comissoes text not null,
     crud bool default false,
+    estatistica bool default false,
     primary key (id)
 );
 

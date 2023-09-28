@@ -44,16 +44,6 @@ const handler = async function (req, res) {
         console.log(error)
         return res.status(400).send({ response: error });
     }
-
-
-    // const attendeeJwt = await jwt.buildJwt({ kind: "attendee", attendeeId })
-    // const attendeeLink = `${process.env.API_URL_BROWSER}dashboard/${attendeeJwt}`
-
-    // if (process.env.LOG_LINKS) console.log(attendeeLink)
-
-    mailer.sendRegistered(forumId, forumName.attendeeEmail)
-
-    res.status(200).json({ status: 'OK' });
 }
 
 export default apiHandler({

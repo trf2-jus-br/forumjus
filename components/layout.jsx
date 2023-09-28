@@ -1,15 +1,24 @@
 import Head from 'next/head';
-import { usePathname } from 'next/navigation';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBuildingColumns } from '@fortawesome/free-solid-svg-icons'
-import ModalError from './modalError'
-import { Permissao, usuario } from '../context/usuario';
-import { Dropdown, DropdownButton } from 'react-bootstrap';
+import { usarContexto } from '../contexto';
+import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 
 export const siteTitle = 'Jornada';
 
-export default function Layout({ children, forumName, errorMessage, setErrorMessage }) {
-    const usuario_logado = usuario();
+export default function Layout({ children }) {
+    const {usuario, forum} = usarContexto();
+
+    function logout(){
+        fetch('/api/login', {method: 'DELETE'}).then(res => {
+            if(!res.ok)
+                throw 'err';
+
+            window.location.href = '/login';
+        })
+    }
+
+    console.log(usuario);
 
     return (<>
         <Head>
@@ -31,13 +40,24 @@ export default function Layout({ children, forumName, errorMessage, setErrorMess
         <header>
             <div className="navbar navbar-dark bg-dark shadow-sm mb-4">
                 <div className="container">
-                    <div className="navbar-brand d-flex align-items-center" style={{whiteSpace: 'normal'}}>
-                        <span className="text-success font-weight-bold" style={{ fontSize: "150%" }}><FontAwesomeIcon icon={faBuildingColumns} /></span>&nbsp;&nbsp;
-                        <strong>{forumName}</strong>
-                    </div>
+                    <div className="navbar-brand w-100 d-flex align-items-center justify-content-between" style={{whiteSpace: 'normal'}}>
+                        <div className='col-8'>
+                            <span className="text-success font-weight-bold" style={{ fontSize: "150%" }}><FontAwesomeIcon icon={faBuildingColumns} /></span>&nbsp;&nbsp;
+                            <strong>{forum?.forum_name}</strong>
+                        </div>
+                        {usuario &&
+                            <div className='col-4 d-flex align-items-center justify-content-end' style={{fontSize: 14, textAlign: 'right'}}>
+                                <div style={{marginRight: 10}}>
+                                    <div>{usuario.nome}</div>
+                                    <div>{usuario.lotacao}</div>
+                                </div>
+                                <Button size="sm" onClick={logout} title='Sair'>Sair</Button>
+                            </div>
+                        }
+                        </div>
                     <div>
                         {
-                            usuario_logado?.permissoes?.crud && <DropdownButton title="CRUD">
+                            usuario?.permissoes?.crud && <DropdownButton title="CRUD">
                                 <Dropdown.Item href="/admin/ocupacao" >Ocupações</Dropdown.Item>
                                 <Dropdown.Item href="/admin/enunciado" >Enunciados</Dropdown.Item>
                                 <Dropdown.Item href="/admin/comite" >Comitês</Dropdown.Item>
@@ -54,7 +74,6 @@ export default function Layout({ children, forumName, errorMessage, setErrorMess
         <div className="container mb-3">
             {children}
         </div>
-        <ModalError show={errorMessage} onOk={() => setErrorMessage(undefined)} onCancel={() => setErrorMessage(undefined)} title="Atenção" text={errorMessage} />
     </>
     );
 }

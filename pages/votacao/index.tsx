@@ -1,22 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/layout';
 import Comite from './comite';
-
-import type { CRUD } from '../../components/crud/crud';
 import { Breadcrumb } from 'react-bootstrap';
+import { usarContexto } from '../../contexto';
 
 function Votacao(){
-    const [comites, setComites] = useState<CRUD.Comite[]>();
+    const [comites, setComites] = useState<Comite[]>();
+    const {exibirNotificacao, api} = usarContexto();
 
     useEffect(()=>{
-        fetch("/api/votacao")
-        .then(async res => {
-            if(!res.ok)
-                throw res.statusText;
-
-            setComites(await res.json())
-        })
-        .catch(err => alert(err));
+        api.get('/api/votacao')
+        .then(({data}) => setComites(data))
+        .catch(err => exibirNotificacao({texto: 'Votação', titulo: 'Não foi possível carregar os enunciados.'}));
     }, [])
 
     return <Layout>
@@ -25,7 +20,7 @@ function Votacao(){
         </Breadcrumb>
 
         <div className='d-flex row'>
-            {comites?.map( c => <Comite comite={c} />) }
+            {comites?.map( c => <Comite key={c.committee_id} comite={c} />) }
         </div>
     </Layout>
 }

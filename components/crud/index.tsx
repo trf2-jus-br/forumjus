@@ -7,7 +7,7 @@ import { Button, Dropdown, DropdownButton, Form, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Formik } from 'formik';
-import { usuario } from '../../context/usuario';
+import { usarContexto, usuario } from '../../contexto';
 
 
 function CRUD<R> (props : CRUD.Props<R>){
@@ -24,13 +24,13 @@ function CRUD<R> (props : CRUD.Props<R>){
     const formikRef = useRef(null);
 
 
-    const usuario_logado = usuario();
-    const possui_permissao = usuario_logado?.permissoes?.crud;  
+    const {usuario} = usarContexto();
+    const possui_permissao = usuario?.permissoes?.crud;  
 
 
     function carregar(){
         if(!possui_permissao){
-            return alert(`${usuario_logado?.nome || ''} não possui permissão para acessar essa tela.` )
+            return alert(`${usuario?.nome || ''} não possui permissão para acessar essa tela.` )
         }
 
         fetch(api)
