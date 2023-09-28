@@ -114,6 +114,31 @@ export default {
             conn.release();
         }
     },
+    
+    async alterarComite({usuario, statement_id, committee_id}){
+        const conn = await pool.getConnection();
+
+        try{
+            const permissao = await this.carregarPermissoes(usuario.matricula);
+
+            const [enunciado] = await this.carregar({tabela: 'statement', chave: 'statement_id', valor: statement_id});
+
+            if(permissao.administrar_comissoes.indexOf(enunciado.committee_id) === -1){
+                throw "Usuário sem permissão";
+            }
+
+            const [result] = await conn.query( 
+                `UPDATE statement SET committee_id = ? WHERE statement_id = ?`,
+                [committee_id, statement_id]
+            );
+    
+            return result;
+        }catch(err){
+            throw err;
+        } finally {
+            conn.release();
+        }
+    },
 
     async votar({matricula, statement_id, committee_id, contra}){
         const conn = await pool.getConnection();
@@ -141,7 +166,70 @@ export default {
         }
     },
 
-    async carregarVotacaoComites(commites: string){
+    async analisar({usuario, statement_id, admitido}){
+        const conn = await pool.getConnection();
+
+        try{
+            const permissao = await this.carregarPermissoes(usuario.matricula);
+
+            const [enunciado] = await this.carregar({tabela: 'statement', chave: 'statement_id', valor: statement_id});
+
+            if(permissao.administrar_comissoes.indexOf(enunciado.committee_id) === -1){
+                throw "Usuário sem permissão para analisar."
+            }
+
+            const nome = `${usuario.nome} (${usuario.matricula})`;
+
+            const [result] = await conn.query( 
+                `UPDATE statement 
+                    SET admitido = ?, 
+                    analisado_por = ?, 
+                    data_analise=now() 
+                WHERE statement_id = ?;`,
+                [admitido, nome, statement_id]
+            );
+    
+            return result;
+        }catch(err){
+            throw err;
+        } finally {
+            conn.release();
+        }
+    },
+
+    
+    async desfazerAnalise({usuario, statement_id}){
+        const conn = await pool.getConnection();
+
+        try{
+            const permissao = await this.carregarPermissoes(usuario.matricula);
+
+            const [enunciado] = await this.carregar({tabela: 'statement', chave: 'statement_id', valor: statement_id});
+
+            if(permissao.administrar_comissoes.indexOf(enunciado.committee_id) === -1){
+                throw "Usuário sem permissão para analisar."
+            }
+
+            const [result] = await conn.query( 
+                `UPDATE statement 
+                    SET admitido = NULL, 
+                    analisado_por = NULL, 
+                    data_analise = NULL 
+                WHERE statement_id = ?;`,
+                [statement_id]
+            );
+    
+            return result;
+        }catch(err){
+            throw err;
+        } finally {
+            conn.release();
+        }
+    },
+
+    async carregarVotacaoComites(usuario){
+        const permissao = await this.carregarPermissoes(usuario.matricula);
+
         const conn = await pool.getConnection();
 
         try{
@@ -151,9 +239,7 @@ export default {
                 inner join statement on committee.committee_id = statement.committee_id
                 where committee.committee_id in (?)
                 group by committee_id
-                `, [commites]);
-
-            console.log(result)
+                `, [permissao.administrar_comissoes]);
 
             return result;
         }catch(err){
@@ -162,26 +248,22 @@ export default {
             conn.release();
         }
     },
-    async carregarEnunciados({ comite, matricula }){
+    async carregarEnunciados({ usuario }){
         const conn = await pool.getConnection();
 
-        try{
-            let filtro_comite = '';
-            let params = [`"${matricula}"`];
-            
-            if(comite != null){
-                filtro_comite = ' and committee_id = ?';
-                params.push(comite);
-            }
+        const permissoes = await this.carregarPermissoes(usuario.matricula);
+        
+        if( permissoes.administrar_comissoes.length === 0)
+            throw "Usuário não tem permissão";
 
+        try{
             const [result] = await conn.query( 
                 `SELECT	statement.* 
                 FROM statement, permissao
-                WHERE
-                    JSON_CONTAINS(usuarios, ?) and
-                    JSON_CONTAINS(administrar_comissoes, concat(committee_id)) ${filtro_comite};`
+                WHERE committee_id in (?)
+                ORDER BY admitido is not null, admitido desc, data_analise desc;`
             , 
-            params);
+            [permissoes.administrar_comissoes]);
     
             return result;
         }catch(err){
@@ -191,16 +273,24 @@ export default {
         }
     },
 
-    async carregar({tabela}){
+    async carregar({tabela, chave, valor}){
         if(tabela == null)
             throw "tabela nula"
 
         const conn = await pool.getConnection();
 
         try{
-            this.protegerSqlInjection(tabela)
-    
-            const [result] = await conn.query( `SELECT * FROM ${tabela};`)
+            this.protegerSqlInjection(tabela, chave)
+            
+            let condicao = ''
+            let params = [];
+
+            if(chave != null){
+                params.push(valor);
+                condicao = ` WHERE ${chave} = ?`;
+            }
+
+            const [result] = await conn.query( `SELECT * FROM ${tabela} ${condicao};`, params)
     
             return result;
         }catch(err){
@@ -212,7 +302,7 @@ export default {
     async protegerSqlInjection(...campos){
         const regex = /^[a-zA-Z_]*$/;
 
-        const injection = campos.some( txt => !txt.match(regex))
+        const injection = campos.some( txt => txt != null && !txt.match(regex))
 
         if(injection)
             throw "Possível Injection";
@@ -241,18 +331,12 @@ export default {
     },
     async criarLinha({tabela, linha, usuario}){
 
-        console.log({tabela, linha});
-
         this.protegerSqlInjection(tabela, ...Object.keys(linha));
         
         const conn = await pool.getConnection();
 
         const campos = Object.keys(linha).join(',');
         const valores = Object.keys(linha).map( e => '?').join(',');
-
-        console.log(
-            `INSERT INTO ${tabela} (${campos}) VALUES (${valores});`
-        )
 
         const [result] = await conn.query(`INSERT INTO ${tabela} (${campos}) VALUES (${valores});`, [ ...Object.values(linha) ]);
 
@@ -282,8 +366,6 @@ export default {
     },
 
     async aprovar(id){
-        console.log("id", id)
-
         const conn = await pool.getConnection();
 
         await conn.query( 
@@ -298,8 +380,6 @@ export default {
 
     async rejeitar(id){
         const conn = await pool.getConnection();
-
-        console.log(id)
 
         const [result] = await conn.query( 
             `UPDATE statement 

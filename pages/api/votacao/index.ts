@@ -4,9 +4,8 @@ import mysql from "../../../utils/mysql";
 import { carregarUsuario } from "../../../middleware";
 
 async function listar(req: NextApiRequest, res: NextApiResponse){
-    const { matricula } = await carregarUsuario(req);
-    const permissao = await mysql.carregarPermissoes(matricula);
-    const result = await mysql.carregarVotacaoComites(permissao.administrar_comissoes);
+    const usuario = await carregarUsuario(req);
+    const result = await mysql.carregarVotacaoComites(usuario);
     res.send(result)
 }
 

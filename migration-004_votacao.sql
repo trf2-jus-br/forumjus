@@ -1,4 +1,3 @@
-
 /*drop table permissao;*/
 
 create table permissao(
@@ -15,6 +14,7 @@ create table permissao(
 alter table statement drop statement_acceptance_datetime;
 alter table statement drop statement_rejection_datetime;
 
-alter table statement add statement_acceptance int not null default 0;
-alter table statement add statement_rejection int not null default 0;
+alter table statement add data_analise datetime;
+alter table statement add analisado_por varchar(255);
+alter table statement add admitido int default null;
 

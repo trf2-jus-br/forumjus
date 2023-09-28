@@ -20,10 +20,13 @@ async function carregarDados(token){
     
     const {usuario} = await resposta.json();
 
+    const permissoes = await mysql.carregarPermissoes(usuario.titularSigla);
+
     return {
         nome: usuario.titularNome,
         matricula: usuario.titularSigla,
-        lotacao: usuario.lotaTitularSigla
+        lotacao: usuario.lotaTitularSigla,
+        permissoes
     };
 }
 

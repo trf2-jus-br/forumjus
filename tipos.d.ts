@@ -1,6 +1,11 @@
+
+type AxiosInstance = import('axios').AxiosInstance;
+
 interface Usuario {
-    nome: string,
-    doc: string,
+    nome: string;
+    matricula: string,
+    lotacao: string,
+
     permissoes: {
         comissoes: number [],
         crud?: number
@@ -22,7 +27,7 @@ interface Contexto {
     forum: Forum,
     usuario: Usuario,
     exibirNotificacao: (msg: Mensagem) => void;
-    api: 
+    api: AxiosInstance;
 }
 
 interface Comite {
@@ -41,6 +46,8 @@ interface Enunciado {
     committee_id: number;
     statement_text: string;
     statement_justification: string;
-    statement_acceptance: number;
-    statement_rejection: number;
+    
+    data_analise: string | null;
+    analisado_por: string | null;
+    admitido: 0 | 1 | null;
 }
