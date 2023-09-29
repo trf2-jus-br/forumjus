@@ -62,7 +62,7 @@ async function logar(req: NextApiRequest, res: NextApiResponse){
         `forum_usuario=${JSON.stringify(usuario)}; Secure; Path=/`
     ])
 
-    res.status(200).send(null);
+    res.status(200).send(usuario);
 }
 
 function logout(req: NextApiRequest, res: NextApiResponse){

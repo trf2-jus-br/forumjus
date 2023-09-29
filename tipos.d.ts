@@ -7,8 +7,10 @@ interface Usuario {
     lotacao: string,
 
     permissoes: {
-        comissoes: number [],
-        crud?: number
+        administrar_comissoes: number [],
+        crud: boolean,
+        estatistica: boolean,
+        votar_comissoes : number [],
     }
 }
 

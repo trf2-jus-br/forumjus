@@ -106,7 +106,9 @@ export default {
     
             return {
                 administrar_comissoes: JSON.parse(result[0]?.administrar_comissoes || '[]'),
-                crud: result[0]?.crud === 1
+                votar_comissoes: JSON.parse(result[0]?.votar_comissoes || '[]'),
+                crud: result[0]?.crud === 1,
+                estatistica: result[0]?.estatistica === 1,
             }
         }catch(err){
             throw err;

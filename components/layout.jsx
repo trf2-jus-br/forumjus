@@ -1,8 +1,9 @@
 import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBuildingColumns } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faBuildingColumns } from '@fortawesome/free-solid-svg-icons'
 import { usarContexto } from '../contexto';
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
+import { faBan, faCheck } from '@fortawesome/free-solid-svg-icons';
 
 export const siteTitle = 'Jornada';
 
@@ -17,8 +18,6 @@ export default function Layout({ children }) {
             window.location.href = '/login';
         })
     }
-
-    console.log(usuario);
 
     return (<>
         <Head>
@@ -47,26 +46,29 @@ export default function Layout({ children }) {
                         </div>
                         {usuario &&
                             <div className='col-4 d-flex align-items-center justify-content-end' style={{fontSize: 14, textAlign: 'right'}}>
-                                <div style={{marginRight: 10}}>
-                                    <div>{usuario.nome}</div>
-                                    <div>{usuario.lotacao}</div>
-                                </div>
-                                <Button size="sm" onClick={logout} title='Sair'>Sair</Button>
+                                <FontAwesomeIcon style={{fontSize: 26}} icon={faBars} />
                             </div>
                         }
-                        </div>
-                    <div>
-                        {
-                            usuario?.permissoes?.crud && <DropdownButton title="CRUD">
-                                <Dropdown.Item href="/admin/ocupacao" >Ocupações</Dropdown.Item>
-                                <Dropdown.Item href="/admin/enunciado" >Enunciados</Dropdown.Item>
-                                <Dropdown.Item href="/admin/comite" >Comitês</Dropdown.Item>
-                                <Dropdown.Item href="/admin/participante" >Participantes</Dropdown.Item>
-                                <Dropdown.Item href="/admin/forum" >Fóruns</Dropdown.Item>
-                                <Dropdown.Item href="/admin/permissao" >Permissões</Dropdown.Item>
-                            </DropdownButton>
-                        }
                     </div>
+                    {/*
+                    <Dropdown.Menu className='mt-3' style={{ right: 5}} show={true}>
+                        <div style={{margin: 20}}>
+                            <div>{usuario.nome}</div>
+                            <div>{usuario.lotacao}</div>
+                        </div>
+                        {/*<>
+                            <Dropdown.Divider />
+                            <Dropdown.Item href="/admin/ocupacao" >Ocupações</Dropdown.Item>
+                            <Dropdown.Item href="/admin/enunciado" >Enunciados</Dropdown.Item>
+                            <Dropdown.Item href="/admin/comite" >Comitês</Dropdown.Item>
+                            <Dropdown.Item href="/admin/participante" >Participantes</Dropdown.Item>
+                            <Dropdown.Item href="/admin/forum" >Fóruns</Dropdown.Item>
+                            <Dropdown.Item href="/admin/permissao" >Permissões</Dropdown.Item>
+                            <Dropdown.Divider />
+                            <Dropdown.Item onClick={logout}>Sair</Dropdown.Item>
+                    </>}
+                    </Dropdown.Menu>
+                    */}
                 </div>
             </div>
         </header>
