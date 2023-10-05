@@ -46,5 +46,14 @@ INSERT INTO membro (nome, funcao, comite, token) VALUES
     ('Relator 7', 'RELATOR', 7, 'c46dfda')
 ;
 
-select substring(uuid(), 2, 7);
+create table Log (
+	id bigint not null auto_increment,
+    pathname varchar(256) not null,
+    params varchar(1024),
+    body varchar(2048),
+    usuario varchar(1024),
+    excecao text,
+    primary key (id)
+);
 
+select * from Log;

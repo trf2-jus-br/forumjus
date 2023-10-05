@@ -1,36 +1,28 @@
-"use server"
-
 import { NextApiRequest, NextApiResponse } from "next";
 import { apiHandler } from "../../utils/apis";
-import mysql from "../../utils/mysql";
 import jwt from "../../utils/jwt";
+import axios from "axios";
+import PermissaoDAO from "../../db/permissao";
 
-async function carregarDados(token){
+async function carregarDados(db: PoolConnection, token: string) : Promise<Usuario>{
     // busca os dados do usuário ( identificado pelo jwt)
-    const resposta = await fetch('https://siga.jfrj.jus.br/siga/api/v1/usuario', {
+    const { data } = await axios.get<SIGA_API_V1_USUARIO>('https://siga.jfrj.jus.br/siga/api/v1/usuario', {
         headers: {
             Authorization: token
         }
     })
 
-    // caso http status seja diferente de 200, encaminha o erro enviado pelo SIGA.
-    if(!resposta.ok){
-        throw await resposta.json();
-    }
-    
-    const {usuario} = await resposta.json();
-
-    const permissoes = await mysql.carregarPermissoes(usuario.titularSigla);
+    const permissoes = await PermissaoDAO.carregar(db, data.usuario);
 
     return {
-        nome: usuario.titularNome,
-        matricula: usuario.titularSigla,
-        lotacao: usuario.lotaTitularSigla,
+        nome: data.usuario.titularNome,
+        matricula: data.usuario.titularSigla,
+        lotacao: data.usuario.lotaTitularSigla,
         permissoes
     };
 }
-
-async function logar(req: NextApiRequest, res: NextApiResponse){
+    
+async function logar({req, res, db} : API){
     // obtém o login e senha
     const auth = req.headers.authorization;
 
@@ -50,7 +42,7 @@ async function logar(req: NextApiRequest, res: NextApiResponse){
     const {token : SIGA_token} = await resposta.json();
 
     // carrega as informações como nome, matricula e lotação utilizando a token gerada no login.
-    const usuario = await carregarDados( SIGA_token );
+    const usuario = await carregarDados(db, SIGA_token );
 
     // Não enviamos a token do SIGA pro usuário, pois não conseguiríamos validar se o usuário alterou ela.
     // Por essa razão criamos outro JWT utilizando.
@@ -65,7 +57,7 @@ async function logar(req: NextApiRequest, res: NextApiResponse){
     res.status(200).send(usuario);
 }
 
-function logout(req: NextApiRequest, res: NextApiResponse){
+function logout({res}: API){
     res.setHeader("Set-Cookie", [
         `forum_token=deslogado; Secure; HttpOnly; Path=/api; Max-Age=-1`,
         `forum_usuario=deslogado; Secure; Path=/; Max-Age=-1`

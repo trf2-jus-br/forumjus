@@ -1,30 +1,26 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { apiHandler } from "../../utils/apis";
-import mysql from "../../utils/mysql";
-import { carregarUsuario } from "../../middleware";
+import EnunciadoDAO from "../../db/enunciado";
 
-async function listar(req: NextApiRequest, res: NextApiResponse){
-    const usuario = await carregarUsuario(req);
-    const result = await mysql.carregarEnunciados({usuario});
-    res.send(result)
+async function listar({req, res, db, usuario}: API){
+    res.send(
+        await EnunciadoDAO.listar(db, usuario)
+    )
 }
 
-async function analisar(req: NextApiRequest, res: NextApiResponse){
-    const usuario = await carregarUsuario(req);
+async function analisar({req, res, db, usuario}: API){
     const { statement_id, admitido } = req.body;
     
-    const result = await mysql.analisar({usuario, statement_id, admitido});
-    res.send(result)
+    res.send(
+        await EnunciadoDAO.analisar(db, usuario, statement_id, admitido)
+    )
 }
 
+async function desfazer({req, res, db, usuario}: API){
+    let statement_id : number = req.query.statement_id;
 
-async function desfazer(req: NextApiRequest, res: NextApiResponse){
-    const usuario = await carregarUsuario(req);
-
-    const { statement_id } = req.query;
-    
-    const result = await mysql.desfazerAnalise({usuario, statement_id });
-    res.send(result)
+    res.send(
+        await EnunciadoDAO.desfazerAnalise(db, usuario, statement_id)
+    );
 }
 
 export default apiHandler({

@@ -5,6 +5,11 @@ import ModalError from '../components/modalError'
 
 const contexto = React.createContext<Contexto>(null);
 
+// define as página que podem ser acessadas sem login.
+const paginas_publicas = [
+    "/login", '/', '/register'
+]
+
 export function ContextoProvider({children}){
     const [usuario, setUsuario] = useState<Usuario>(null);
     const [forum, setForum] = useState<Forum>(null);
@@ -22,8 +27,8 @@ export function ContextoProvider({children}){
             if(error?.request?.status === 403 && window.location.pathname !== '/login'){
                 // Notifica que a sessão expirou e redireciona para página de login.
                 mensagemRef.current.exibir({
-                    texto: 'asdasdasd', 
-                    mensagem: 'asdasdasd',
+                    texto: 'Sessão expirada', 
+                    titulo: 'Sessão expirada##',
                     acao:  ()=> window.location.href = '/login'
                 })
 
@@ -39,21 +44,17 @@ export function ContextoProvider({children}){
         mensagemRef.current.exibir(msg)
     }
 
-    useEffect(()=>{
-        api.get<Forum>('/api/forum').then(({data}) => setForum(data)).catch(err => '');
-    }, [])
-
-    useEffect(()=>{
-        // define as página que podem ser acessadas sem login.
-        const paginas_publicas = [
-            "/login", '/', '/register'
-        ]
+    async function carregar(){
+        try{
+            const { data } = await api.get<Forum>('/api/forum');
+            setForum(data)
+        }catch(err){
+            alert(err);
+        }
 
         // carrega do cookie as informações do usuário, se ele estiver logado.
         const { forum_usuario } = cookie.parse(document.cookie);
         
-        
-
         // valida se url digitada é uma das públicas.
         const eh_pagina_publica = paginas_publicas.some( p =>  window.location.pathname === p );
 
@@ -67,6 +68,10 @@ export function ContextoProvider({children}){
         }
         
         setCarregando(false)
+    }
+
+    useEffect(()=>{
+        carregar();
     }, [])
 
 

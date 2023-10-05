@@ -1,12 +1,11 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import EnunciadoDAO from "../../db/enunciado";
 import { apiHandler } from "../../utils/apis";
 import mysql from "../../utils/mysql";
-import { carregarUsuario } from "../../middleware";
 
-async function editar(req: NextApiRequest, res: NextApiResponse){
+async function editar({req, res, db, usuario}: API){
     const {committee_id, statement_id} = req.body;
-    const usuario = await carregarUsuario(req);
-    await mysql.alterarComite({usuario, committee_id, statement_id});
+
+    await EnunciadoDAO.alterarComite(db, usuario, committee_id, statement_id);
 
     res.send(null)
 }

@@ -1,15 +1,13 @@
 "use server"
 
-import { NextApiRequest, NextApiResponse } from "next";
+import ForumDAO from "../../db/forum";
 import { apiHandler } from "../../utils/apis";
-import mysql from "../../utils/mysql";
 
-
-async function listar(req: NextApiRequest, res: NextApiResponse){
-    const forum = await mysql.carregarForum();   
+async function ultimoForum({res, db}: API){
+    const forum = await ForumDAO.ultimo(db);   
     res.status(200).send(forum);
 }
 
 export default apiHandler({
-    "GET": listar
+    "GET": ultimoForum
 })

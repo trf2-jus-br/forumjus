@@ -26,7 +26,7 @@ export default {
         }
         finally {
             if (errorMsg) {
-                if (params && params.setErrorMessage) params.setErrorMessage(errorMsg)
+                alert('Implementar mensagem de erro.', errorMsg);
                 throw errorMsg
             }
         }

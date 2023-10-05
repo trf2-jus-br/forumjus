@@ -1,10 +1,10 @@
-function enunciados(data, forumConstants) {
+function enunciados(data, forum: Forum, ocupacoes: Ocupacao[], comites: Comite[]) {
     return data.statement.reduce((acc, s, i) => {
         return acc + 
         `<div style="margin-top: 25px;">
             Enunciado ${i + 1}
             <ul>
-                <li><strong>Comissão:</strong> ${forumConstants.committee[s.committeeId].name}</li>
+                <li><strong>Comissão:</strong> ${comites.find(e => e.committee_id == s.committeeId).committee_name}</li>
                 <li><strong>Enunciado:</strong> "${s.text}"</li>
                 <li><strong>Justificativa:</strong> "${s.justification}"</li>
             </ul>                
@@ -12,7 +12,7 @@ function enunciados(data, forumConstants) {
     }, "");
 }
 
-const EmailConfirmacaoCadastro = (data, forumConstants) => `
+const EmailConfirmacaoCadastro = (data, forum: Forum, ocupacoes: Ocupacao[], comites: Comite[]) => `
 <html>
     <head>
         <title>Display Image</title>
@@ -38,22 +38,19 @@ const EmailConfirmacaoCadastro = (data, forumConstants) => `
                     <li><strong>Nome Social:</strong> ${data.attendeeChosenName ? data.attendeeChosenName : ''}</li>
                     <li><strong>E-Mail:</strong> ${data.attendeeEmail}</li>
                     <li><strong>Telefone:</strong> ${data.attendeePhone}</li>
-                    <li><strong>Profissão:</strong> ${forumConstants.occupation[data.attendeeOccupationId].name}</li>
+                    <li><strong>Profissão:</strong> ${ocupacoes.find(e => e.occupation_id == data.attendeeOccupationId).occupation_name}</li>
                     <li><strong>Vinculado a qual Órgão:</strong> ${data.attendeeAffiliation}</li>
                     <li><strong>Pessoa com Deficiência:</strong> ${data.attendeeDisabilityYN === true || data.attendeeDisabilityYN === 'true' ? 'Sim' : 'Não'}${data.attendeeDisabilityYN === true || data.attendeeDisabilityYN === 'true' ? '\n- Descrever a Necessidade de Atendimento Especial: ' + data.attendeeDisability : ''}</li>
                 </ul>
             </div>
 
-            ${enunciados(data, forumConstants)}
+            ${enunciados(data, forum, ocupacoes, comites)}
 
             <div style="margin-top: 25px;">Atenciosamente,</div>
-            <div style="margin-top: 25px;">Equipe ${forumConstants.forumName}.</div>
+            <div style="margin-top: 25px;">Equipe ${forum.forum_name}.</div>
         </div>
     </body>
 </html>
 `;
-
-console.log(EmailConfirmacaoCadastro)
-
 
 export default EmailConfirmacaoCadastro;

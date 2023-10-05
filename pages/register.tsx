@@ -1,6 +1,6 @@
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Fetcher from '../utils/fetcher'
 import Layout from '../components/layout'
 import ReCAPTCHA from "react-google-recaptcha";
@@ -10,28 +10,59 @@ import mysql from "../utils/mysql"
 import { Modal } from 'react-bootstrap';
 import PrivacyPolicy from '../components/modalPrivacyPolice';
 import Regimento from '../components/modalRegimento';
+import { usarContexto } from '../contexto';
 
 const recaptchaRef = React.createRef();
 
-export async function getServerSideProps({ params }) {
-  return {
-    props: {
-      API_URL_BROWSER: process.env.API_URL_BROWSER,
-      forumConstants: await mysql.loadForumConstants(1)
-    },
-  };
-}
-
-
-export default function Create(props) {
+export default function Create() {
   const [attendeeEmail, setAttendeeEmail] = useState(undefined)
   const [created, setCreated] = useState(false)
-  const [errorMessage, setErrorMessage] = useState(undefined)
   const [editingCommittee, setEdittingCommittee] = useState(null)
+
+  /* Hashtable dos Comites e Ocupações, utilizando os id's como indexadores.*/
+  const [committee, setCommittee] = useState({});
+  const [occupation, setOccupation] = useState({});
+
   const { Formik, FieldArray } = formik;
 
   const privacyPolicyRef = useRef()
   const regimentoRef = useRef();
+
+  const {api} = usarContexto();
+
+
+  
+  useEffect(()=>{
+    // carrrega as ocupações.
+    api.get<Ocupacao[]>('/api/ocupacao').then(({data}) => {
+      
+      // converse a lista de ocupações em uma hashtable.
+      const _ocupacoes = data.reduce((acc, curr) => { 
+          acc[curr.occupation_id] = {name : curr.occupation_name}
+          return acc;
+      }, {})
+
+      setOccupation(_ocupacoes);
+    });
+
+    // carrega os comites.
+    api.get<Comite[]>('/api/comite').then(({data}) => {
+      
+      // converse a lista de ocupações em uma hashtable.
+      const _comites = data.reduce((acc, curr) => {
+        acc[curr.committee_id] = {
+            name: curr.committee_name,
+            description: curr.committee_description,
+            chairName: curr.committee_chair_name,
+            chairDocument: curr.committee_chair_document
+        }
+        return acc;
+      },{})
+      
+      setCommittee(_comites);
+    })
+  }, []);
+
 
   const handleChangeAttendeePhone = (evt) => {
     let data = event.target.value.replace(/\D/g, "");
@@ -62,26 +93,18 @@ export default function Create(props) {
     return data;
   };
 
-  const handleClickAddStatement = () => {
-    setStatement([...statement, { ...emptyStatement }])
-  };
-
-  const handleClickRemoveStatement = (i) => {
-    const a = [...statement].splice(i)
-    setStatement(a)
-  };
-
   const handleSubmit = async (values, actions) => {
     try {
       const recaptchaToken = await recaptchaRef.current.executeAsync();
 
       actions.setSubmitting(false)
-      await Fetcher.post(`${props.API_URL_BROWSER}api/register`, { recaptchaToken, values }, { setErrorMessage })
+      await Fetcher.post(`/api/register`, { recaptchaToken, values })
       setAttendeeEmail(values.attendeeEmail)
       setCreated(true)
     } catch (e) {
-      setErrorMessage(e)
+      alert("Implementar mensagem de erro:", e);
     }
+
     try {
       await recaptchaRef.current.reset();
     } catch (e) { }
@@ -100,16 +123,16 @@ export default function Create(props) {
     if(id === undefined)
       return  <div>[Selecione]</div>;
 
-    const committee = props.forumConstants.committee[id]
+    const _committee = committee[id]
     
     return <div className='p-1'>
-      <h6>{committee.name}</h6>
-      <div style={{paddingLeft: "20px"}}>{committee.description}</div>
+      <h6>{_committee.name}</h6>
+      <div style={{paddingLeft: "20px"}}>{_committee.description}</div>
     </div>
   }
 
   return (
-    <Layout forumName={props.forumConstants.forumName} errorMessage={errorMessage} setErrorMessage={setErrorMessage}>
+    <Layout>
       <h1 className='mb-4'>Formulário de inscrições de propostas de enunciados</h1>
 
       {created
@@ -194,7 +217,7 @@ export default function Create(props) {
                       <Form.Label>Profissão</Form.Label>
                       <Form.Control as="select" value={values.attendeeOccupationId} onChange={handleChange} isValid={touched.attendeeOccupationId && !errors.attendeeOccupationId} isInvalid={touched.attendeeOccupationId && errors.attendeeOccupationId} >
                         <option value hidden={values.attendeeOccupationId}>[Selecione]</option>
-                        {Object.keys(props.forumConstants.occupation).map((ci) => (<option key={ci} value={ci}>{props.forumConstants.occupation[ci].name}</option>))}
+                        {Object.keys(occupation).map((ci) => (<option key={ci} value={ci}>{occupation[ci].name}</option>))}
                       </Form.Control>
                       <Form.Control.Feedback type="invalid">{errors.attendeeOccupationId}</Form.Control.Feedback>
                     </Form.Group>
@@ -268,7 +291,7 @@ export default function Create(props) {
                               </div>
                               <Form.Control className="d-none" as="select" value={values.statement[i].committeeId} onChange={(evt, i) => handleChange(evt, i)} isValid={touched.attendeeName && !(errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId)} isInvalid={touched.attendeeName && errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId}  >
                                 <option value hidden={values.statement[i].committeeId}>[Selecione]</option>
-                                {Object.keys(props.forumConstants.committee).map((ci) => (<option key={ci} value={ci}>{props.forumConstants.committee[ci].name}</option>))}
+                                {Object.keys(committee).map((ci) => (<option key={ci} value={ci}>{committee[ci].name}</option>))}
                               </Form.Control>
                               <Form.Control.Feedback type="invalid">{errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId}</Form.Control.Feedback>
                             </Form.Group>
@@ -319,10 +342,10 @@ export default function Create(props) {
                   </Modal.Header>
                   <Modal.Body className='form-control p-0 custom-select-container'>
                     {
-                      Object.keys(props.forumConstants.committee).map( (committee_id) => (
+                      Object.keys(committee).map( (committee_id) => (
                             <div key={committee_id} className='p-3 custom-option' onClick={() => selectCommittee(committee_id, setFieldValue)}>
-                              <h6>{props.forumConstants.committee[committee_id].name}</h6>
-                              <div style={{paddingLeft: "20px"}}>{props.forumConstants.committee[committee_id].description}</div>
+                              <h6>{committee[committee_id].name}</h6>
+                              <div style={{paddingLeft: "20px"}}>{committee[committee_id].description}</div>
                             </div>
                           ))}
                   </Modal.Body>

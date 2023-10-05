@@ -88,7 +88,7 @@ function CRUD<R> (props : CRUD.Props<R>){
     }
 
     return (
-        <Layout errorMessage={null} setErrorMessage={null} forumName={null}>
+        <Layout>
             <div className="d-flex justify-content-between">
                 <div className='d-flex align-items-center'>
                     <h3>{nome}</h3>

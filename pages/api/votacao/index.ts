@@ -1,16 +1,15 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { apiHandler } from "../../../utils/apis";
 import mysql from "../../../utils/mysql";
-import { carregarUsuario } from "../../../middleware";
+import ComiteDAO from "../../../db/comite";
 
-async function listar(req: NextApiRequest, res: NextApiResponse){
-    const usuario = await carregarUsuario(req);
-    const result = await mysql.carregarVotacaoComites(usuario);
-    res.send(result)
+async function listar({res, db, usuario}: API){
+    res.send(
+        await ComiteDAO.listar(db, usuario)
+    )
 }
 
-async function votar(req: NextApiRequest, res: NextApiResponse){
-    const {matricula} = await carregarUsuario(req);
+async function votar({req, res, db, usuario}: API){
+    const {matricula} = usuario;
 
     const { statement_id, committee_id, contra } = JSON.parse(req.body);
     

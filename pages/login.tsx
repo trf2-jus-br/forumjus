@@ -38,16 +38,6 @@ function Login(props){
       }
     }
 
-
-    useEffect(()=>{
-        const params = new URL(window.location).searchParams;
-        const token = params.get('t');
-        if(token !== ''){
-            logar(token)
-        }
-    }, [])
-
-
     return (
         <div>
             <Form.Group className='d-flex' style={{
