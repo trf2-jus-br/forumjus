@@ -1,5 +1,8 @@
 import type { PoolConnection } from 'mysql2/promise';
 import PermissaoDAO from './permissao';
+import LogDAO from './log';
+import MembroDAO from './membro';
+import ProponenteDAO from './proponente';
 
 const forumId = 1;
 
@@ -24,8 +27,6 @@ interface RequisicaoCriacao {
 class EnunciadoDAO {
 
     static async criar(db: PoolConnection, statement: RequisicaoCriacao, attendeeId: number){
-        console.log("CRIAR");
-        
         return db.query(
             `INSERT INTO statement (
                 forum_id,attendee_id,committee_id,
@@ -49,21 +50,30 @@ class EnunciadoDAO {
         // carrega as informações do enunciado, que o usuário deseja alterar.
         const enunciado = await EnunciadoDAO.listarPorId(db, usuario, statement_id);
 
+        console.log(permissao.administrar_comissoes);
+
         // verifica se este enunciado pertence a um dos comites que o usuário tem permissão para alterar.
         if(permissao.administrar_comissoes.indexOf(enunciado.committee_id) === -1){
             throw "Usuário sem permissão para analisar."
         }
 
-        const nome = `${usuario.nome} (${usuario.matricula})`;
+        // registra quem fez a analise
+        await LogDAO.registrar(db, usuario, "analisar enunciado", { statement_id, admitido });
 
+        // grava os dados no banco de dados
         const [result] = await db.query( 
             `UPDATE statement 
                 SET admitido = ?, 
-                analisado_por = ?, 
-                data_analise=now() 
+                data_analise=now()
             WHERE statement_id = ?;`,
-            [admitido, nome, statement_id]
+            [admitido, statement_id]
         );
+
+        // Se o enunciado for aceito, o proponente é automaticamente adiciona, como membro, ao comitê que aprovou seu enunciado.
+        if(admitido){
+            const proponente = await ProponenteDAO.listarPorId(db, enunciado.attendee_id);
+            await MembroDAO.criar(db, usuario, proponente, enunciado.committee_id);
+        }
 
         return result;
     }
@@ -77,29 +87,42 @@ class EnunciadoDAO {
         if( permissoes.administrar_comissoes.indexOf(enunciado.committee_id) === -1)
             throw "Usuário não tem permissão";
 
+        await LogDAO.registrar(db, usuario, "desfazer analise", { statement_id });
+
         await db.query( 
             `UPDATE statement 
                 SET admitido = NULL, 
-                analisado_por = NULL, 
-                data_analise = NULL 
+                data_analise = NULL
             WHERE statement_id = ?;`,
             [statement_id]
         );
+
+        // Se o enunciado for aceito, o proponente é automaticamente adiciona, como membro, ao comitê que aprovou seu enunciado.
+        // Portanto devemos remover o membro ao desfazer a análise.
+        const proponente = await ProponenteDAO.listarPorId(db, enunciado.attendee_id);
+        await MembroDAO.deletar(db, usuario, proponente.attendee_name, enunciado.committee_id);        
     }
 
     static async listar(db: PoolConnection, usuario: Usuario){
-        const permissoes = await PermissaoDAO.carregar(db, usuario);
+        const { administrar_comissoes, estatistica } = usuario.permissoes;
         
-        if( permissoes.administrar_comissoes.length === 0)
-            throw "Usuário não tem permissão";
-
-        const [result] = await db.query( 
+        const SQL_GERAL = 
             `SELECT	statement.* 
-            FROM statement
-            WHERE committee_id in (?)
-            ORDER BY admitido is not null, admitido desc, data_analise desc;`
-        , 
-        [permissoes.administrar_comissoes]);
+                FROM statement
+                ORDER BY admitido is not null, admitido desc, data_analise desc;`;
+        
+        
+        const SQL_ESPECIFICO = 
+            `SELECT	statement.* 
+                FROM statement
+                WHERE committee_id in (?)
+                ORDER BY admitido is not null, admitido desc, data_analise desc;`;
+
+        const sql = estatistica ? SQL_GERAL : SQL_ESPECIFICO;
+        const params = estatistica ? [] : administrar_comissoes;
+        
+
+        const [result] = await db.query( sql,params );
 
         return result as Enunciado[];
     }
@@ -132,6 +155,8 @@ class EnunciadoDAO {
         if(permissao.administrar_comissoes.indexOf(enunciado.committee_id) === -1){
             throw "Usuário sem permissão";
         }
+
+        await LogDAO.registrar(db, usuario, "alterar comitê", { statement_id, committee_id, comite_antigo: enunciado.committee_id });
 
         await db.query( 
             `UPDATE statement SET committee_id = ? WHERE statement_id = ?`,

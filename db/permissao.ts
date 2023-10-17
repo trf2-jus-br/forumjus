@@ -1,21 +1,17 @@
+import createHttpError from "http-errors";
 
 /*
     Classe tem como objetivo carregar as permissões do usuário, utilizando a sua matricula.
  */
 class PermissaoDAO{
-    static async carregar(db: PoolConnection, usuario : Usuario | UsuarioSiga) : Promise<Usuario['permissoes']>{
-        const documento = "titularSigla" in usuario ? usuario.titularSigla : usuario.matricula;
-
-        const [result ] = await db.query( 
-            `select administrar_comissoes, votar_comissoes, crud, estatistica 
-            from permissao where JSON_CONTAINS(usuarios, ?, '$');`, [`"${documento}"`])
-
-        return {
-            administrar_comissoes: JSON.parse(result[0]?.administrar_comissoes || '[]'),
-            votar_comissoes: JSON.parse(result[0]?.votar_comissoes || '[]'),
-            crud: result[0]?.crud === 1,
-            estatistica: result[0]?.estatistica === 1,
+    static async carregar(db: PoolConnection, usuario : Usuario) : Promise<Usuario['permissoes']>{
+        if(usuario == null){
+            throw createHttpError(403, "Usuário nulo ao validar as permissões.")
         }
+
+        // decidimos só atualizar as permissões no login.
+        // razão: É incomum atualizar as permissões e isso acarretaria em uma atraso 'desnecessário' na maioria dos casos.
+        return usuario.permissoes;
     }
 }
 

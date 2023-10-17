@@ -4,11 +4,14 @@ import { faBars, faBuildingColumns } from '@fortawesome/free-solid-svg-icons'
 import { usarContexto } from '../contexto';
 import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
 import { faBan, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { useState } from 'react';
 
 export const siteTitle = 'Jornada';
 
 export default function Layout({ children }) {
     const {usuario, forum} = usarContexto();
+    const [exibirMenu, setExibirMenu] = useState(false);
+
 
     function logout(){
         fetch('/api/login', {method: 'DELETE'}).then(res => {
@@ -18,6 +21,8 @@ export default function Layout({ children }) {
             window.location.href = '/login';
         })
     }
+
+    const {administrar_comissoes, estatistica, crud} = usuario.permissoes;
 
     return (<>
         <Head>
@@ -40,37 +45,55 @@ export default function Layout({ children }) {
             <div className="navbar navbar-dark bg-dark shadow-sm mb-4">
                 <div className="container">
                     <div className="navbar-brand w-100 d-flex align-items-center justify-content-between" style={{whiteSpace: 'normal'}}>
-                        <div className='col-8'>
+                        <div className='col-12'>
                             <span className="text-success font-weight-bold" style={{ fontSize: "150%" }}><FontAwesomeIcon icon={faBuildingColumns} /></span>&nbsp;&nbsp;
                             <strong>{forum?.forum_name}</strong>
                         </div>
                         {usuario &&
-                            <div className='col-4 d-flex align-items-center justify-content-end' style={{fontSize: 14, textAlign: 'right'}}>
-                                <FontAwesomeIcon style={{fontSize: 26}} icon={faBars} />
+                            <div className='col d-flex align-items-center justify-content-end' style={{fontSize: 14, textAlign: 'right'}}>
+                                <FontAwesomeIcon onClick={()=> setExibirMenu(!exibirMenu)} style={{fontSize: 26}} icon={faBars} />
                             </div>
                         }
                     </div>
-                    {/*
-                    <Dropdown.Menu className='mt-3' style={{ right: 5}} show={true}>
+                </div>
+            </div>
+            {usuario &&
+                <Dropdown className='container' show={exibirMenu} onToggle={()=> setExibirMenu(!exibirMenu)}>
+                    <Dropdown.Menu style={{ marginTop: -20, right: 0}} id='menu'>
                         <div style={{margin: 20}}>
                             <div>{usuario.nome}</div>
                             <div>{usuario.lotacao}</div>
                         </div>
-                        {/*<>
+                        {crud && <>
                             <Dropdown.Divider />
-                            <Dropdown.Item href="/admin/ocupacao" >Ocupações</Dropdown.Item>
-                            <Dropdown.Item href="/admin/enunciado" >Enunciados</Dropdown.Item>
-                            <Dropdown.Item href="/admin/comite" >Comitês</Dropdown.Item>
-                            <Dropdown.Item href="/admin/participante" >Participantes</Dropdown.Item>
-                            <Dropdown.Item href="/admin/forum" >Fóruns</Dropdown.Item>
-                            <Dropdown.Item href="/admin/permissao" >Permissões</Dropdown.Item>
+                            <Dropdown.Item href="/admin/comite">* Comitês</Dropdown.Item>
+                            <Dropdown.Item href="/admin/enunciado">* Enunciados</Dropdown.Item>
+                            <Dropdown.Item href="/admin/forum">* Fóruns</Dropdown.Item>
+                            <Dropdown.Item href="/admin/participante">* Participantes</Dropdown.Item>
+                            <Dropdown.Item href="/admin/ocupacao">* Ocupações</Dropdown.Item>
+                            <Dropdown.Item href="/admin/permissao">* Permissões</Dropdown.Item>
+                        </>}
+
+                        {(administrar_comissoes.length !== 0 || estatistica) &&
                             <Dropdown.Divider />
-                            <Dropdown.Item onClick={logout}>Sair</Dropdown.Item>
-                    </>}
+                        }
+                        
+                        {administrar_comissoes.length !== 0 && <Dropdown.Item href="/admissao">Admissão</Dropdown.Item>}
+
+                        {(administrar_comissoes.length !== 0 || estatistica) && <>
+                            <Dropdown.Item href="/inscricoes">Inscrições</Dropdown.Item>
+                            <Dropdown.Item href="/membros">Membros</Dropdown.Item>
+                        </>}
+
+
+                        {/*<Dropdown.Divider />
+                        <Dropdown.Item href="/ajuda">Ajuda</Dropdown.Item>*/}
+
+                        <Dropdown.Divider />
+                        <Dropdown.Item onClick={logout}>Sair</Dropdown.Item>
                     </Dropdown.Menu>
-                    */}
-                </div>
-            </div>
+                </Dropdown>
+            }
         </header>
 
         <div className="container mb-3">

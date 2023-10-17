@@ -12,15 +12,25 @@ class ComiteDAO {
     }
 
     static async detalharPorUsuario(db: PoolConnection, usuario: Usuario){
-        const permissao = await PermissaoDAO.carregar(db, usuario);
+        const { administrar_comissoes, estatistica } = usuario.permissoes;
 
-        const [result] = await db.query( 
-            `select committee.*, count(*) as enunciados
-            from committee
-            inner join statement on committee.committee_id = statement.committee_id
-            where committee.committee_id in (?)
-            group by committee_id
-            `, [permissao.administrar_comissoes]);
+        const SQL_GERAL = 
+            `SELECT committee.*, count(*) as enunciados
+            FROM committee
+            INNER JOIN statement on committee.committee_id = statement.committee_id
+            GROUP BY committee_id`;
+
+        const SQL_ESPECIFICO = 
+            `SELECT committee.*, count(*) as enunciados
+                FROM committee
+                INNER JOIN statement on committee.committee_id = statement.committee_id
+                WHERE committee.committee_id in (?)
+                GROUP BY committee_id`;
+
+        const sql = estatistica ? SQL_GERAL : SQL_ESPECIFICO;
+        const params = estatistica ? [] : administrar_comissoes;
+
+        const [result] = await db.query( sql, params);
 
         return result as ComiteDetalhado[];
     }

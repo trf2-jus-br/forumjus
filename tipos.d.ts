@@ -32,7 +32,23 @@ interface SIGA_API_V1_USUARIO {
     usuario : UsuarioSiga
 }
 
+interface SIGA_GI_ACESSO {
+    'soap:Envelope' : {
+        'soap:Body' : {
+            'ns2:acessoResponse' : {
+                return: string
+            }[]
+        }[]
+    }
+}
+
+interface SIGA_API_V1_LOGIN {
+    token : string
+}
+
 interface Usuario {
+    token?: string;
+
     nome: string;
     matricula: string,
     lotacao: string,
@@ -72,6 +88,31 @@ interface Comite {
     committee_description: string,
 }
 
+type DetalheComite = Comite & {
+    enunciados : number
+}
+
+interface Inscricao {
+    statement_id: number,
+    forum_id: number,
+    attendee_id: number,
+    committee_id: null,
+    statement_text: string,
+    statement_justification: string,
+    statement_acceptance_datetime: null,
+    statement_rejection_datetime: null,
+    occupation_id: number,
+    attendee_name: string,
+    attendee_chosen_name: string | null,
+    attendee_email: string,
+    attendee_phone: string,
+    attendee_document: string,
+    attendee_affiliation: null,
+    attendee_disability: string,
+    attendee_acceptance_datetime: null,
+    attendee_rejection_datetime: null
+}
+
 interface Enunciado {
     statement_id: number;
     forum_id: number;
@@ -80,8 +121,6 @@ interface Enunciado {
     statement_text: string;
     statement_justification: string;
     
-    data_analise: string | null;
-    analisado_por: string | null;
     admitido: 0 | 1 | null;
 }
 
@@ -89,4 +128,35 @@ interface Ocupacao {
     occupation_id: number,
     forum_id: number,
     occupation_name: string,
+ }
+
+ interface Membro {
+    id: number,
+    nome: string,
+    funcao: "PRESIDENTE" | "RELATOR" | "MEMBRO",
+    proponente: number,
+    comite: number,
+    token: string,
+ }
+
+interface Proponente {
+    attendee_id : number,
+    forum_id : number,
+    occupation_id : number,
+    committee_id : number, 
+    attendee_name : string,
+    attendee_chosen_name : string,
+    attendee_email : string,
+    attendee_phone : string,
+    attendee_document : string,
+    attendee_affiliation : string,
+    attendee_disability : string,
+    attendee_acceptance_datetime : string,
+    attendee_rejection_datetime : string,
+} 
+
+ interface Log {
+	acao : string,
+    detalhes: string,
+    usuario : string
  }

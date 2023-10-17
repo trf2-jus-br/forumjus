@@ -47,10 +47,10 @@ export function apiHandler(handler: ApiMethodHandlers) {
     return async (req: NextApiRequest, res: NextApiResponse) => {
         let db : PoolConnection = null;
         let usuario : Usuario = null; 
-
+        
         try {
             // valida o JWT e carrega o usuário presente nele.
-            usuario = await validarSessao(req);
+            usuario = await carregarUsuario(req);
 
             //define a função que deve ser executada.
             const methodHandler = handler[req.method as Method];
@@ -95,16 +95,21 @@ const rotas_publicas = [
 ];
 
 
-async function validarSessao(req: NextApiRequest) : Promise<Usuario | null>{
+async function carregarUsuario(req: NextApiRequest) : Promise<Usuario | null>{
      // verifico se estou tentado acessar é uma das rotas publicas.
-     const rota_publica = rotas_publicas.some(r => r === req.url);
+    //const url = req.url.replace(/\?.*/, '');
+    //const rota_publica = rotas_publicas.some(r => r === url);
 
-     try {
-         return await jwt.parseJwt( req.cookies['forum_token'] ) as any;
-     } catch(err) {
+    try {
+        return await jwt.parseJwt( req.cookies['forum_token'] ) as any;
+    } catch(err) {
+        return null;
+        /*
         // no caso de rotas protegidas, verifico se o usuário está autenticado.
         if(!rota_publica){
+            console.log(req.url, 'Rota privada!');
              throw createHttpError.Forbidden(null)    
         }
+        */
     }
 }

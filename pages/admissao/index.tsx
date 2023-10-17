@@ -57,36 +57,6 @@ function Votacao(props){
             </Form.Select>
         </div>
 
-        <div>
-            <Collapse in={true}>
-                <Card className='m-2 mb-5'>
-                    <Card.Body>
-                        <Table>
-                            <thead>
-                                <th></th>
-                                <th className='text-center'>Inscrições</th>
-                                <th className='text-center'>Admitidos</th>
-                                <th className='text-center'>Rejeitados</th>
-                            </thead>
-                            <tbody>
-                                {comites?.map(e => 
-                                    <tr>
-                                        <td>{e.committee_name}</td>
-                                        <td className='text-center'>20</td>
-                                        <td className='text-center'>15</td>
-                                        <td className='text-center'>5</td>
-                                    </tr>
-                                )}
-                                
-                            </tbody>
-                        </Table>
-                    </Card.Body>
-                </Card>
-            </Collapse>    
-            
-        </div>
-        
-
         <div className='row'>
             {enunciados.map((e,i) => <Enunciado 
                 filtro={filtro}

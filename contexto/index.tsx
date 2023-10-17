@@ -7,7 +7,7 @@ const contexto = React.createContext<Contexto>(null);
 
 // define as página que podem ser acessadas sem login.
 const paginas_publicas = [
-    "/login", '/', '/register'
+    "/login", '/', '/register', '/comite/login/.*'
 ]
 
 export function ContextoProvider({children}){
@@ -56,7 +56,12 @@ export function ContextoProvider({children}){
         const { forum_usuario } = cookie.parse(document.cookie);
         
         // valida se url digitada é uma das públicas.
-        const eh_pagina_publica = paginas_publicas.some( p =>  window.location.pathname === p );
+        const eh_pagina_publica = paginas_publicas.some( p => window.location.pathname.match(p));
+
+        console.log(
+            window.location.pathname
+        )
+
 
         // salva no contexto as informações do usuário.
         if(forum_usuario){

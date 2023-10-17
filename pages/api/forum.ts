@@ -1,4 +1,4 @@
-"use server"
+//"use server"
 
 import ForumDAO from "../../db/forum";
 import { apiHandler } from "../../utils/apis";

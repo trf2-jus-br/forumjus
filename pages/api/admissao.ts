@@ -9,7 +9,7 @@ async function listar({req, res, db, usuario}: API){
 
 async function analisar({req, res, db, usuario}: API){
     const { statement_id, admitido } = req.body;
-    
+
     res.send(
         await EnunciadoDAO.analisar(db, usuario, statement_id, admitido)
     )

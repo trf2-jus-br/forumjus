@@ -1,40 +1,53 @@
-/*drop table permissao;*/
-
-create table permissao(
-	id bigint not null auto_increment,
-	nome varchar(100) not null,
-    usuarios text not null,
-    administrar_comissoes text not null,
-    votar_comissoes text not null,
-    crud bool default false,
-    estatistica bool default false,
-    primary key (id)
-);
-
+/*COMANDO 1*/
 alter table statement drop statement_acceptance_datetime;
+
+/*COMANDO 2*/
 alter table statement drop statement_rejection_datetime;
 
+/*COMANDO 3*/
 alter table statement add data_analise datetime;
-alter table statement add analisado_por varchar(255);
+
+/*COMANDO 4*/
 alter table statement add admitido int default null;
 
+/*COMANDO 5*/
 create table membro (
 	id bigint not null auto_increment,
 	nome varchar(255) not null, 
     funcao varchar(255) not null,
     comite int not null,
-    token varchar(36) unique not null,
+    token varchar(36),
+	proponente int,
     
-    foreign key(comite) references committee(committee_id),
+    foreign key(proponente) references attendee(attendee_id),
+	foreign key(comite) references committee(committee_id),
+    unique token_unico (token),
     primary key(id)
 );
+
+/*COMANDO 6*/
+create table log (
+	id bigint not null auto_increment,
+	acao varchar(126) not null,
+    detalhes text not null,
+    usuario varchar(1024) not null,
+	data datetime default current_timestamp,
+    
+    primary key (id)
+);
+
+/*COMANDO 7*/
+ALTER TABLE attendee DROP FOREIGN KEY attendee_ibfk_3;
+
+/*COMANDO 8*/
+ALTER TABLE attendee DROP COLUMN committee_id;
 
 INSERT INTO membro (nome, funcao, comite, token) VALUES 
 	('Presidente 1', 'PRESIDENTE', 1, '294985f'),
     ('Presidente 2', 'PRESIDENTE', 2, '75cf409'),
     ('Presidente 3', 'PRESIDENTE', 3, 'bb2abf3'),
     ('Presidente 4', 'PRESIDENTE', 4, '22619b1e'),
-    ('Presidente 5', 'PRESIDENTE', 5, 'bb2abf3'),
+    ('Presidente 5', 'PRESIDENTE', 5, 'bk2abz1'),
     ('Presidente 6', 'PRESIDENTE', 6, 'a4c7830'),
     ('Presidente 7', 'PRESIDENTE', 7, '42530e5'),
     ('Relator 1', 'RELATOR', 1, '6852767'),
@@ -46,14 +59,19 @@ INSERT INTO membro (nome, funcao, comite, token) VALUES
     ('Relator 7', 'RELATOR', 7, 'c46dfda')
 ;
 
-create table Log (
+/*
+create table calendario (
 	id bigint not null auto_increment,
-    pathname varchar(256) not null,
-    params varchar(1024),
-    body varchar(2048),
-    usuario varchar(1024),
-    excecao text,
+	evento varchar(200) not null,
+    inicio datetime not null,
+    fim datetime not null,
+    
     primary key (id)
 );
 
-select * from Log;
+INSERT INTO calendario (evento, inicio, fim) VALUES 
+	( 'INSCRIÇÕES', '2023-10-09T18:07', '2023-11-09 18:07'),
+	( 'HOMOLOGAÇÃO', '2023-10-09T18:07', '2023-11-09 18:07'),
+	( 'VOTAÇÃO POR COMITÊ', '2023-10-09T18:07', '2023-11-09 18:07'),
+	( 'VOTAÇÃO GERAL', '2023-10-09T18:07', '2023-11-09 18:07');
+*/

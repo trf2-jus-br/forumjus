@@ -4,7 +4,7 @@ import ComiteDAO from "../../../db/comite";
 
 async function listar({res, db, usuario}: API){
     res.send(
-        await ComiteDAO.listar(db, usuario)
+        await ComiteDAO.listar(db)
     )
 }
 

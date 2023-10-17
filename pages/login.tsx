@@ -7,9 +7,9 @@ function Login(props){
     
     async function logar(token?: string){
       try{
-        const auth = 'Basic ' + btoa(token || (matricula + ':' + senha))
+        const auth = token || 'Basic ' + btoa(matricula + ':' + senha)
 
-        const resposta = await fetch('/api/login', {
+        const resposta = await fetch(`/api/login?cracha=${token != null}`, {
             method: 'POST',
             headers: {
                 Authorization: auth
@@ -24,12 +24,8 @@ function Login(props){
 
         const {estatistica, administrar_comissoes} =  usuario.permissoes;
 
-        console.log(
-            JSON.stringify(usuario, null, 3)
-        )
-
         if(estatistica){
-            window.location.href = '/enunciados'
+            window.location.href = '/inscricoes'
         }else if(administrar_comissoes.length !== 0){
             window.location.href = '/admissao'
         }

@@ -56,6 +56,11 @@ class ProponenteDAO{
         // Retorno o futuro id do proponente, que será utilizado como chave estrangeira do enunciado.
         return result.insertId
     }
+
+    static async listarPorId(db: PoolConnection, id: number){
+        const [proponentes] = await db.query('SELECT * FROM attendee where attendee_id = ?;', [id]);
+        return proponentes[0] as Proponente;
+    }
 }
 
 export default ProponenteDAO;

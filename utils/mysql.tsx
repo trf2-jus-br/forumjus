@@ -11,6 +11,13 @@ const pool = mysql.createPool({
     debug: false
 });
 
+/*
+pool.on("acquire", (con) => console.log(`acquire ${con.threadId}`));
+pool.on("connection", (con) => console.log(`connection ${con.threadId}`, ));
+pool.on("enqueue", () => console.log('enqueue'));
+pool.on("release", (con) => console.log(`release ${con.threadId}`));
+*/
+
 export default {
 
     async getConnection() {
