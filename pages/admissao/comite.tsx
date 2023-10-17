@@ -3,13 +3,14 @@ import { Button, Card } from 'react-bootstrap';
 
 
 interface Props {
-    comite: DetalheComite
+    comite: DetalheComite,
+    setFiltro: React.Dispatch<number>
 }
 
-function Comite({ comite} : Props){
+function Comite({ comite, setFiltro} : Props){
 
     function abrir(){
-        window.location.href = `/inscricoes?comite=${comite.committee_id}`
+        setFiltro(comite.committee_id);
     }
 
     return (

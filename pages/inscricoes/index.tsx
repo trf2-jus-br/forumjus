@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBan, faCheck, faInfo } from '@fortawesome/free-solid-svg-icons'
-import { Button, CloseButton, Form, Modal, Nav } from 'react-bootstrap';
+import { faBan, faCheck, faExchange, faIcons, faInfo, faTable } from '@fortawesome/free-solid-svg-icons'
+import { Breadcrumb, Button, CloseButton, Form, Modal, Nav, Table } from 'react-bootstrap';
 import { Formik } from 'formik';
 import Usuario from '../../components/register/usuario';
 import Enunciado from '../../components/register/enunciado';
 import { usarContexto } from '../../contexto';
 import Comite from '../admissao/comite';
+import Tooltip from '../../components/tooltip';
 
 
 
@@ -35,11 +36,10 @@ function Inscricoes (props){
     const [exibirModalDetalhes, setExibirModalDetalhes] = useState(false)
     const [aba, setAba] = useState<Aba>("enunciado")
     const [comites, setComites] = useState<DetalheComite[]>([]);
-    const [filtro, setFiltro] = useState<number>(-1);
+    const [filtro, setFiltro] = useState<null | -1 | number>(null);
+    const [tabela, setTabela] = useState(false);
 
     const { api, usuario } = usarContexto();
-
-    const comite = typeof window !== "undefined" &&  new URLSearchParams(window.location.search).get("comite");
 
     async function carregarInscricoes(){
         api.get<Inscricao[]>("/api/inscricao")
@@ -53,7 +53,6 @@ function Inscricoes (props){
 
     useEffect(()=>{
         carregarInscricoes();
-        setFiltro(comite ? parseInt(comite) : -1);
     }, [])
 
     function mostrarDetalhes(i : Inscricao){
@@ -70,27 +69,57 @@ function Inscricoes (props){
 
     const inscricoes_filtradas = inscricoes?.filter(k => filtro === -1 || k.committee_id === filtro);
     return <Layout>
-        <div className='d-flex align-items-center justify-content-between'>
-            <h4>Inscrições</h4>
+        <div className='d-flex align-items-start justify-content-between'>
+            <Breadcrumb>
+                <Breadcrumb.Item onClick={()=> setFiltro(null)}  active={filtro === null}>Inscrições</Breadcrumb.Item>
+                {filtro !== null && <Breadcrumb.Item active>Detalhes</Breadcrumb.Item>}
 
-            {comite != null && usuario.permissoes.estatistica &&
+                {filtro == null &&
+                    <Tooltip mensagem='Exibe a estatística em forma de tabela.'>
+                        <FontAwesomeIcon onClick={()=> setTabela(!tabela)} style={{marginLeft: 5, marginTop: 5, cursor: "pointer"}} icon={faExchange} />
+                    </Tooltip>
+                }
+            </Breadcrumb>
+
+
+            {filtro != null && usuario.permissoes.estatistica &&
                 <Form.Select size='sm' value={filtro} style={{width: '40%'}} onChange={(e)=> setFiltro(parseInt(e.target.value))}>
                     <option value={-1}>TODOS</option>
-                    {comites?.map( (c, i) => <option key={c.committee_id} value={c.committee_id}>{i + 1}. {c.committee_name}</option>)}
+                    {comites?.map( (c, i) => <option key={c.committee_id} value={c.committee_id}>{c.committee_id}. {c.committee_name}</option>)}
                 </Form.Select>
             }
         </div>
         
-        {comite == null &&
-        <div className='d-flex row'>
-            {comites?.map( c => <Comite key={c.committee_id} comite={c} />) }
-        </div>}
+        {filtro == null && (
+            tabela ? 
+            
+            <Table hover={true}>
+                <thead>
+                    <tr>
+                        <th>Comissão</th>
+                        <th className='text-center'>Inscrições</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {comites?.map( c => <tr style={{cursor:'pointer'}} key={c.committee_id} onClick={()=> setFiltro(c.committee_id)}>
+                        <td>{c.committee_name}</td>
+                        <td className='text-center' >{c.enunciados}</td>
+                        <td></td>
+                    </tr>)}
+                </tbody>
+            </Table>
+            :
+            <div className='d-flex row'>
+                {comites?.map( c => <Comite key={c.committee_id} comite={c} setFiltro={setFiltro} />) }
+            </div>
+        )}
 
-        {comite != null && 
-        <table className='table table-hover table-light text-center'>
+        {filtro != null && 
+        <table className='table table-hover text-center'>
             <thead className='thead-dark'>
                 <tr className='align-middle'>
-                    <th className='col-1'>ID</th>
+                    {/*<th className='col-1'>ID</th>*/}
                     <th className='col-9'>Enunciado</th>
                     <th className='col-2'>Ações</th>
                 </tr>
@@ -98,7 +127,7 @@ function Inscricoes (props){
             <tbody>
                 {inscricoes_filtradas?.map(
                     e => <tr key={e.statement_id} style={{borderLeft: status(e)}} onClick={()=> mostrarDetalhes(e)}>
-                        <td style={{cursor:'pointer'}}>{e.statement_id}</td>
+                        {/*<td style={{cursor:'pointer'}}>{e.statement_id}</td>*/}
                         <td style={{cursor:'pointer'}}>{e.statement_text}</td>
                         <td style={{cursor:'pointer'}} className='align-middle'>
                             <FontAwesomeIcon className='btn d-inline' title='Detalhes' onClick={()=> mostrarDetalhes(e)} icon={faInfo} />

@@ -18,11 +18,11 @@ export default function Layout({ children }) {
             if(!res.ok)
                 throw 'err';
 
-            window.location.href = '/login';
+            window.location.href = '/assessoria/login';
         })
     }
 
-    const {administrar_comissoes, estatistica, crud} = usuario.permissoes;
+    const {administrar_comissoes, estatistica, crud} = usuario?.permissoes || {};
 
     return (<>
         <Head>

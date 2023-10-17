@@ -15,15 +15,15 @@ class ComiteDAO {
         const { administrar_comissoes, estatistica } = usuario.permissoes;
 
         const SQL_GERAL = 
-            `SELECT committee.*, count(*) as enunciados
+            `SELECT committee.*, count(statement_id) as enunciados
             FROM committee
-            INNER JOIN statement on committee.committee_id = statement.committee_id
+            LEFT JOIN statement on committee.committee_id = statement.committee_id
             GROUP BY committee_id`;
 
         const SQL_ESPECIFICO = 
-            `SELECT committee.*, count(*) as enunciados
+            `SELECT committee.*, count(statement_id) as enunciados
                 FROM committee
-                INNER JOIN statement on committee.committee_id = statement.committee_id
+                LEFT JOIN statement on committee.committee_id = statement.committee_id
                 WHERE committee.committee_id in (?)
                 GROUP BY committee_id`;
 

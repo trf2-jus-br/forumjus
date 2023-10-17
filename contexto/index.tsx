@@ -7,7 +7,7 @@ const contexto = React.createContext<Contexto>(null);
 
 // define as página que podem ser acessadas sem login.
 const paginas_publicas = [
-    "/login", '/', '/register', '/comite/login/.*'
+    "/assessoria/login", '/', '/register', '/comite/login/.*'
 ]
 
 export function ContextoProvider({children}){
@@ -24,12 +24,12 @@ export function ContextoProvider({children}){
         }, 
         function (error) {
             // Intercepta todas as requisições 403
-            if(error?.request?.status === 403 && window.location.pathname !== '/login'){
+            if(error?.request?.status === 403 && window.location.pathname !== '/assessoria/login'){
                 // Notifica que a sessão expirou e redireciona para página de login.
                 mensagemRef.current.exibir({
                     texto: 'Sessão expirada', 
                     titulo: 'Sessão expirada##',
-                    acao:  ()=> window.location.href = '/login'
+                    acao:  ()=> window.location.href = '/assessoria/login'
                 })
 
                 // Ignora o tratamento original da requisição.
@@ -56,19 +56,14 @@ export function ContextoProvider({children}){
         const { forum_usuario } = cookie.parse(document.cookie);
         
         // valida se url digitada é uma das públicas.
-        const eh_pagina_publica = paginas_publicas.some( p => window.location.pathname.match(p));
-
-        console.log(
-            window.location.pathname
-        )
-
+        const eh_pagina_publica = paginas_publicas.some( p => window.location.pathname.match(`^${p}$`) );
 
         // salva no contexto as informações do usuário.
         if(forum_usuario){
             setUsuario( JSON.parse(forum_usuario))
         }else if(!eh_pagina_publica){
             // redireciona pro login, caso a página seja privada e não tenha nenhum usuário logado.
-            window.location.href = "/login"
+            window.location.href = "/assessoria/login"
             return undefined;
         }
         

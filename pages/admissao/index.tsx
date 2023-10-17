@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/layout';
 import Enunciado from './enunciado';
-import { Card, Collapse, Form, Modal, Table } from 'react-bootstrap';
+import { Breadcrumb, Card, Collapse, Form, Modal, Table } from 'react-bootstrap';
 import { usarContexto } from '../../contexto';
 
 enum Filtro {
@@ -46,10 +46,12 @@ function Votacao(props){
     }
 
     return <Layout>
-        <div className='d-flex align-items-center justify-content-between'>
-            <h4>Admissão</h4>
+        <div className='d-flex align-items-start justify-content-between'>
+            <Breadcrumb>
+                <Breadcrumb.Item active>Admissão</Breadcrumb.Item>
+            </Breadcrumb>
 
-            <Form.Select className='mb-3' style={{width: '30%'}} onChange={(e)=> setFiltro(parseInt(e.target.value))}>
+            <Form.Select size='sm' className='mb-3' style={{width: '30%'}} onChange={(e)=> setFiltro(parseInt(e.target.value))}>
                 <option value={Filtro.TODOS}>TODOS</option>
                 <option value={Filtro.EM_ANALISE}>EM ANÁLISE</option>
                 <option value={Filtro.ADMITIDOS}>ADMITIDOS</option>

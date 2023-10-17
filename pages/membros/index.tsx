@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Layout from "../../components/layout";
 import { usarContexto } from "../../contexto";
-import { Form, Table } from "react-bootstrap";
+import { Breadcrumb, Form, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import Tooltip from "../../components/tooltip";
@@ -115,8 +115,11 @@ function Membros(){
 
 
     return <Layout>
-        <div className='d-flex align-items-center justify-content-between'>
-            <h4>Membros</h4>
+        <div className='d-flex align-items-start justify-content-between'>
+            <Breadcrumb>
+                <Breadcrumb.Item active>Membros</Breadcrumb.Item>
+            </Breadcrumb>
+
 
             {comites?.length > 1 && usuario.permissoes.estatistica &&
                 <Form.Select size="sm" value={filtro} style={{width: '40%'}} onChange={(e)=> setFiltro(parseInt(e.target.value))}>
