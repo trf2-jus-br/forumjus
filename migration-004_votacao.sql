@@ -72,6 +72,6 @@ create table calendario (
 INSERT INTO calendario (evento, inicio, fim) VALUES 
 	( 'INSCRIÇÕES', '2023-10-09T18:07', '2023-11-09 18:07'),
 	( 'HOMOLOGAÇÃO', '2023-10-09T18:07', '2023-11-09 18:07'),
-	( 'VOTAÇÃO POR COMITÊ', '2023-10-09T18:07', '2023-11-09 18:07'),
+	( 'VOTAÇÃO POR COMISSÃO', '2023-10-09T18:07', '2023-11-09 18:07'),
 	( 'VOTAÇÃO GERAL', '2023-10-09T18:07', '2023-11-09 18:07');
 */

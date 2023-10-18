@@ -22,24 +22,24 @@ function Ajuda(){
             <div>09/10 16:01</div>
             <div>09/10 16:01</div>
             
-            Os responsáveis por cada comitê (Presidente ou Relator) podem:
+            Os responsáveis por cada comissão (Presidente ou Relator) podem:
             <ul>
                 <li>Aprovar enunciados</li>
                 <li>Rejeitar enunciados</li>
-                <li>Trocar o comitê dos enunciados</li>
+                <li>Trocar a comissão dos enunciados</li>
             </ul>
         </div>
 
         <hr/>
 
-        <h5>3. Votação por Comitê</h5>
+        <h5>3. Votação por Comissão</h5>
         <div className="m-2">
             <div>09/10 16:01</div>
             <div>09/10 16:01</div>
             
-            <p>Os comitês irão se reunião para votar os enunciados pré-aprovados.</p>
+            <p>As comissões irão se reunião para votar os enunciados pré-aprovados.</p>
 
-            Os responsáveis por cada comitê (Presidente ou Relator) podem:
+            Os responsáveis por cada comissão (Presidente ou Relator) podem:
             <ul>
                 <li>Iniciar votação</li>
                 <li>Parar votação</li>
@@ -59,9 +59,9 @@ function Ajuda(){
             <div>09/10 16:01</div>
             <div>09/10 16:01</div>
             
-            <p>Todos irão se reunir para votar todos os enunciados aprovados nas votações por comitê.</p>
+            <p>Todos irão se reunir para votar todos os enunciados aprovados nas votações por comissão.</p>
 
-            Os responsáveis pelos comitês (Presidente ou Relator) podem:
+            Os responsáveis pelas comissões (Presidente ou Relator) podem:
             <ul>
                 <li>Iniciar votação</li>
                 <li>Parar votação</li>
@@ -80,11 +80,11 @@ function Ajuda(){
             <div>09/10 16:01</div>
             <div>09/10 16:01</div>
             
-            Os responsáveis por cada comitê (Presidente ou Relator) podem:
+            Os responsáveis por cada comissão (Presidente ou Relator) podem:
             <ul>
                 <li>Aprovar enunciados</li>
                 <li>Rejeitar enunciados</li>
-                <li>Trocar o comitê dos enunciados</li>
+                <li>Trocar a comissão dos enunciados</li>
             </ul>
         </div>
     </Layout>

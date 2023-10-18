@@ -9,9 +9,9 @@ const forumId = 1;
 /*
     A jornada é compostar por 4 fases:
     1. Os usuários enviam enunciados;
-    2. Os responsáveis de cada comitê analisa os enunciados, admitindo ou rejeitando eles.
-    3. Cada comitê se reune e vota os enunciados que foram admitidos por aquele comitê. Cada comitê é composto por membros fixos mais todos os tiveram seus enunciados admitidos.    
-    4. Todos os comitês se reunem e votam todos os enunciados que foram aprovados nas reuniões anteriores.
+    2. Os responsáveis de cada comissão analisa os enunciados, admitindo ou rejeitando eles.
+    3. Cada comissão se reune e vota os enunciados que foram admitidos por aquela comissão. Cada comissão é composta por membros fixos mais todos os tiveram seus enunciados admitidos.    
+    4. Todos as comissões se reunem e votam todos os enunciados que foram aprovados nas reuniões anteriores.
 */
 
 /* 
@@ -69,7 +69,7 @@ class EnunciadoDAO {
             [admitido, statement_id]
         );
 
-        // Se o enunciado for aceito, o proponente é automaticamente adiciona, como membro, ao comitê que aprovou seu enunciado.
+        // Se o enunciado for aceito, o proponente é automaticamente adiciona, como membro, ao comissão que aprovou seu enunciado.
         if(admitido){
             const proponente = await ProponenteDAO.listarPorId(db, enunciado.attendee_id);
             await MembroDAO.criar(db, usuario, proponente, enunciado.committee_id);
@@ -83,7 +83,7 @@ class EnunciadoDAO {
 
         const enunciado = await EnunciadoDAO.listarPorId(db, usuario, statement_id);
 
-        // Verifica se este enunciado pertence a um dos comitês permitidos para este usuário.
+        // Verifica se este enunciado pertence a uma das comissões permitidos para este usuário.
         if( permissoes.administrar_comissoes.indexOf(enunciado.committee_id) === -1)
             throw "Usuário não tem permissão";
 
@@ -97,7 +97,7 @@ class EnunciadoDAO {
             [statement_id]
         );
 
-        // Se o enunciado for aceito, o proponente é automaticamente adiciona, como membro, ao comitê que aprovou seu enunciado.
+        // Se o enunciado for aceito, o proponente é automaticamente adiciona, como membro, à comissão que aprovou seu enunciado.
         // Portanto devemos remover o membro ao desfazer a análise.
         const proponente = await ProponenteDAO.listarPorId(db, enunciado.attendee_id);
         await MembroDAO.deletar(db, usuario, proponente.attendee_name, enunciado.committee_id);        
@@ -139,7 +139,7 @@ class EnunciadoDAO {
 
         const enunciado = result[0][0] as Enunciado;
 
-        // Verifica se este enunciado pertence a um dos comitês permitidos para este usuário.
+        // Verifica se este enunciado pertence a uma das comissões permitidos para este usuário.
         if( permissoes.administrar_comissoes.indexOf(enunciado.committee_id) === -1)
             throw "Usuário não tem permissão";
 
@@ -156,7 +156,7 @@ class EnunciadoDAO {
             throw "Usuário sem permissão";
         }
 
-        await LogDAO.registrar(db, usuario, "alterar comitê", { statement_id, committee_id, comite_antigo: enunciado.committee_id });
+        await LogDAO.registrar(db, usuario, "alterar comissão", { statement_id, committee_id, comite_antigo: enunciado.committee_id });
 
         await db.query( 
             `UPDATE statement SET committee_id = ? WHERE statement_id = ?`,

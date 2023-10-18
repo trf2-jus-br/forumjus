@@ -7,7 +7,7 @@ interface Props {
 
 function Comite (props: Props){
     return <CRUD 
-        nome='Comitês' 
+        nome='Comissões' 
         colunas={[
             {nome: "ID", banco: "committee_id", largura: 1, exibir: true},
             {nome: "Jornada", banco: "forum_id", largura: 1},

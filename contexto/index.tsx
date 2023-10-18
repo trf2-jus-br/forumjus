@@ -7,7 +7,7 @@ const contexto = React.createContext<Contexto>(null);
 
 // define as página que podem ser acessadas sem login.
 const paginas_publicas = [
-    "/assessoria/login", '/', '/register', '/comite/login/.*'
+    "/assessoria/login", '/', '/register', '/comissao/login/.*'
 ]
 
 export function ContextoProvider({children}){
@@ -24,7 +24,7 @@ export function ContextoProvider({children}){
         }, 
         function (error) {
             // Intercepta todas as requisições 403
-            if(error?.request?.status === 403 && window.location.pathname !== '/assessoria/login'){
+            if(error?.response?.status === 403 && window.location.pathname !== '/assessoria/login'){
                 // Notifica que a sessão expirou e redireciona para página de login.
                 mensagemRef.current.exibir({
                     texto: 'Sessão expirada', 

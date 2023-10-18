@@ -1,18 +1,20 @@
-import axios from 'axios';
 import React, { FormEvent, useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
+import { usarContexto } from '../../contexto';
 
 function Login(props){
     const [senha, setSenha] = useState("");
     const [matricula, setMatricula] = useState("");
     
+    const { api } = usarContexto();
+
     async function logar(event: FormEvent){
         event.preventDefault();
 
         try{
             const auth = 'Basic ' + btoa(matricula.toUpperCase() + ':' + senha)
             
-            const {data: usuario} = await axios.post<Usuario>(`/api/login`, null, {
+            const {data: usuario} = await api.post<Usuario>(`/api/login`, null, {
                 headers: {
                     Authorization: auth
                 }
@@ -32,7 +34,7 @@ function Login(props){
 
     useEffect(()=>{
         try{
-            axios.delete('/api/login')
+            api.delete('/api/login')
         }catch(err){
             alert("Não possível encerrar a sessão anterior.")
         }

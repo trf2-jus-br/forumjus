@@ -66,7 +66,7 @@ export default function Layout({ children }) {
                         </div>
                         {crud && <>
                             <Dropdown.Divider />
-                            <Dropdown.Item href="/admin/comite">* Comitês</Dropdown.Item>
+                            <Dropdown.Item href="/admin/comite">* Comissões</Dropdown.Item>
                             <Dropdown.Item href="/admin/enunciado">* Enunciados</Dropdown.Item>
                             <Dropdown.Item href="/admin/forum">* Fóruns</Dropdown.Item>
                             <Dropdown.Item href="/admin/participante">* Participantes</Dropdown.Item>
