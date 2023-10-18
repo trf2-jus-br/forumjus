@@ -15,10 +15,11 @@ function enunciados(data, forum: Forum, ocupacoes: Ocupacao[], comites: Comite[]
 const EmailConfirmacaoCadastro = (data, forum: Forum, ocupacoes: Ocupacao[], comites: Comite[]) => `
 <html>
     <head>
-        <title>Display Image</title>
+        <title>I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região</title>
     </head>
     <body>
         <div style="max-width:601px; margin: 0 auto">
+            ${process.env.HOMOLOGACAO === "true" && '<h3 style="color: red; text-align: center;">E-mail de homologação de funcionalidades.<br/>Sem valor real para Jornada.</h3>' }
             <img width="100%" src="cid:imagem" />
             <div style="margin-top: 10px">
                 <div>Prezado (a),</div><br/>

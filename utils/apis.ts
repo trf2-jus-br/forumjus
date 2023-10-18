@@ -80,7 +80,10 @@ export function apiHandler(handler: ApiMethodHandlers) {
             try{
                 console.log(err);
                 db.beginTransaction();
-                await LogDAO.registrar(db, usuario, "Erro", JSON.stringify(err));
+                await LogDAO.registrar(db, usuario, "Erro", JSON.stringify({
+                    message: err.message,
+                    stack: err.stack,
+                }));
                 db.commit();
             }catch(err){
                 console.log("Errrrr", err);
