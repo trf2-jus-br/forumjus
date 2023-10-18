@@ -4,6 +4,7 @@ import pool from './mysql';
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PoolConnection } from 'mysql2/promise';
 import jwt from './jwt';
+import LogDAO from "../db/log";
 
 type Method =
   |'GET'
@@ -74,6 +75,16 @@ export function apiHandler(handler: ApiMethodHandlers) {
         } catch (err) {
             // em caso de erro, desfaz as alterações propostas pela api no banco de dados.
             db?.rollback();
+
+            // tento registrar o problema ocorrido
+            try{
+                console.log(err);
+                db.beginTransaction();
+                await LogDAO.registrar(db, usuario, "Erro", JSON.stringify(err));
+                db.commit();
+            }catch(err){
+                console.log("Errrrr", err);
+            }
 
             // formata a mensagem que será enviada pra página web.
             errorHandler(err, res);

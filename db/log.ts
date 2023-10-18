@@ -3,7 +3,7 @@ class LogDAO {
         return db.query("INSERT INTO log (acao, detalhes, usuario) VALUES (?, ?, ?)", [
             acao,
             JSON.stringify(detalhes, null, 2),
-            usuario.nome
+            usuario?.nome || ""
         ])
     }
 }
