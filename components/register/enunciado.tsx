@@ -9,7 +9,7 @@ type Props = FormikProps<typeof valor> &  {
     handleChangeAttendeePhone: (valor : string)=> string,
     handleChangeAttendeeDocument: (valor : string)=> string,
     disabled: boolean,
-    forumConstants: any
+    comites: Comite[]
 }
 
 export const valor = {
@@ -33,7 +33,7 @@ export const valor = {
 }
 
 
-function Enunciado({values, errors, handleChange, touched, handleChangeAttendeePhone, handleChangeAttendeeDocument, disabled, forumConstants} : Props){
+function Enunciado({values, errors, handleChange, touched, disabled, comites} : Props){
     const [editingCommittee, setEdittingCommittee] = useState(null)
 
     function selectCommittee(committee_id, setFieldValue){
@@ -45,11 +45,11 @@ function Enunciado({values, errors, handleChange, touched, handleChangeAttendeeP
         if(id === undefined)
           return  <div>[Selecione]</div>;
     
-        const committee = forumConstants.committee[id]
+        const committee = comites.find(e => id === e.committee_id);
         
         return <div className='p-1'>
-          <h6>{committee.name}</h6>
-          <div style={{paddingLeft: "20px"}}>{committee.description}</div>
+          <h6>{committee.committee_name}</h6>
+          <div style={{paddingLeft: "20px"}}>{committee.committee_description}</div>
         </div>
       }
 
@@ -69,14 +69,14 @@ function Enunciado({values, errors, handleChange, touched, handleChangeAttendeeP
                     <div className="col col-12 col-lg-12">
                             <Form.Group className="mb-3" controlId={`statement[${i}].committeeId`}>
                               <Form.Label>Comissão</Form.Label>
-                              <div className="custom-select" onClick={()=> setEdittingCommittee(i)}>
-                                <div className={`form-control ${touched.statement && touched.statement[i] && errors.statement && errors.statement[i] && errors.statement[i].committeeId && 'border-danger'}`}>
+                              <div style={{backgroundColor: "#e9ecef"}} className="custom-select" onClick={()=> setEdittingCommittee(i)}>
+                                <div style={{backgroundColor: "#e9ecef", cursor: "default"}} className={`form-control ${touched.statement && touched.statement[i] && errors.statement && errors.statement[i] && errors.statement[i].committeeId && 'border-danger'}`}>
                                   {renderCommittee(values.statement[i].committeeId)}
                                 </div>
                               </div>
-                              <Form.Control className="d-none" as="select" value={values.statement[i].committeeId} onChange={(evt, i) => handleChange(evt, i)} isValid={touched.attendeeName && !(errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId)} isInvalid={touched.attendeeName && errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId}  >
+                              <Form.Control disabled={false} className="d-none" as="select" value={values.statement[i].committeeId} onChange={(evt, i) => handleChange(evt, i)} isValid={touched.attendeeName && !(errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId)} isInvalid={touched.attendeeName && errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId}  >
                                 <option value hidden={values.statement[i].committeeId}>[Selecione]</option>
-                                {Object.keys(forumConstants.committee).map((ci) => (<option key={ci} value={ci}>{forumConstants.committee[ci].name}</option>))}
+                                {comites.map((ci) => (<option key={ci.committee_id} value={ci.forum_id}>{ci.committee_name}</option>))}
                               </Form.Control>
                               <Form.Control.Feedback type="invalid">{errors && errors.statement && errors.statement[i] && errors.statement[i].committeeId}</Form.Control.Feedback>
                             </Form.Group>
@@ -87,17 +87,17 @@ function Enunciado({values, errors, handleChange, touched, handleChangeAttendeeP
                     <div className="col col-12 col-md-6">
                     <Form.Group className="mb-3" controlId={`statement[${i}].text`}>
                         <Form.Label>Enunciado</Form.Label>
-                        <Form.Control as="textarea" rows="9" value={values.statement[i].text} onChange={(evt, i) => handleChange(evt, i)} isValid={touched.attendeeName && !(errors && errors.statement && errors.statement[i] && errors.statement[i].text)} isInvalid={touched.attendeeName && errors && errors.statement && errors.statement[i] && errors.statement[i].text} />
+                        <Form.Control disabled={disabled} as="textarea" rows="9" value={values.statement[i].text} onChange={(evt, i) => handleChange(evt, i)} isValid={touched.attendeeName && !(errors && errors.statement && errors.statement[i] && errors.statement[i].text)} isInvalid={touched.attendeeName && errors && errors.statement && errors.statement[i] && errors.statement[i].text} />
                         <Form.Control.Feedback type="invalid">{errors && errors.statement && errors.statement[i] && errors.statement[i].text}</Form.Control.Feedback>
-                        <Form.Text className="text-muted">Escreva um texto de no máximo 800 caracteres.</Form.Text>
+                        {/*<Form.Text className="text-muted">Escreva um texto de no máximo 800 caracteres.</Form.Text>*/}
                     </Form.Group>
                     </div>
                     <div className="col col-12 col-md-6">
                     <Form.Group className="mb-3" controlId={`statement[${i}].justification`}>
                         <Form.Label>Justificativa</Form.Label>
-                        <Form.Control as="textarea" rows="9" value={values.statement[i].justification} onChange={(evt, i) => handleChange(evt, i)} isValid={touched.attendeeName && !(errors && errors.statement && errors.statement[i] && errors.statement[i].justification)} isInvalid={touched.attendeeName && errors && errors.statement && errors.statement[i] && errors.statement[i].justification} />
+                        <Form.Control disabled={disabled} as="textarea" rows="9" value={values.statement[i].justification} onChange={(evt, i) => handleChange(evt, i)} isValid={touched.attendeeName && !(errors && errors.statement && errors.statement[i] && errors.statement[i].justification)} isInvalid={touched.attendeeName && errors && errors.statement && errors.statement[i] && errors.statement[i].justification} />
                         <Form.Control.Feedback type="invalid">{errors && errors.statement && errors.statement[i] && errors.statement[i].justification}</Form.Control.Feedback>
-                        <Form.Text className="text-muted">Escreva uma justificativa para o enunciado de no máximo 1600 caracteres.</Form.Text>
+                        {/*<Form.Text className="text-muted">Escreva uma justificativa para o enunciado de no máximo 1600 caracteres.</Form.Text>*/}
                     </Form.Group>
                     </div>
                 </div>

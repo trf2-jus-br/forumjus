@@ -12,7 +12,7 @@ function Comissao (props: Props){
             {nome: "ID", banco: "attendee_id", largura: 1, exibir: true},
             {nome: "Jornada", banco: "forum_id", largura: 1, exibir: true},
             {nome: "Ocupação", banco: "occupation_id", largura: 1, exibir: true},
-            {nome: "Comitê", banco: "committee_id", largura: 1, exibir: true},
+            {nome: "Comissão", banco: "committee_id", largura: 1, exibir: true},
             {nome: "Nome", banco: "attendee_name", largura: 1, exibir: true},
             {nome: "Nome Social", banco: "attendee_chosen_name", largura: 1, exibir: true},
             {nome: "E-mail", banco: "attendee_email", largura: 1, exibir: true},

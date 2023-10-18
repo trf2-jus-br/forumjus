@@ -1,76 +1,74 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { apiHandler } from "../../utils/apis";
 import mysql from "../../utils/mysql";
+import PermissaoDAO from "../../db/permissao";
+import CRUD from "../../db/crud";
 
-async function validarPermissao(req: NextApiRequest){
-    const doc = req.cookies['doc'];
-
-    if(!doc)
-        throw "Usuário não está logado no gov.br"
-
-    const permissoes = await mysql.carregarPermissoes(doc);
+async function validarPermissao(db: PoolConnection, usuario: Usuario){
+    const permissoes = await PermissaoDAO.carregar(db, usuario);
 
     if(!permissoes.crud)
         throw "Usuário sem permissão";
-
-    return doc;
 }
 
-async function listar(req: NextApiRequest, res: NextApiResponse){
-    await validarPermissao(req);
+async function listar({req, res, db, usuario}: API){
+    await validarPermissao(db, usuario);
 
-    const {tabela} = req.query;
+    const tabela : string = req.query.tabela;
 
-    
-    const result = await mysql.carregar({tabela});
-    res.send(result)
+    res.send(
+        await CRUD.carregar(db, tabela)
+    )
 }
 
-async function editar(req: NextApiRequest, res: NextApiResponse){
-    const usuario = await validarPermissao(req);
+async function editar({req, res, db, usuario}: API){
+    await validarPermissao(db, usuario);
 
-    const {linha, coluna, valor} = JSON.parse(req.body); 
-    const {tabela, nome_id} = req.query;
+    const {linha, coluna, valor} = JSON.parse(req.body) as any; 
+    const {tabela, nome_id} = req.query as any;
     
-    await mysql.atualizarBanco({
+    await CRUD.atualizarBanco(
+        db,
         tabela,
         nome_id,
-        id : linha[nome_id],
+        linha[nome_id],
         coluna, 
         valor, 
         usuario
-    })
+    );
 
     res.status(200).send(null);
 }
 
-async function deletar(req: NextApiRequest, res: NextApiResponse){
-    const usuario = await validarPermissao(req);
+async function deletar({req, res, db, usuario}: API){
+    await validarPermissao(db, usuario);
 
-    const {linha} = JSON.parse(req.body); 
-    const {tabela, nome_id} = req.query;
+    const {linha} = JSON.parse(req.body) as any; 
+    const {tabela, nome_id} = req.query as any;
 
-    await mysql.deletarLinha({
+    await CRUD.deletarLinha(
+        db,
         tabela,
         nome_id,
-        id : linha[nome_id],
+        linha[nome_id],
         usuario
-    })
+    )
 
     res.status(200).send(null);
 }
 
-async function criar(req: NextApiRequest, res: NextApiResponse){
-    const usuario = await validarPermissao(req);
+async function criar({req, res, db, usuario}: API){
+    await validarPermissao(db, usuario);
 
-    const linha = JSON.parse(req.body); 
-    const {tabela, nome_id} = req.query;
+    const linha = JSON.parse(req.body) as any; 
+    const {tabela, nome_id} = req.query as any;
 
-    await mysql.criarLinha({
+    await CRUD.criarLinha(
+        db,
         tabela,
         linha,
         usuario
-    })
+    )
 
     res.status(200).send(null);
 }
