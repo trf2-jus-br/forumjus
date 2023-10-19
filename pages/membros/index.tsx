@@ -45,7 +45,9 @@ function Membros(){
     const membro_filtrado = membros.filter(m => m.comite === filtro);
 
     const presidente = membro_filtrado.find(m => m.funcao === "PRESIDENTE");
-    const relator = membro_filtrado.find(m => m.funcao === "RELATOR");
+    const relatores = membro_filtrado.filter(m => m.funcao === "RELATOR");
+    const especialistas = membro_filtrado.filter(m => m.funcao === "ESPECIALISTA");
+    const juristas = membro_filtrado.filter(m => m.funcao === "JURISTA");
 
     const membros_comuns = membro_filtrado.filter(m => m.funcao === "MEMBRO");
 
@@ -71,7 +73,7 @@ function Membros(){
                             {text: "Presidente", alignment: "center"},
                         ],
                         [ 
-                            {text: relator.nome, alignment: "center", bold: true},
+                            {text: relatores.nome, alignment: "center", bold: true},
                             {text: "Relator", alignment: "center"},
                         ],
                     ]
@@ -135,15 +137,25 @@ function Membros(){
         </Tooltip>
         */}
 
-        <div className="mt-4 d-flex justify-content-evenly w-100 text-center">
-            <div>
+        <div className="container row text-center">
+            <div className="col-lg-6 col-12 mt-5">
                 <h6>{presidente.nome}</h6>
                 <div>Presidente</div>
             </div>        
 
-            <div>
-                <h6>{relator.nome}</h6>
-                <div>Relator</div>
+            <div className="col-lg-6 col-12 mt-5">
+                {relatores.map(r => <h6 key={r.id}>{r.nome}</h6>)}
+                <div>{relatores.length === 1 ? 'Relator' : 'Relatores'}</div>
+            </div>    
+
+            <div className="col-lg-6 col-12 mt-5">
+                {especialistas.map(r => <h6 key={r.id}>{r.nome}</h6>)}
+                <div>{especialistas.length === 1 ? 'Especialista' : 'Especialistas'}</div>
+            </div>    
+
+            <div className="col-lg-6 col-12 mt-5">
+                {juristas.map(r => <h6 key={r.id}>{r.nome}</h6>)}
+                <div>{juristas.length === 1 ? 'Jurista' : 'Juristas'}</div>
             </div>        
         </div>
         

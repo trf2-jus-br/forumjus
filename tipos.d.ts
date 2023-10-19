@@ -133,7 +133,7 @@ interface Ocupacao {
  interface Membro {
     id: number,
     nome: string,
-    funcao: "PRESIDENTE" | "RELATOR" | "MEMBRO",
+    funcao: "PRESIDENTE" | "RELATOR" | "MEMBRO" | "JURISTA" | "ESPECIALISTA",
     proponente: number,
     comite: number,
     token: string,
