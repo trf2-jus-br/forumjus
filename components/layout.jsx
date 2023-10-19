@@ -11,14 +11,14 @@ export const siteTitle = 'Jornada';
 export default function Layout({ children }) {
     const {usuario, forum} = usarContexto();
     const [exibirMenu, setExibirMenu] = useState(false);
-
+    const {api} = usarContexto();
 
     function logout(){
-        fetch('/api/login', {method: 'DELETE'}).then(res => {
-            if(!res.ok)
-                throw 'err';
-
+        api.delete('/api/login')
+        .then(() => {
             window.location.href = '/assessoria/login';
+        }).catch(err => {
+            // Não faz nada, só notifica o usuário.
         })
     }
 

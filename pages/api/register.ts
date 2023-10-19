@@ -1,5 +1,4 @@
 import mailer from "../../utils/mailer"
-import mysql from "../../utils/mysql"
 import { apiHandler } from "../../utils/apis"
 import Fetcher from '../../utils/fetcher'
 import { registerSchema } from "../../utils/schema"

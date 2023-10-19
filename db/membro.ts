@@ -39,7 +39,7 @@ class MembroDAO {
         const SQL_GERAL = 'SELECT * FROM membro;';
         const SQL_ESPECIFICO = 'SELECT * FROM membro WHERE comite = ?;';
 
-        const {estatistica, administrar_comissoes} = usuario.permissoes;
+        const {estatistica, administrar_comissoes} = await PermissaoDAO.carregar(db, usuario);
 
         const sql = estatistica ? SQL_GERAL : SQL_ESPECIFICO;
         const params = estatistica ? [] : administrar_comissoes;

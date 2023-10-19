@@ -1,3 +1,5 @@
+import PermissaoDAO from "./permissao";
+
 /*
     Classe agrupa as informação da inscrição: Enunciados, Proponente.
 */
@@ -19,7 +21,7 @@ class InscricaoDAO {
                 WHERE statement.committee_id = ?;`;
         
         // analisa as permissões do usuário.
-        const { estatistica, administrar_comissoes } = usuario.permissoes;
+        const { estatistica, administrar_comissoes } = await PermissaoDAO.carregar(db, usuario);
 
         const sql = estatistica ? SQL_GERAL : SQL_ESPECIFICO;
         const params = estatistica ? [] : administrar_comissoes

@@ -23,18 +23,31 @@ export function ContextoProvider({children}){
             return response;
         }, 
         function (error) {
+            const httpBody = error?.response?.data?.error;
+
+            let errorMsg = httpBody?.err?.message || httpBody?.err || httpBody?.message || httpBody?.response || "Indisponibilidade de sistema.";
+
+
+            errorMsg = errorMsg.replace(' Tente novamente, ou clique <a href="/siga/public/app/usuario/senha/reset" class="alert-link">Esqueci minha senha</a>', '');
+
             // Intercepta todas as requisições 403
             if(error?.response?.status === 403 && window.location.pathname !== '/assessoria/login'){
                 // Notifica que a sessão expirou e redireciona para página de login.
                 mensagemRef.current.exibir({
                     texto: 'Sessão expirada', 
-                    titulo: 'Sessão expirada##',
+                    titulo: 'Sessão expirada',
                     acao:  ()=> window.location.href = '/assessoria/login'
                 })
 
                 // Ignora o tratamento original da requisição.
                 return new Promise(()=>{});
             } else{
+                mensagemRef.current.exibir({
+                    titulo: "Atenção",
+                    texto: errorMsg, 
+                })
+
+                // Ignora o tratamento original da requisição.
                 return Promise.reject(error);
             }
         }
@@ -49,7 +62,8 @@ export function ContextoProvider({children}){
             const { data } = await api.get<Forum>('/api/forum');
             setForum(data)
         }catch(err){
-            alert(err);
+            // Apenas notifica o usuário que ocorreu um erro.
+            // A página será montada com as outras informações, mas certamente não será funcional.
         }
 
         // carrega do cookie as informações do usuário, se ele estiver logado.
@@ -75,11 +89,8 @@ export function ContextoProvider({children}){
     }, [])
 
 
-    if(carregando)
-        return <></>;
-
     return <contexto.Provider value={{usuario, forum, exibirNotificacao, api}}>
-        {children}
+        {carregando ? <></> : children}
         <ModalError ref={mensagemRef} title="Atenção" />
     </contexto.Provider>
 }

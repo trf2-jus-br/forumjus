@@ -41,13 +41,19 @@ function Enunciado({ enunciado, trocarComite, filtro} : Props){
     function votar({admitido}){
         api.post('/api/admissao', { admitido, statement_id, committee_id})
         .then(()=> setAdmitido(admitido))
-        .catch(err => alert(err));
+        .catch(err => {
+            // Apenas notifica o usuário que ocorreu um erro.
+            // A página será montada com as outras informações, mas certamente não será funcional.
+        });
     }
 
     function refazerAnalise(){
         api.delete(`/api/admissao?statement_id=${statement_id}`)
         .then(()=> setAdmitido(null))
-        .catch(err => alert(err));
+        .catch(err => {
+            // Apenas notifica o usuário que ocorreu um erro.
+            // A página será montada com as outras informações, mas certamente não será funcional.
+        });
     }
 
     const borda = admitido === null ? '' : admitido ? 'border-success' : 'border-danger';

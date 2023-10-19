@@ -1,12 +1,10 @@
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import React, { useEffect, useRef, useState } from 'react'
-import Fetcher from '../utils/fetcher'
 import Layout from '../components/layout'
 import ReCAPTCHA from "react-google-recaptcha";
 import * as formik from 'formik';
 import { registerSchema } from '../utils/schema';
-import mysql from "../utils/mysql"
 import { Modal } from 'react-bootstrap';
 import PrivacyPolicy from '../components/modalPrivacyPolice';
 import Regimento from '../components/modalRegimento';
@@ -43,6 +41,9 @@ export default function Create() {
       }, {})
 
       setOccupation(_ocupacoes);
+    }).catch(err => {
+      // Apenas notifica o usuário que ocorreu um erro.
+      // A página será montada com as outras informações, mas certamente não será funcional.
     });
 
     // carrega os comites.
@@ -60,7 +61,11 @@ export default function Create() {
       },{})
       
       setCommittee(_comites);
-    })
+    }).catch(err => {
+      // Apenas notifica o usuário que ocorreu um erro.
+      // A página será montada com as outras informações, mas certamente não será funcional.
+    });
+
   }, []);
 
 
@@ -98,11 +103,11 @@ export default function Create() {
       const recaptchaToken = await recaptchaRef.current.executeAsync();
 
       actions.setSubmitting(false)
-      await Fetcher.post(`/api/register`, { recaptchaToken, values })
+      await api.post(`/api/register`, { recaptchaToken, values })
       setAttendeeEmail(values.attendeeEmail)
       setCreated(true)
     } catch (e) {
-      alert("Implementar mensagem de erro:", e);
+        //não executa nenhuma ação, apenas notifica o usuário do erro.
     }
 
     try {

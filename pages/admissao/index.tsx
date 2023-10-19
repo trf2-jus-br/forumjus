@@ -22,11 +22,17 @@ function Votacao(props){
     function carregar(){
         api.get<Enunciado[]>(`/api/admissao`)
             .then(({data}) => setEnunciados(data))
-            .catch(err => alert(err));
+            .catch(err => {
+                // Apenas notifica o usuário que ocorreu um erro.
+                // A página será montada com as outras informações, mas certamente não será funcional.
+            });
 
         api.get<Comite[]>(`/api/comite`)
             .then(({data}) => setComites(data))
-            .catch(err => alert(err));
+            .catch(err => {
+                // Apenas notifica o usuário que ocorreu um erro.
+                // A página será montada com as outras informações, mas certamente não será funcional.
+            });
     }
 
     useEffect(()=>{
@@ -42,7 +48,10 @@ function Votacao(props){
             trocarComite(null)
             carregar();
         })
-        .catch(err => alert(err));
+        .catch(err => {
+            // Apenas notifica o usuário que ocorreu um erro.
+            // A página será montada com as outras informações, mas certamente não será funcional.
+        });
     }
 
     return <Layout>

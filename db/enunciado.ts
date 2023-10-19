@@ -104,7 +104,7 @@ class EnunciadoDAO {
     }
 
     static async listar(db: PoolConnection, usuario: Usuario){
-        const { administrar_comissoes, estatistica } = usuario.permissoes;
+        const { administrar_comissoes, estatistica } = await PermissaoDAO.carregar(db, usuario);
         
         const SQL_GERAL = 
             `SELECT	statement.* 

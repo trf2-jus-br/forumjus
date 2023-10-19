@@ -12,7 +12,7 @@ class ComiteDAO {
     }
 
     static async detalharPorUsuario(db: PoolConnection, usuario: Usuario){
-        const { administrar_comissoes, estatistica } = usuario.permissoes;
+        const { administrar_comissoes, estatistica } = await PermissaoDAO.carregar(db, usuario);
 
         const SQL_GERAL = 
             `SELECT committee.*, count(statement_id) as enunciados

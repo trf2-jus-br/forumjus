@@ -24,8 +24,6 @@ type ApiMethodHandlers = {
 };
 
 function errorHandler(err: unknown, res: NextApiResponse) {
-    console.log(err);
-
     // Errors with statusCode >= 500 are should not be exposed
     if (createHttpError.isHttpError(err) && err.expose) {
         // Handle all errors thrown by http-errors module

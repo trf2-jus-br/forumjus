@@ -29,7 +29,8 @@ function Membros(){
             setMembros(membros)
 
         }catch(err){
-            alert(err);
+            // Apenas notifica o usuário que ocorreu um erro.
+            // A página será montada com as outras informações, mas certamente não será funcional.
         }
     }
 

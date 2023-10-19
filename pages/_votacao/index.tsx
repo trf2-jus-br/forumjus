@@ -11,7 +11,12 @@ function Votacao(){
 
 
     useEffect(()=>{
-        api.get('/api/admissao').then(({data})=> setEnunciados(data))
+        api.get('/api/admissao')
+        .then(({data})=> setEnunciados(data))
+        .catch(err => {
+            // Apenas notifica o usuário que ocorreu um erro.
+            // A página será montada com as outras informações, mas certamente não será funcional.
+        });
     }, [])
 
 

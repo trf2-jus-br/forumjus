@@ -26,11 +26,17 @@ function Caderno (props){
     async function carregarInscricoes(){
         api.get<Inscricao[]>("/api/inscricao")
             .then(({data}) => setInscricoes(data))
-            .catch(err => alert(err));
+            .catch(err => {
+                // Apenas notifica o usuário que ocorreu um erro.
+                // A página será montada com as outras informações, mas certamente não será funcional.
+              });
 
         api.get<DetalheComite[]>("/api/comite?detalhes=true")
             .then(({data}) => setComites(data))
-            .catch(err => alert(err));
+            .catch(err => {
+                // Apenas notifica o usuário que ocorreu um erro.
+                // A página será montada com as outras informações, mas certamente não será funcional.
+            });
     }
 
     useEffect(()=>{

@@ -28,16 +28,16 @@ function Login(props){
                 window.location.href = '/admissao'
             }
         }catch(err) {
-            alert(err || "Erro ao se comunicar com servidor.");
+            // Apenas notifica o usuário que ocorreu um erro.
         }
     }
 
     useEffect(()=>{
-        try{
-            api.delete('/api/login')
-        }catch(err){
-            alert("Não possível encerrar a sessão anterior.")
-        }
+        api.delete('/api/login')
+        .catch(err => {
+            // Apenas notifica o usuário que ocorreu um erro.
+            // A página será montada com as outras informações, mas certamente não será funcional.
+        });
     }, [])
 
     return (
