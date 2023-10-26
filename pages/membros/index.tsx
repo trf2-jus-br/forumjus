@@ -11,6 +11,14 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 
+function nomeFuncao(relatores: Membro[]){
+    if(relatores.length === 1)
+        return relatores[0].funcao.toLowerCase();
+    
+    const mulheres = relatores.every(r => r.funcao === "RELATORA");
+    return mulheres ? 'Relatoras' :  'Relatores';
+}
+
 function Membros(){
     const [comites, setComites] = useState<Comite[]>();
     const [membros, setMembros] = useState<Membro[]>();
@@ -44,8 +52,8 @@ function Membros(){
 
     const membro_filtrado = membros.filter(m => m.comite === filtro);
 
-    const presidente = membro_filtrado.find(m => m.funcao === "PRESIDENTE");
-    const relatores = membro_filtrado.filter(m => m.funcao === "RELATOR");
+    const presidente = membro_filtrado.find(m => m.funcao === "PRESIDENTE" || m.funcao === "PRESIDENTA");
+    const relatores = membro_filtrado.filter(m => m.funcao === "RELATOR" || m.funcao === "RELATORA");
     const especialistas = membro_filtrado.filter(m => m.funcao === "ESPECIALISTA");
     const juristas = membro_filtrado.filter(m => m.funcao === "JURISTA");
 
@@ -140,12 +148,14 @@ function Membros(){
         <div className="container row text-center">
             <div className="col-lg-6 col-12 mt-5">
                 <h6>{presidente.nome}</h6>
-                <div>Presidente</div>
+                <div style={{textTransform:"capitalize"}}>{presidente.funcao.toLowerCase()}</div>
             </div>        
 
             <div className="col-lg-6 col-12 mt-5">
                 {relatores.map(r => <h6 key={r.id}>{r.nome}</h6>)}
-                <div>{relatores.length === 1 ? 'Relator' : 'Relatores'}</div>
+                <div style={{textTransform:"capitalize"}}>
+                    {nomeFuncao(relatores)}
+                </div>
             </div>    
 
             <div className="col-lg-6 col-12 mt-5">

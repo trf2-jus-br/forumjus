@@ -15,7 +15,7 @@ async function logarCracha(db: PoolConnection, token: string) : Promise<Usuario>
         throw createHttpError(403, "logarCracha: Token informada não existe.");
 
     // diferencia 'MEMBRO', 'RELATOR' e 'PRESIDENTE'
-    const administrador = membro.funcao === "PRESIDENTE" || membro.funcao === "RELATOR";
+    const administrador = membro.funcao === "PRESIDENTE" || membro.funcao === "PRESIDENTA"  || membro.funcao === "RELATOR" || membro.funcao === "RELATORA";
 
     // Ao logar com uma token, não será concedido acesso as páginas de estatistica ou 'crud'.
     // Ao PRESIDENTE e ao RELATOR são dados a permissão de administar e votar em uma comissão.
