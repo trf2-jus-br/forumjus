@@ -19,23 +19,7 @@ pool.on("release", (con) => console.log(`release ${con.threadId}`));
 */
 
 export default {
-
     async getConnection() {
         return await pool.getConnection();
-    },
-      
-    async votar({db, matricula, statement_id, committee_id, contra}){
-        const permissao = await PermissaoDAO.carregar(db, usuario);
-
-        if(permissao.administrar_comissoes.indexOf(committee_id) === -1){
-            throw "Usuário sem permissão para votar."
-        }
-
-        const voto = contra ? 'statement_acceptance' : ' statement_rejection';
-
-        await db.query( 
-            `UPDATE statement SET ${voto} = ${voto} + 1 WHERE statement_id = ? and committee_id = ?;`,
-            [statement_id, committee_id]
-        );
     },
 }

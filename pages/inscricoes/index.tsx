@@ -9,6 +9,8 @@ import Enunciado from '../../components/register/enunciado';
 import { usarContexto } from '../../contexto';
 import Comite from '../admissao/comite';
 import Tooltip from '../../components/tooltip';
+import { formatarCodigo } from '../admissao/enunciado';
+import Registro from '../../components/register/registro';
 
 
 
@@ -18,7 +20,7 @@ enum Status {
     PENDENTE = "Pendente",
 }
 
-type Aba = "enunciado" | "autor" ;
+type Aba = "enunciado" | "autor" | "registro" ;
 
 function status(inscricao: Inscricao){
     if(inscricao.statement_acceptance_datetime) 
@@ -125,7 +127,7 @@ function Inscricoes (props){
         <table className='table table-hover text-center'>
             <thead className='thead-dark'>
                 <tr className='align-middle'>
-                    {/*<th className='col-1'>ID</th>*/}
+                    {<th className='col-1'>ID</th>}
                     <th className='col-9'>Enunciado</th>
                     <th className='col-2'>Ações</th>
                 </tr>
@@ -133,7 +135,7 @@ function Inscricoes (props){
             <tbody>
                 {inscricoes_filtradas?.map(
                     e => <tr key={e.statement_id} style={{borderLeft: status(e)}} onClick={()=> mostrarDetalhes(e)}>
-                        {/*<td style={{cursor:'pointer'}}>{e.statement_id}</td>*/}
+                        {<td style={{cursor:'pointer'}}>{ formatarCodigo(e)}</td>}
                         <td style={{cursor:'pointer'}}>{e.statement_text}</td>
                         <td style={{cursor:'pointer'}} className='align-middle'>
                             <FontAwesomeIcon className='btn d-inline' title='Detalhes' onClick={()=> mostrarDetalhes(e)} icon={faInfo} />
@@ -144,13 +146,16 @@ function Inscricoes (props){
         </table>}
 
 
-        <Modal show={exibirModalDetalhes} size='xl' onHide={ocultarDetalhes}>
+        <Modal show={exibirModalDetalhes} size='xl' onHide={ocultarDetalhes} scrollable={true}>
             <Nav variant='tabs' className='mb-3' activeKey={aba} onSelect={(aba: Aba) => setAba(aba)}>
                 <Nav.Item>
                     <Nav.Link eventKey="enunciado">Enunciado</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
                     <Nav.Link eventKey="autor">Autor</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link eventKey="registro">Registros</Nav.Link>
                 </Nav.Item>
                 <CloseButton style={{position: 'absolute', right: 10, top: 10}} onClick={ocultarDetalhes} />
             </Nav>
@@ -183,6 +188,9 @@ function Inscricoes (props){
 
                             case "autor": 
                                 return <Usuario {...props} disabled={true} />
+
+                            case "registro":
+                                return <Registro id={detalhes.statement_id}/>
                         }
                     }}                  
                 </Formik>}

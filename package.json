@@ -20,6 +20,7 @@
         "http-errors": "^2.0.0",
         "jose": "^4.11.2",
         "jsonwebtoken": "^9.0.2",
+        "moment": "^2.29.4",
         "mysql2": "^3.0.1",
         "next": "latest",
         "nodemailer": "^6.9.0",
@@ -35,6 +36,7 @@
     },
     "devDependencies": {
         "@types/jsonwebtoken": "^9.0.3",
+        "@types/moment": "^2.13.0",
         "@types/node": "^20.5.9",
         "@types/pdfmake": "^0.2.5",
         "@types/xml2js": "^0.4.12",

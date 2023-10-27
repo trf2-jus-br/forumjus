@@ -129,12 +129,11 @@ function CRUD<R> (props : CRUD.Props<R>){
                             <Modal.Title>{nome}</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            {colunas.map( coluna => <>
-                                <Form.Group key={coluna.banco} controlId={coluna.banco}>
+                            {colunas.map( coluna => <Form.Group key={Math.random() + coluna.banco} controlId={coluna.banco}>
                                     <Form.Label>{coluna.nome}</Form.Label>
                                     <Form.Control className='text-center' size='sm' onChange={handleChange} />
                                 </Form.Group>
-                            </> )}
+                            )}
                         </Modal.Body>
                         <Modal.Footer>
                             <Button onClick={()=> handleSubmit()}>Criar</Button>

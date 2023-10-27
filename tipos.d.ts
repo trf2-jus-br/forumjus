@@ -47,6 +47,7 @@ interface SIGA_API_V1_LOGIN {
 }
 
 interface Usuario {
+    id?: number,
     token?: string;
 
     nome: string;
@@ -92,26 +93,7 @@ type DetalheComite = Comite & {
     enunciados : number
 }
 
-interface Inscricao {
-    statement_id: number,
-    forum_id: number,
-    attendee_id: number,
-    committee_id: null,
-    statement_text: string,
-    statement_justification: string,
-    statement_acceptance_datetime: null,
-    statement_rejection_datetime: null,
-    occupation_id: number,
-    attendee_name: string,
-    attendee_chosen_name: string | null,
-    attendee_email: string,
-    attendee_phone: string,
-    attendee_document: string,
-    attendee_affiliation: null,
-    attendee_disability: string,
-    attendee_acceptance_datetime: null,
-    attendee_rejection_datetime: null
-}
+type Inscricao = Proponente & Enunciado;
 
 interface Enunciado {
     statement_id: number;
@@ -122,6 +104,7 @@ interface Enunciado {
     statement_justification: string;
     
     admitido: 0 | 1 | null;
+    codigo: number | null;
 }
 
 interface Ocupacao {
@@ -133,7 +116,7 @@ interface Ocupacao {
  interface Membro {
     id: number,
     nome: string,
-    funcao: "PRESIDENTE" | "RELATOR" | "MEMBRO" | "JURISTA" | "ESPECIALISTA",
+    funcao: "PRESIDENTE" | "PRESIDENTA" | "RELATORA" | "RELATOR" | "MEMBRO" | "JURISTA" | "ESPECIALISTA",
     proponente: number,
     comite: number,
     token: string,
@@ -158,5 +141,18 @@ interface Proponente {
  interface Log {
 	acao : string,
     detalhes: string,
-    usuario : string
+    usuario : string,
+    data: string
  }
+
+ interface Votacao {
+    votacao : number;
+    justificativa : string;
+    texto : string;
+    comissao : string;
+    votos : {
+        id: number,
+        nome: string, 
+        voto: 0 | 1 | null
+    }[];
+}

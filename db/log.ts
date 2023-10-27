@@ -6,6 +6,17 @@ class LogDAO {
             usuario?.nome || ""
         ])
     }
+
+    public static async listarPorEnunciado(db: PoolConnection, enunciado: number){
+        const [resposta] = await db.query(
+            `SELECT *
+                FROM log 
+                WHERE CAST( JSON_EXTRACT(detalhes, '$.statement_id') as decimal) = ? 
+                ORDER BY id DESC `, 
+            [enunciado]);
+
+        return resposta as Log[];
+    }
 }
 
 export default LogDAO;

@@ -28,9 +28,17 @@ function filtrar(filtro: Filtro, admitido: 0 | 1 | null){
     }
 }
 
+export function formatarCodigo({committee_id, codigo}: Enunciado){
+    if(!codigo)
+        return '';
+    
+    return committee_id + codigo.toString().padStart(3, "0");
+}
+
 function Enunciado({ enunciado, trocarComite, filtro} : Props){
     const [mostrarMais, setMostrarMais] = useState(false);
     const [admitido, setAdmitido] = useState(enunciado.admitido)
+    const [codigo, setCodigo] = useState<string>(formatarCodigo(enunciado));
 
     const {
         statement_text, statement_justification, statement_id, committee_id
@@ -38,13 +46,17 @@ function Enunciado({ enunciado, trocarComite, filtro} : Props){
 
     const {api} = usarContexto();
 
-    function votar({admitido}){
-        api.post('/api/admissao', { admitido, statement_id, committee_id})
-        .then(()=> setAdmitido(admitido))
-        .catch(err => {
+    async function votar({admitido}){
+        try{
+            await api.post('/api/admissao', { admitido, statement_id, committee_id});
+            setAdmitido(admitido ? 1 : 0);
+
+            const {data} = await api.get<Enunciado>(`/api/enunciado?id=${statement_id}`);
+            setCodigo(formatarCodigo(data));
+        }catch(err){
             // Apenas notifica o usuário que ocorreu um erro.
             // A página será montada com as outras informações, mas certamente não será funcional.
-        });
+        }
     }
 
     function refazerAnalise(){
@@ -68,7 +80,7 @@ function Enunciado({ enunciado, trocarComite, filtro} : Props){
                 
                
                     <div className='d-flex justify-content-between w-100'>
-                        <span className={`text-${texto}`} style={{fontWeight: 600, marginLeft: 10}}>{admitido === null ? '' : admitido ? "Admitido" : "Rejeitado" }</span>
+                        <span className={`text-${texto}`} style={{fontWeight: 600, marginLeft: 10}}>{admitido === null ? '' : admitido ? `Admitido Nº ${codigo}` : "Rejeitado" }</span>
                         { admitido === null &&
                             <Tooltip mensagem='Trocar a comissão' posicao='left'>
                                 <Button 

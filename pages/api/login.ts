@@ -20,6 +20,7 @@ async function logarCracha(db: PoolConnection, token: string) : Promise<Usuario>
     // Ao logar com uma token, não será concedido acesso as páginas de estatistica ou 'crud'.
     // Ao PRESIDENTE e ao RELATOR são dados a permissão de administar e votar em uma comissão.
     return {
+        id: membro.id,
         token,
         lotacao: membro.funcao,
         matricula: token,

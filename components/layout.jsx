@@ -2,13 +2,12 @@ import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBars, faBuildingColumns } from '@fortawesome/free-solid-svg-icons'
 import { usarContexto } from '../contexto';
-import { Button, Dropdown, DropdownButton } from 'react-bootstrap';
-import { faBan, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { Dropdown } from 'react-bootstrap';
 import { useState } from 'react';
 
 export const siteTitle = 'Jornada';
 
-export default function Layout({ children }) {
+export default function Layout({ children, fluid }) {
     const {usuario, forum} = usarContexto();
     const [exibirMenu, setExibirMenu] = useState(false);
     const {api} = usarContexto();
@@ -22,9 +21,11 @@ export default function Layout({ children }) {
         })
     }
 
-    const {administrar_comissoes, estatistica, crud} = usuario?.permissoes || {};
+    const {administrar_comissoes, votar_comissoes, estatistica, crud} = usuario?.permissoes || {};
 
-    return (<>
+    const container = fluid ? 'container-fluid px-5' : 'container';
+
+    return (<div className='d-flex flex-column' style={{minHeight: '100vh'}}>
         <Head>
             <link rel="icon" href="/favicon-32x32.png" />
             <meta
@@ -43,7 +44,7 @@ export default function Layout({ children }) {
         </Head>
         <header>
             <div className="navbar navbar-dark bg-dark shadow-sm mb-4">
-                <div className="container">
+                <div className={`${container}`}>
                     <div className="navbar-brand w-100 d-flex align-items-center justify-content-between" style={{whiteSpace: 'normal'}}>
                         <div className='col-12'>
                             <span className="text-success font-weight-bold" style={{ fontSize: "150%" }}><FontAwesomeIcon icon={faBuildingColumns} /></span>&nbsp;&nbsp;
@@ -58,7 +59,7 @@ export default function Layout({ children }) {
                 </div>
             </div>
             {usuario &&
-                <Dropdown className='container' show={exibirMenu} onToggle={()=> setExibirMenu(!exibirMenu)}>
+                <Dropdown className={`${container}`} show={exibirMenu} onToggle={()=> setExibirMenu(!exibirMenu)}>
                     <Dropdown.Menu style={{ marginTop: -20, right: 0}} id='menu'>
                         <div style={{margin: 20}}>
                             <div>{usuario.nome}</div>
@@ -81,9 +82,14 @@ export default function Layout({ children }) {
                         {administrar_comissoes.length !== 0 && <Dropdown.Item href="/admissao">Admissão</Dropdown.Item>}
 
                         {(administrar_comissoes.length !== 0 || estatistica) && <>
+                            <Dropdown.Item href="/caderno">Cadernos</Dropdown.Item>
                             <Dropdown.Item href="/inscricoes">Inscrições</Dropdown.Item>
                             <Dropdown.Item href="/membros">Membros</Dropdown.Item>
                         </>}
+                        
+                        {administrar_comissoes.length !== 0 && <Dropdown.Item href="/telao">Telão</Dropdown.Item>}
+
+                        {votar_comissoes.length !== 0 && <Dropdown.Item href="/votacao">Votação</Dropdown.Item>}
 
 
                         {/*<Dropdown.Divider />
@@ -96,9 +102,9 @@ export default function Layout({ children }) {
             }
         </header>
 
-        <div className="container mb-3">
+        <div className={`${container} mb-3 d-flex flex-column`} style={{flex: 1}}>
             {children}
         </div>
-    </>
+    </div>
     );
 }

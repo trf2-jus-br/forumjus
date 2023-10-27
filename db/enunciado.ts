@@ -3,6 +3,7 @@ import PermissaoDAO from './permissao';
 import LogDAO from './log';
 import MembroDAO from './membro';
 import ProponenteDAO from './proponente';
+import createHttpError from 'http-errors';
 
 const forumId = 1;
 
@@ -25,6 +26,18 @@ interface RequisicaoCriacao {
 }
 
 class EnunciadoDAO {
+
+    static async log(db: PoolConnection, usuario: Usuario, statement_id: number){
+        const permissoes = await PermissaoDAO.carregar(db, usuario);
+        
+        const enunciado = await EnunciadoDAO.listarPorId(db, usuario, statement_id);
+
+        if(!permissoes.estatistica && permissoes.administrar_comissoes.indexOf(enunciado.committee_id) === -1){
+            throw createHttpError.Forbidden("Usuário sem permissão.");
+        }
+
+        return LogDAO.listarPorEnunciado(db, statement_id);
+    }
 
     static async criar(db: PoolConnection, statement: RequisicaoCriacao, attendeeId: number){
         return db.query(
@@ -50,8 +63,6 @@ class EnunciadoDAO {
         // carrega as informações do enunciado, que o usuário deseja alterar.
         const enunciado = await EnunciadoDAO.listarPorId(db, usuario, statement_id);
 
-        console.log(permissao.administrar_comissoes);
-
         // verifica se este enunciado pertence a um dos comites que o usuário tem permissão para alterar.
         if(permissao.administrar_comissoes.indexOf(enunciado.committee_id) === -1){
             throw "Usuário sem permissão para analisar."
@@ -61,21 +72,40 @@ class EnunciadoDAO {
         await LogDAO.registrar(db, usuario, "analisar enunciado", { statement_id, admitido });
 
         // grava os dados no banco de dados
-        const [result] = await db.query( 
-            `UPDATE statement 
-                SET admitido = ?, 
-                data_analise=now()
-            WHERE statement_id = ?;`,
-            [admitido, statement_id]
-        );
+        if(admitido == false){
+            await db.query( 
+                `UPDATE statement 
+                    SET admitido = ?, 
+                    data_analise=now()
+                WHERE statement_id = ?;`,
+                [admitido, statement_id]
+            );
+        }else{
+            // Gera um ID, quando o enunciado é aprovado.
+            await db.query( 
+                `UPDATE 
+                    statement S
+                    INNER JOIN (
+                        SELECT IFNULL(codigo, 0) + 1 as codigo, committee_id
+                        FROM statement 
+                        WHERE committee_id = ?
+                        ORDER BY codigo 
+                        DESC LIMIT 1	
+                    ) as C on S.committee_id = C.committee_id
+                SET 
+                    admitido = ?,
+                    S.codigo = C.codigo,
+                    data_analise=now()
+                WHERE statement_id = ?;`,
+                [enunciado.committee_id, admitido, statement_id]
+            );
+        }
 
         // Se o enunciado for aceito, o proponente é automaticamente adiciona, como membro, ao comissão que aprovou seu enunciado.
         if(admitido){
             const proponente = await ProponenteDAO.listarPorId(db, enunciado.attendee_id);
             await MembroDAO.criar(db, usuario, proponente, enunciado.committee_id);
         }
-
-        return result;
     }
     
     static async desfazerAnalise(db: PoolConnection, usuario: Usuario, statement_id: number){
@@ -92,6 +122,7 @@ class EnunciadoDAO {
         await db.query( 
             `UPDATE statement 
                 SET admitido = NULL, 
+                codigo = null,
                 data_analise = NULL
             WHERE statement_id = ?;`,
             [statement_id]
@@ -140,11 +171,52 @@ class EnunciadoDAO {
         const enunciado = result[0][0] as Enunciado;
 
         // Verifica se este enunciado pertence a uma das comissões permitidos para este usuário.
-        if( permissoes.administrar_comissoes.indexOf(enunciado.committee_id) === -1)
+        if(!permissoes.estatistica && permissoes.administrar_comissoes.indexOf(enunciado.committee_id) === -1)
             throw "Usuário não tem permissão";
 
 
         return enunciado;
+    }
+
+    static async listarPorVotacao(db: PoolConnection, usuario: Usuario, dia: number){
+        const permissoes = await PermissaoDAO.carregar(db, usuario);
+        
+        // Verifica se este enunciado pertence a uma das comissões permitidos para este usuário.
+        if(permissoes.administrar_comissoes.length === 0)
+            throw "Usuário não tem permissão para gerenciar uma votação";
+
+
+        // Lista todos os enunciados que foram admitidos em dada comissão;
+        const SQL_1_DIA = 
+            `SELECT *, 
+                    statement_id IN ( SELECT enunciado FROM votacao ) as votado
+                FROM statement 
+                WHERE
+                    committee_id = ? AND
+                    admitido = 1;`
+
+        // Seleciona todos os enunciados que foram aprovados ( mais votos positivos do que negativos)
+        const SQL_2_DIA =
+            `SELECT statement.*
+                FROM 
+                    statement
+                INNER JOIN (    
+                    SELECT 
+                        votacao.enunciado,
+                        sum(IF(voto.voto = 1, 1, 0)) as favor,
+                        sum(IF(voto.voto = 1, 0, 1)) as contra
+                    FROM votacao
+                    LEFT JOIN voto on votacao.id = voto.votacao
+                    GROUP BY votacao.enunciado
+                ) V on V.enunciado = statement_id
+                WHERE favor > contra`;
+
+        const sql = dia === 1 ? SQL_1_DIA : SQL_2_DIA;
+        const params = dia === 1 ? permissoes.administrar_comissoes : [];
+
+        const [enunciados] = await db.query( sql, params);
+
+        return enunciados;
     }
 
     static async alterarComite(db: PoolConnection, usuario: Usuario, statement_id: number, committee_id: number){

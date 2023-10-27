@@ -1,39 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBan, faCheck, faExchange, faFile, faFileAlt, faFileArchive, faFileCircleCheck, faFileCircleExclamation, faIcons, faInfo, faTable } from '@fortawesome/free-solid-svg-icons'
-import { Breadcrumb, Button, CloseButton, Form, Modal, Nav, Table } from 'react-bootstrap';
-import { Formik } from 'formik';
-import Usuario from '../../components/register/usuario';
-import Enunciado from '../../components/register/enunciado';
+import { faFile, faFileCircleCheck } from '@fortawesome/free-solid-svg-icons'
+import { Breadcrumb, Button, Table } from 'react-bootstrap';
 import { usarContexto } from '../../contexto';
-import Comite from '../admissao/comite';
 import Tooltip from '../../components/tooltip';
-
+import gerarCadernoPreliminar from './caderno-preliminar';
 
 
 function Caderno (props){
     const [inscricoes, setInscricoes] = useState<Inscricao[]>()    
-    const [detalhes, setDetalhes] = useState<Inscricao>()
-    const [exibirModalDetalhes, setExibirModalDetalhes] = useState(false)
-    const [aba, setAba] = useState<Aba>("enunciado")
     const [comites, setComites] = useState<DetalheComite[]>([]);
-    const [filtro, setFiltro] = useState<null | -1 | number>(null);
-    const [tabela, setTabela] = useState(false);
 
-    const { api, usuario } = usarContexto();
+    const { api, exibirNotificacao } = usarContexto();
 
     async function carregarInscricoes(){
         api.get<Inscricao[]>("/api/inscricao")
             .then(({data}) => setInscricoes(data))
-            .catch(err => {
+            .catch(() => {
                 // Apenas notifica o usuário que ocorreu um erro.
                 // A página será montada com as outras informações, mas certamente não será funcional.
               });
 
         api.get<DetalheComite[]>("/api/comite?detalhes=true")
             .then(({data}) => setComites(data))
-            .catch(err => {
+            .catch(() => {
                 // Apenas notifica o usuário que ocorreu um erro.
                 // A página será montada com as outras informações, mas certamente não será funcional.
             });
@@ -43,19 +34,44 @@ function Caderno (props){
         carregarInscricoes();
     }, [])
 
-    function mostrarDetalhes(i : Inscricao){
-        setAba("enunciado")
-        setDetalhes(i)
-        setExibirModalDetalhes(true)
+
+    function abrirCadernoJornada(){
+        const filtro = inscricoes.filter(i => i.admitido && 
+            i.votos_afavor_1 > i.votos_contra_1.toString() 
+            && i.votos_afavor_2 > i.votos_contra_2
+        );
+
+        if(filtro.length === 0)
+            return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível'});
+        
+        gerarCadernoPreliminar(inscricoes, comites, 'Caderno da Jornada')
     }
 
-    function ocultarDetalhes(){
-        setDetalhes(null)
-        setExibirModalDetalhes(false)
+    function abrirCadernoPreliminar(comissao: number){
+        const filtro = inscricoes.filter(i => i.committee_id === comissao && i.admitido);
+
+        console.log(inscricoes, comissao);
+
+        if(filtro.length === 0)
+            return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível'});
+        
+        gerarCadernoPreliminar(filtro, comites, 'Caderno Preliminar')
+    }
+
+    function abrirCaderno(comissao: number){
+        const filtro = inscricoes.filter(i => i.committee_id === comissao && 
+            i.admitido && 
+            i.votos_afavor_1 > i.votos_contra_1.toString() && 
+            i.votos_afavor_2 > i.votos_contra_2
+        );
+
+        if(filtro.length === 0)
+            return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível'});
+
+        gerarCadernoPreliminar(filtro, comites, 'Caderno da Jornada')
     }
 
 
-    const inscricoes_filtradas = inscricoes?.filter(k => filtro === -1 || k.committee_id === filtro);
     return <Layout>
         <div className='d-flex align-items-start justify-content-between'>
             <Breadcrumb>
@@ -64,7 +80,7 @@ function Caderno (props){
         </div>
         
         <div className='d-flex justify-content-center' >
-            <Button>
+            <Button onClick={abrirCadernoJornada}>
                 <FontAwesomeIcon icon={faFileCircleCheck} />
                 <span style={{marginLeft: 10}}>Caderno da Jornada</span>
             </Button>
@@ -78,15 +94,25 @@ function Caderno (props){
                 </tr>
             </thead>
             <tbody>
-                {comites?.map( c => <tr style={{cursor:'pointer'}} key={c.committee_id} onClick={()=> setFiltro(c.committee_id)}>
+                {comites?.map( c => <tr key={c.committee_id}>
                     <td>{c.committee_name}</td>
                     <td className='text-center' >
                         <Tooltip mensagem='Caderno Preliminar' posicao='bottom'>
-                            <FontAwesomeIcon color='#b55e5e' style={{marginRight: 10}} icon={faFile} />
+                            <FontAwesomeIcon 
+                                onClick={() => abrirCadernoPreliminar(c.committee_id)}
+                                color='#b55e5e' 
+                                style={{cursor: 'pointer', marginRight: 10}} 
+                                icon={faFile} 
+                            />
                         </Tooltip>
 
                         <Tooltip mensagem='Caderno Aprovado' posicao='bottom'>
-                            <FontAwesomeIcon color='#060' icon={faFileCircleCheck} />
+                            <FontAwesomeIcon 
+                                style={{cursor: 'pointer'}} 
+                                color='#060' 
+                                icon={faFileCircleCheck} 
+                                onClick={() => abrirCaderno(c.committee_id)}
+                            />
                         </Tooltip>
                     </td>
                 </tr>)}
