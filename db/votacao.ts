@@ -1,6 +1,7 @@
 import createHttpError from "http-errors";
 import PermissaoDAO from "./permissao";
 import EnunciadoDAO from "./enunciado";
+import CalendarioDAO from "./calendario";
 
 class VotacaoDAO {
     static async listar(db: PoolConnection, usuario: Usuario){
@@ -71,23 +72,100 @@ class VotacaoDAO {
     }
 
 
-    static async iniciar(db: PoolConnection, usuario: Usuario, id_enunciado: number, dia: 1 | 2){
+    static async iniciar(db: PoolConnection, usuario: Usuario, id_enunciado: number){
+        // Verifica a permissão do usuário.
         const permissoes = await PermissaoDAO.carregar(db, usuario);
 
-        //const enunciado = await EnunciadoDAO.listarPorId(db, usuario, id_enunciado);
-        //CRIAR AS VALIDAÇÕES...
-
         if(permissoes.administrar_comissoes.length === 0)
-            throw createHttpError.Forbidden("Usuário não tem permissão para iniciar votação");
+            throw createHttpError.BadRequest("Usuário não tem permissão para iniciar votação.");
 
+        // Busca no banco a data e hora das votações.
+        const calendario = await CalendarioDAO.hoje(db);
+        
+        const geral = calendario.find(e => e.evento === "VOTAÇÃO GERAL");
+        const por_comissao = calendario.find(e => e.evento === "VOTAÇÃO POR COMISSÃO");
+
+        // Notifica o usuário, caso haja um erro de configuração.
+        if(geral && por_comissao)
+            throw "Votação geral e por comissão não podem ocorrer no mesmo dia!";
+
+        // Notifica o usuário, caso ele tente votar fora dos intervalos permitidos.
+        if(!geral && !por_comissao)
+            throw "Aguarde até a data da votação.";
+
+        const enunciado = await EnunciadoDAO.listarPorId(db, usuario, id_enunciado);
+        
+        // Na votação por comissão, verifica se o administrador pode iniciar o dado enunciado.
+        if(por_comissao && permissoes.administrar_comissoes.indexOf(enunciado.committee_id) === -1)
+            throw createHttpError.BadRequest("Usuário não tem permissão para iniciar votação");
+
+        // Verifica os enunciados que já foram votados na etapa atual, seja 1º ou 2º dia.
+        const [votacoes] = await db.query(
+            `SELECT 
+                    enunciado, inicio, fim 
+                FROM votacao 
+                WHERE 
+                    ? < inicio;`, 
+            [ 
+                (por_comissao || geral).inicio
+            ]
+        ) as any[]
+
+        console.log(votacoes);
+
+        // Verifica se não há nenhuma votação em andamento.
+        const votacao_andamento = votacoes.find(e => e.fim == null);
+
+        if(votacao_andamento)
+            throw createHttpError.BadRequest("Já há uma votação em andamento.");
+
+        // Verifica se o enunciado já foi votado.
+        if( votacoes.find(e => e.enunciado == id_enunciado) ){
+            throw createHttpError.BadRequest("Enunciado já foi votado.");
+        }
+
+        // Caso esteja tudo certo, inicia a votação.
         const SQL = `INSERT INTO votacao(enunciado, iniciada_por) VALUES (?, ?);`
 
         await db.query(SQL, [id_enunciado, usuario.id]);
     }
 
     
-    static async parar(db: PoolConnection, usuario: Usuario, enunciado : number){
+    static async parar(db: PoolConnection, usuario: Usuario){
+        // Verifica a permissão do usuário.
+        const permissoes = await PermissaoDAO.carregar(db, usuario);
 
+        // Qualquer administrador (Presidente / Relator) pode parar ou inicio a votação.
+        if( permissoes.administrar_comissoes.length === 0)
+            throw createHttpError.BadRequest("Usuário sem permissão para 'Finalizar a votação'.");
+
+        // Busca no banco a data e hora das votações.
+        const calendario = await CalendarioDAO.hoje(db);
+        
+        const geral = calendario.find(e => e.evento === "VOTAÇÃO GERAL");
+        const por_comissao = calendario.find(e => e.evento === "VOTAÇÃO POR COMISSÃO");
+
+        // Notifica o usuário, caso haja um erro de configuração.
+        if(geral && por_comissao)
+            throw "Votação geral e por comissão não podem ocorrer no mesmo dia!";
+
+        // Notifica o usuário, caso ele tente votar fora dos intervalos permitidos.
+        if(!geral && !por_comissao)
+            throw "Aguarde até a data da votação.";
+
+        // Determina o SQL que deve ser executado.
+        const SQL_GERAL = `UPDATE votacao SET fim = now();`
+
+        const SQL_POR_COMISSAO = 
+            `UPDATE votacao
+                INNER JOIN statement on votacao.enunciado = statement_id
+                SET votacao.fim = now()
+                WHERE committee_id = ?;`
+
+        const SQL = por_comissao ? SQL_POR_COMISSAO : SQL_GERAL;
+        const params = por_comissao ? permissoes.administrar_comissoes : [];
+
+        await db.query(SQL, params);
     }
 
 }

@@ -156,3 +156,10 @@ interface Proponente {
         voto: 0 | 1 | null
     }[];
 }
+
+interface Calendario {
+    id : number,
+	evento: "INSCRIÇÕES" | "HOMOLOGAÇÃO" | "VOTAÇÃO POR COMISSÃO" | "VOTAÇÃO GERAL",
+    inicio: string,
+    fim : string,
+}

@@ -15,9 +15,14 @@ async function votar({res, req, usuario, db}: API){
 }
 
 async function iniciarVotacao({res, req, usuario, db} : API){
-    const {enunciado, dia} = req.body;
+    const {enunciado} = req.body;
 
-    await VotacaoDAO.iniciar(db, usuario, enunciado, dia);
+    await VotacaoDAO.iniciar(db, usuario, enunciado);
+    res.send(null);
+}
+
+async function pararVotacao({res, db, usuario} : API){
+    await VotacaoDAO.parar(db, usuario);
     res.send(null);
 }
 
@@ -25,4 +30,5 @@ export default apiHandler({
     GET: listar,
     POST: votar,
     PUT: iniciarVotacao,
+    DELETE: pararVotacao,
 })

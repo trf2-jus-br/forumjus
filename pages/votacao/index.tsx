@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Modal } from "react-bootstrap";
+import { Button, Modal, Spinner } from "react-bootstrap";
 import Layout from "../../components/layout";
 import { useEffect, useState } from "react";
 import { usarContexto } from "../../contexto";
@@ -15,26 +15,32 @@ function Votacao({telao}: Props){
     const [votacao, setVotacao] = useState<Votacao>(null);
     const [votoUsuario, setVotoUsuario] = useState(null);
     const [processandoVoto, setProcessandoVoto] = useState(false);
+    const [estilo, setEstilo] = useState({});
 
 
     async function carregar(){
         try{
             const {data} = await api.get<Votacao>('/api/votacao');
-            setVotacao(data);
 
-            const votoUsuario = data.votos.find(({id})=> id === usuario.id);
-            setVotoUsuario(votoUsuario.voto);
+
+            setEstilo(!data ? e.ocultar: e.exibir)
+
+            // Só atualizo o objeto votação, nunca deixo ele nulo.
+            // Fiz isso para viabilizar as animações.
+            if(data){
+                setVotacao(!data ? null : data);
+                const votoUsuario = data.votos.find(({id})=> id === usuario.id);
+                setVotoUsuario(votoUsuario.voto);
+            }
         }catch(err){
 
         }
     }
 
     async function votar(favoravel: boolean){
-        console.log("processandoVoto", processandoVoto)
         // impede que o usuário clique 10 vezes no botão.
         if(processandoVoto || votoUsuario !== null)
             return;
-
 
         setProcessandoVoto(true);
 
@@ -53,25 +59,33 @@ function Votacao({telao}: Props){
     }
 
     useEffect(()=>{
-        const interval = setInterval(()=> carregar(), 500);
+        const interval = setInterval(()=> carregar(), 1000);
         
         return () => {
             clearInterval(interval);
         }
     }, [])
 
+    if(!votacao)
+        return <Layout fluid>
+            <div className='d-flex justify-content-center align-items-center' style={{flex: 1}}>
+                <Spinner style={{color: "#0003"}} />
+            </div>
+        </Layout>
+
+
     const votos_contrarios = votacao?.votos?.filter(({voto}) => voto === 0)?.length || 0;
     const votos_favoraveis = votacao?.votos?.filter(({voto}) => voto === 1)?.length || 0;
 
-    console.log('processandoVoto', processandoVoto  )
-    
     return <Layout fluid>
         {
              votacao &&
-                <div className="d-flex flex-column align-items-center w-100" style={{flex: 1}}>
+                <div className="d-flex flex-column align-items-center w-100" 
+                    style={{opacity: estilo.opacity, transition: "all 0.5s", flex: 1}}
+                >
                     <div className="d-flex justify-content-between w-100 align-items-center">
                         <div></div>
-                        {votacao.comissao}
+                        <div style={{...estilo}}>{votacao.comissao}</div>
                         
                         <div className="d-flex">
                             <span>{votos_favoraveis}</span>
@@ -110,12 +124,12 @@ function Votacao({telao}: Props){
                     <div className="d-flex">
                         {telao && <div className="col-2"></div>}
                         <div className={telao ? "col-8" : "col-12"}>
-                            <div style={e.enunciado}>{votacao.texto}</div>
+                            <div style={{...estilo, ...e.enunciado}}>{votacao.texto}</div>
                             <hr className="w-100" />
-                            <div style={e.justificativa}>{votacao.justificativa}</div>
+                            <div style={{...estilo, ...e.justificativa}}>{votacao.justificativa}</div>
                             <hr className="w-100" />
                         </div>
-                        {telao && <div className="col-2 d-flex flex-column text-center px-5">
+                        {telao && <div className="col-2 d-flex flex-column text-center px-5" style={estilo}>
                             <h5 className="">
                                 Votos 
                                 <h6 className='d-block'>
@@ -123,7 +137,7 @@ function Votacao({telao}: Props){
                                 </h6>
                             </h5>
                             {
-                                votacao.votos.map(m => {
+                                votacao.votos.slice(0, 5).map(m => {
                                     const cor = m.voto === null ? "#999" : m.voto === 0 ? "#900" : "#070";
                                     const icone = m.voto === 0 ? faCircleXmark : faCircleCheck;
 
@@ -173,7 +187,7 @@ const e : {[key: string]: React.CSSProperties} = {
         margin: 5,
         textIndent: 50,
         lineHeight: 1.5,
-        fontWeight: 600
+        fontWeight: 600,
     },
     justificativa: {
         //fontSize: 18,
@@ -184,7 +198,17 @@ const e : {[key: string]: React.CSSProperties} = {
     },
     membro: {
         fontSize: 14
-    }
+    },
+    exibir: {
+        transition: "all 1s",
+        transform: "scale(1)",
+        opacity: 1,
+    },
+    ocultar: {
+        transition: "all 1s",
+        transform: "scale(0.75)",
+        opacity: 0,
+    },
 }
 
 export default Votacao;

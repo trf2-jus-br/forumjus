@@ -4,6 +4,7 @@ import LogDAO from './log';
 import MembroDAO from './membro';
 import ProponenteDAO from './proponente';
 import createHttpError from 'http-errors';
+import CalendarioDAO from './calendario';
 
 const forumId = 1;
 
@@ -178,25 +179,40 @@ class EnunciadoDAO {
         return enunciado;
     }
 
-    static async listarPorVotacao(db: PoolConnection, usuario: Usuario, dia: number){
+    static async listarPorVotacao(db: PoolConnection, usuario: Usuario){
+        // Verifica a permissão do usuário.
         const permissoes = await PermissaoDAO.carregar(db, usuario);
         
-        // Verifica se este enunciado pertence a uma das comissões permitidos para este usuário.
         if(permissoes.administrar_comissoes.length === 0)
-            throw "Usuário não tem permissão para gerenciar uma votação";
+            throw createHttpError.BadRequest( "Usuário não tem permissão para gerenciar uma votação"); 
 
+        // Busca no banco a data e hora das votações.
+        const calendario = await CalendarioDAO.hoje(db);
+                
+        const geral = calendario.find(e => e.evento === "VOTAÇÃO GERAL");
+        const por_comissao = calendario.find(e => e.evento === "VOTAÇÃO POR COMISSÃO");
+
+        // Notifica o usuário, caso haja um erro de configuração.
+        if(geral && por_comissao)
+            throw "Votação geral e por comissão não podem ocorrer no mesmo dia!";
+
+        // Notifica o usuário, caso ele tente votar fora dos intervalos permitidos.
+        if(!geral && !por_comissao)
+            throw "Aguarde até a data da votação.";
 
         // Lista todos os enunciados que foram admitidos em dada comissão;
-        const SQL_1_DIA = 
-            `SELECT *, 
-                    statement_id IN ( SELECT enunciado FROM votacao ) as votado
-                FROM statement 
-                WHERE
-                    committee_id = ? AND
-                    admitido = 1;`
+        const SQL_POR_COMISSAO = 
+            `SELECT 
+                statement.*, 
+                votacao.inicio as votacao_inicio, 
+                votacao.fim as votacao_fim
+            FROM statement
+            LEFT JOIN votacao on votacao.enunciado = statement_id
+            WHERE 
+                committee_id = ? AND admitido = 1;`
 
         // Seleciona todos os enunciados que foram aprovados ( mais votos positivos do que negativos)
-        const SQL_2_DIA =
+        const SQL_GERAL =
             `SELECT statement.*
                 FROM 
                     statement
@@ -211,10 +227,10 @@ class EnunciadoDAO {
                 ) V on V.enunciado = statement_id
                 WHERE favor > contra`;
 
-        const sql = dia === 1 ? SQL_1_DIA : SQL_2_DIA;
-        const params = dia === 1 ? permissoes.administrar_comissoes : [];
+        const SQL = por_comissao ? SQL_POR_COMISSAO : SQL_GERAL;
+        const params = por_comissao ? permissoes.administrar_comissoes : [];
 
-        const [enunciados] = await db.query( sql, params);
+        const [enunciados] = await db.query( SQL, params);
 
         return enunciados;
     }

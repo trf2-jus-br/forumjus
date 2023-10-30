@@ -58,20 +58,3 @@ INSERT INTO membro (nome, funcao, comite, token) VALUES
     ('Relator 6', 'RELATOR', 6, '9cd4a74'),
     ('Relator 7', 'RELATOR', 7, 'c46dfda')
 ;
-
-/*
-create table calendario (
-	id bigint not null auto_increment,
-	evento varchar(200) not null,
-    inicio datetime not null,
-    fim datetime not null,
-    
-    primary key (id)
-);
-
-INSERT INTO calendario (evento, inicio, fim) VALUES 
-	( 'INSCRIÇÕES', '2023-10-09T18:07', '2023-11-09 18:07'),
-	( 'HOMOLOGAÇÃO', '2023-10-09T18:07', '2023-11-09 18:07'),
-	( 'VOTAÇÃO POR COMISSÃO', '2023-10-09T18:07', '2023-11-09 18:07'),
-	( 'VOTAÇÃO GERAL', '2023-10-09T18:07', '2023-11-09 18:07');
-*/

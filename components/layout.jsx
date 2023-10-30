@@ -88,6 +88,7 @@ export default function Layout({ children, fluid }) {
                         </>}
                         
                         {administrar_comissoes.length !== 0 && <Dropdown.Item href="/telao">Telão</Dropdown.Item>}
+                        {administrar_comissoes.length !== 0 && <Dropdown.Item href="/controle-votacao">Telão - Controle</Dropdown.Item>}
 
                         {votar_comissoes.length !== 0 && <Dropdown.Item href="/votacao">Votação</Dropdown.Item>}
 
