@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import Layout from "../../components/layout";
 import { usarContexto } from "../../contexto";
-import { Breadcrumb, Form, Table } from "react-bootstrap";
+import { Breadcrumb, Button, Form, InputGroup, Modal, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faKey } from '@fortawesome/free-solid-svg-icons';
+import { faCopy } from '@fortawesome/free-regular-svg-icons';
+
 import Tooltip from "../../components/tooltip";
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { QRCodeSVG } from "qrcode.react";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -23,6 +26,7 @@ function Membros(){
     const [comites, setComites] = useState<Comite[]>();
     const [membros, setMembros] = useState<Membro[]>();
     const [filtro, setFiltro] = useState<number>();
+    const [membroSelecionado, setMembroSelecionado] = useState<Membro>(null);
 
     const { api, usuario } = usarContexto();
 
@@ -124,6 +128,12 @@ function Membros(){
         pdf.open();
     }
 
+    async function copiar(txt){
+        navigator.clipboard.writeText(txt);
+    }
+
+    const url = `${window.location.origin}/comissao/login/${membroSelecionado?.token}`;
+
 
     return <Layout>
         <div className='d-flex align-items-start justify-content-between'>
@@ -147,24 +157,54 @@ function Membros(){
 
         <div className="container row text-center">
             <div className="col-lg-6 col-12 mt-5">
-                <h6>{presidente.nome}</h6>
+                <h6>
+                    {presidente.nome}
+                    <Tooltip mensagem="Código de acesso" posicao="top">
+                        <FontAwesomeIcon onClick={()=> setMembroSelecionado(presidente)} style={{marginLeft: 10, cursor: "pointer"}} icon={faKey}/>
+                    </Tooltip>
+                </h6>
+                
                 <div style={{textTransform:"capitalize"}}>{presidente.funcao.toLowerCase()}</div>
             </div>        
 
             <div className="col-lg-6 col-12 mt-5">
-                {relatores.map(r => <h6 key={r.id}>{r.nome}</h6>)}
+                {relatores.map(
+                    r => <h6 key={r.id}>
+                        {r.nome}
+
+                        <Tooltip mensagem="Código de acesso" posicao="top">
+                            <FontAwesomeIcon onClick={()=> setMembroSelecionado(r)} style={{marginLeft: 10, cursor: "pointer"}} icon={faKey}/>
+                        </Tooltip>
+                    </h6>
+                )}
                 <div style={{textTransform:"capitalize"}}>
                     {nomeFuncao(relatores)}
                 </div>
             </div>    
 
             <div className="col-lg-6 col-12 mt-5">
-                {especialistas.map(r => <h6 key={r.id}>{r.nome}</h6>)}
+                {especialistas.map(
+                    r => <h6 key={r.id}>
+                        {r.nome}
+
+                        <Tooltip mensagem="Código de acesso" posicao="top">
+                            <FontAwesomeIcon onClick={()=> setMembroSelecionado(r)} style={{marginLeft: 10, cursor: "pointer"}} icon={faKey}/>
+                        </Tooltip>
+                    </h6>
+                )}
                 <div>{especialistas.length === 1 ? 'Especialista' : 'Especialistas'}</div>
             </div>    
 
             <div className="col-lg-6 col-12 mt-5">
-                {juristas.map(r => <h6 key={r.id}>{r.nome}</h6>)}
+                {juristas.map(
+                    r => <h6 key={r.id}>
+                        {r.nome}
+
+                        <Tooltip mensagem="Código de acesso" posicao="top">
+                            <FontAwesomeIcon onClick={()=> setMembroSelecionado(r)} style={{marginLeft: 10, cursor: "pointer"}} icon={faKey}/>
+                        </Tooltip>
+                    </h6>
+                )}
                 <div>{juristas.length === 1 ? 'Jurista' : 'Juristas'}</div>
             </div>        
         </div>
@@ -177,11 +217,35 @@ function Membros(){
             </thead>
             <tbody>
                 {membros_comuns?.map(m => <tr key={m.id}>
-                    <td>{m.nome}</td>
+                    <td>
+                        {m.nome}
+                        <Tooltip mensagem="Código de acesso" posicao="top">
+                            <FontAwesomeIcon onClick={()=> setMembroSelecionado(r)} style={{marginLeft: 10, cursor: "pointer"}} icon={faKey}/>
+                        </Tooltip>
+                    </td>
                 </tr>)
                 }
             </tbody>
         </Table>
+
+        <Modal show={membroSelecionado !== null} onHide={() => setMembroSelecionado(null)} centered>
+            <Modal.Header closeButton style={{fontWeight: 700}}>{membroSelecionado?.nome}</Modal.Header>
+            <Modal.Body className="d-flex flex-column align-items-center">
+                <QRCodeSVG className="m-5" width={200} height={200} value={url} />
+                <InputGroup size="sm">
+                    <Form.Control id="codigo" type="text" value={url}></Form.Control>
+                    <InputGroup.Text>
+                        <Button variant="link" color="">
+                            <Tooltip mensagem="Copiar link" posicao="top">
+                                <FontAwesomeIcon onClick={() => copiar(url)} fontSize={20} icon={faCopy}/>
+                            </Tooltip>
+                        </Button>
+                    </InputGroup.Text>
+                </InputGroup>
+            </Modal.Body>
+            <Modal.Footer>
+            </Modal.Footer>
+        </Modal>
     </Layout>
 }
 
