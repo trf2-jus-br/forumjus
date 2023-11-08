@@ -133,6 +133,7 @@ function Membros(){
     }
 
     const url = `${window.location.origin}/comissao/login/${membroSelecionado?.token}`;
+    const urlCurta = `${window.location.origin}/comissao/login/...`;
 
 
     return <Layout>
@@ -233,7 +234,7 @@ function Membros(){
             <Modal.Body className="d-flex flex-column align-items-center">
                 <QRCodeSVG className="m-5" width={200} height={200} value={url} />
                 <InputGroup size="sm">
-                    <Form.Control id="codigo" type="text" value={url}></Form.Control>
+                    <Form.Control id="codigo" type="text" value={urlCurta}></Form.Control>
                     <InputGroup.Text>
                         <Button variant="link" color="">
                             <Tooltip mensagem="Copiar link" posicao="top">
