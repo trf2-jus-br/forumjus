@@ -19,7 +19,7 @@ const EmailConfirmacaoCadastro = (data, forum: Forum, ocupacoes: Ocupacao[], com
     </head>
     <body>
         <div style="max-width:601px; margin: 0 auto">
-            ${process.env.HOMOLOGACAO === "true" && '<h3 style="color: red; text-align: center;">E-mail de homologação de funcionalidades.<br/>Sem valor real para Jornada.</h3>' }
+            ${process.env.HOMOLOGACAO === "true" ? '<h3 style="color: red; text-align: center;">E-mail de homologação de funcionalidades.<br/>Sem valor real para Jornada.</h3>' : '' }
             <img width="100%" src="cid:imagem" />
             <div style="margin-top: 10px">
                 <div>Prezado (a),</div><br/>
