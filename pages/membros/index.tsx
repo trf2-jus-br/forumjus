@@ -35,7 +35,9 @@ function Membros(){
             const { data : comites } = await api.get<Comite[]>('/api/comite');
             setComites(comites)
 
-            setFiltro(comites[0].committee_id);
+            if(usuario.permissoes.estatistica){
+                setFiltro(comites[0].committee_id);
+            }
 
             const { data : membros } = await api.get<Membro[]>('/api/membro');
             setMembros(membros)
@@ -54,7 +56,7 @@ function Membros(){
     if(!membros)
         return <></>
 
-    const membro_filtrado = membros.filter(m => m.comite === filtro);
+    const membro_filtrado = membros.filter(m => m.comite === filtro || filtro == null);
 
     const presidente = membro_filtrado.find(m => m.funcao === "PRESIDENTE" || m.funcao === "PRESIDENTA");
     const relatores = membro_filtrado.filter(m => m.funcao === "RELATOR" || m.funcao === "RELATORA");
@@ -63,6 +65,7 @@ function Membros(){
 
     const membros_comuns = membro_filtrado.filter(m => m.funcao === "MEMBRO");
 
+    console.log(filtro);
     
     function gerarPdf(){
         const pdf = pdfMake.createPdf({
@@ -221,7 +224,7 @@ function Membros(){
                     <td>
                         {m.nome}
                         <Tooltip mensagem="Código de acesso" posicao="top">
-                            <FontAwesomeIcon onClick={()=> setMembroSelecionado(r)} style={{marginLeft: 10, cursor: "pointer"}} icon={faKey}/>
+                            <FontAwesomeIcon onClick={()=> setMembroSelecionado(m)} style={{marginLeft: 10, cursor: "pointer"}} icon={faKey}/>
                         </Tooltip>
                     </td>
                 </tr>)
