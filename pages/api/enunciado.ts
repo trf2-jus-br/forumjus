@@ -4,7 +4,7 @@ import { apiHandler } from "../../utils/apis";
 async function editar({req, res, db, usuario}: API){
     const {committee_id, statement_id} = req.body;
 
-    await EnunciadoDAO.alterarComite(db, usuario, committee_id, statement_id);
+    await EnunciadoDAO.alterarComite(db, usuario, statement_id, committee_id);
 
     res.send(null)
 }
