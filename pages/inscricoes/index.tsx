@@ -11,6 +11,8 @@ import Comite from '../admissao/comite';
 import Tooltip from '../../components/tooltip';
 import { formatarCodigo } from '../admissao/enunciado';
 import Registro from '../../components/register/registro';
+import comPermissao from '../../utils/com-permissao';
+import comRestricao from '../../utils/com-restricao';
 
 
 
@@ -199,4 +201,4 @@ function Inscricoes (props){
     </Layout>
 }
 
-export default Inscricoes;
+export default comRestricao(Inscricoes, "MEMBRO") ;

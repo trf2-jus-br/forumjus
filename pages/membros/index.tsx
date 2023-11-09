@@ -7,6 +7,8 @@ import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import Tooltip from "../../components/tooltip";
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
+import { QRCodeSVG } from "qrcode.react";
+import comPermissao from "../../utils/com-permissao";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -185,4 +187,4 @@ function Membros(){
     </Layout>
 }
 
-export default Membros;
+export default comPermissao(Membros, "ASSESSORIA", "PROGRAMADOR");

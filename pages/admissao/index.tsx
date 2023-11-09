@@ -3,6 +3,8 @@ import Layout from '../../components/layout';
 import Enunciado from './enunciado';
 import { Breadcrumb, Card, Collapse, Form, Modal, Table } from 'react-bootstrap';
 import { usarContexto } from '../../contexto';
+import comPermissao from '../../utils/com-permissao';
+import comRestricao from '../../utils/com-restricao';
 
 enum Filtro {
     TODOS,
@@ -36,8 +38,8 @@ function Votacao(props){
     }
 
     useEffect(()=>{
-        carregar();
-    }, []);
+                    carregar();
+            }, []);
 
     function alterarComite(committee_id){
         api.put('/api/enunciado', {
@@ -95,4 +97,4 @@ function Votacao(props){
     </Layout>
 }
 
-export default Votacao;
+export default comPermissao(Votacao, 'RELATOR', 'RELATORA', 'PRESIDENTA', 'PRESIDENTE');

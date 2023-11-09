@@ -6,6 +6,8 @@ import { Breadcrumb, Button, Table } from 'react-bootstrap';
 import { usarContexto } from '../../contexto';
 import Tooltip from '../../components/tooltip';
 import gerarCadernoPreliminar from './caderno-preliminar';
+import comRestricao from '../../utils/com-restricao';
+
 
 
 function Caderno (props){
@@ -121,4 +123,4 @@ function Caderno (props){
     </Layout>
 }
 
-export default Caderno;
+export default comRestricao(Caderno, "MEMBRO");

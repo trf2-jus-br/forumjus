@@ -22,8 +22,9 @@ async function logarCracha(db: PoolConnection, token: string) : Promise<Usuario>
     return {
         id: membro.id,
         token,
-        lotacao: membro.funcao,
-        matricula: token,
+        funcao: membro.funcao,
+        lotacao: null,
+        matricula: null,
         nome: membro.nome,
         permissoes: {
             administrar_comissoes:  administrador ? [ membro.comite ] : [],
@@ -85,14 +86,16 @@ async function logarSiga(db: PoolConnection, auth: string) : Promise<Usuario>{
 
         // Ao logar pelo siga, o usuário terá a permissão 'estatística' e
         // caso seja da COSADM terá acesso a 'CRUD'
+        const COSADM = data.usuario.lotaTitularSigla === "COSADM";
         return {
+            funcao: COSADM ? "PROGRAMADOR" : "ASSESSORIA",
             nome: data.usuario.titularNome,
             matricula: data.usuario.titularSigla,
             lotacao: data.usuario.lotaTitularSigla,
             permissoes : {
                 administrar_comissoes: [],
                 votar_comissoes: [],
-                crud: data.usuario.lotaTitularSigla === "COSADM",
+                crud: COSADM,
                 estatistica: true,
             }
         };

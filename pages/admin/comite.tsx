@@ -1,5 +1,6 @@
 import React from 'react';
 import CRUD from '../../components/crud';
+import comPermissao from '../../utils/com-permissao';
 
 interface Props {
 
@@ -21,4 +22,4 @@ function Comite (props: Props){
 }
 
 
-export default Comite;
+export default comPermissao(Comite, "PROGRAMADOR");

@@ -49,7 +49,7 @@ interface SIGA_API_V1_LOGIN {
 interface Usuario {
     id?: number,
     token?: string;
-
+    funcao: FuncaoMembro,
     nome: string;
     matricula: string,
     lotacao: string,
@@ -113,10 +113,12 @@ interface Ocupacao {
     occupation_name: string,
  }
 
+ type FuncaoMembro = "PRESIDENTE" | "PRESIDENTA" | "RELATOR" | "RELATORA" | "MEMBRO" | "JURISTA" | "ESPECIALISTA" | "ASSESSORIA" | "PROGRAMADOR";
+
  interface Membro {
     id: number,
     nome: string,
-    funcao: "PRESIDENTE" | "PRESIDENTA" | "RELATORA" | "RELATOR" | "MEMBRO" | "JURISTA" | "ESPECIALISTA",
+    funcao: FuncaoMembro,
     proponente: number,
     comite: number,
     token: string,

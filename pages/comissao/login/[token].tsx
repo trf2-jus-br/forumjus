@@ -14,10 +14,10 @@ function Login(props){
         if(token != null && token !== ''){
             logar(token);
         }
-    }, []);
+    }, [router.query]);
 
     async function logar(token?: string){
-      try{
+        try{
         const resposta = await fetch(`/api/login?cracha=${token != null}`, {
             method: 'POST',
             headers: {

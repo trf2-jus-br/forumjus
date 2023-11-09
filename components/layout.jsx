@@ -63,7 +63,7 @@ export default function Layout({ children, fluid }) {
                     <Dropdown.Menu style={{ marginTop: -20, right: 0}} id='menu'>
                         <div style={{margin: 20}}>
                             <div>{usuario.nome}</div>
-                            <div>{usuario.lotacao}</div>
+                            <div>{usuario.lotacao || usuario.funcao}</div>
                         </div>
                         {crud && <>
                             <Dropdown.Divider />
