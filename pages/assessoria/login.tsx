@@ -20,13 +20,8 @@ function Login(props){
                 }
             })
 
-            const {estatistica, administrar_comissoes} =  usuario.permissoes;
-
-            if(estatistica){
-                window.location.href = '/inscricoes'
-            }else if(administrar_comissoes.length !== 0){
-                window.location.href = '/admissao'
-            }
+            // Apenas a COSADM e a ASSESSORIA logam com as credenciais do SIGA.
+            window.location.href = '/inscricoes'
         }catch(err) {
             // Apenas notifica o usuário que ocorreu um erro.
         }

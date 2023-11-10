@@ -3,6 +3,7 @@ import { Breadcrumb, Form } from "react-bootstrap";
 import Layout from "../../components/layout";
 import { usarContexto } from "../../contexto";
 import Enunciado from "./enunciado";
+import comPermissao from "../../utils/com-permissao";
 
 type EnunciadoVotacao = Enunciado & {
     votacao_inicio: string,
@@ -55,4 +56,4 @@ function ControleVotacao(){
     </Layout>
 }
 
-export default ControleVotacao;
+export default comPermissao(ControleVotacao, "PRESIDENTE", "PRESIDENTA", "RELATOR", "RELATORA") ;

@@ -1,3 +1,4 @@
+import createHttpError from "http-errors";
 import PermissaoDAO from "./permissao";
 
 /*
@@ -21,10 +22,12 @@ class InscricaoDAO {
                 WHERE statement.committee_id = ?;`;
         
         // analisa as permissões do usuário.
-        const { estatistica, administrar_comissoes } = await PermissaoDAO.carregar(db, usuario);
+        const { votar_comissoes } = await PermissaoDAO.carregar(db, usuario);
 
-        const sql = estatistica ? SQL_GERAL : SQL_ESPECIFICO;
-        const params = estatistica ? [] : administrar_comissoes
+        // analisa as permissões do usuário.
+        const eh_geral = usuario.funcao === "PROGRAMADOR" || usuario.funcao === "ASSESSORIA";
+        const sql = eh_geral ? SQL_GERAL : SQL_ESPECIFICO;
+        const params = eh_geral ? [] : votar_comissoes
 
         // executa o SQL adequado.
         const [inscricoes] = await db.query( sql, params );

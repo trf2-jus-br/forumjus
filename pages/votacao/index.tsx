@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { usarContexto } from "../../contexto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+import comRestricao from '../../utils/com-restricao';
 
 interface Props {
     telao?: boolean
@@ -211,4 +212,4 @@ const e : {[key: string]: React.CSSProperties} = {
     },
 }
 
-export default Votacao;
+export default comRestricao(Votacao, "ASSESSORIA", "PROGRAMADOR");

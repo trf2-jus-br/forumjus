@@ -21,9 +21,14 @@ export default function Layout({ children, fluid }) {
         })
     }
 
-    const {administrar_comissoes, votar_comissoes, estatistica, crud} = usuario?.permissoes || {};
-
     const container = fluid ? 'container-fluid px-5' : 'container';
+
+    function Se(...funcoes: FuncaoMembro[]){
+        if(!usuario)
+            return false;
+
+        return funcoes.indexOf(usuario.funcao) !== -1;
+    }
 
     return (<div className='d-flex flex-column' style={{minHeight: '100vh'}}>
         <Head>
@@ -65,32 +70,30 @@ export default function Layout({ children, fluid }) {
                             <div>{usuario.nome}</div>
                             <div>{usuario.lotacao || usuario.funcao}</div>
                         </div>
-                        {crud && <>
+                        <Dropdown.Divider />
+                        {Se("PROGRAMADOR") && <>
+                            <Dropdown.Header>
+                                <h6 style={{color: '#a00'}}>admin</h6>
+                            
+                                <Dropdown.Item href="/admin/comite" style={{color: '#a00'}}>Comissões</Dropdown.Item>
+                                <Dropdown.Item href="/admin/enunciado"  style={{color: '#a00'}}>Enunciados</Dropdown.Item>
+                                <Dropdown.Item href="/admin/forum"  style={{color: '#a00'}}>Fóruns</Dropdown.Item>
+                                <Dropdown.Item href="/admin/participante"  style={{color: '#a00'}}>Participantes</Dropdown.Item>
+                                <Dropdown.Item href="/admin/ocupacao"  style={{color: '#a00'}}>Ocupações</Dropdown.Item>
+                            </Dropdown.Header>
                             <Dropdown.Divider />
-                            <Dropdown.Item href="/admin/comite">* Comissões</Dropdown.Item>
-                            <Dropdown.Item href="/admin/enunciado">* Enunciados</Dropdown.Item>
-                            <Dropdown.Item href="/admin/forum">* Fóruns</Dropdown.Item>
-                            <Dropdown.Item href="/admin/participante">* Participantes</Dropdown.Item>
-                            <Dropdown.Item href="/admin/ocupacao">* Ocupações</Dropdown.Item>
-                            <Dropdown.Item href="/admin/permissao">* Permissões</Dropdown.Item>
-                        </>}
-
-                        {(administrar_comissoes.length !== 0 || estatistica) &&
-                            <Dropdown.Divider />
-                        }
-                        
-                        {administrar_comissoes.length !== 0 && <Dropdown.Item href="/admissao">Admissão</Dropdown.Item>}
-
-                        {(administrar_comissoes.length !== 0 || estatistica) && <>
-                            <Dropdown.Item href="/caderno">Cadernos</Dropdown.Item>
-                            <Dropdown.Item href="/inscricoes">Inscrições</Dropdown.Item>
-                            <Dropdown.Item href="/membros">Membros</Dropdown.Item>
                         </>}
                         
-                        {administrar_comissoes.length !== 0 && <Dropdown.Item href="/telao">Telão</Dropdown.Item>}
-                        {administrar_comissoes.length !== 0 && <Dropdown.Item href="/controle-votacao">Telão - Controle</Dropdown.Item>}
+                        {Se("PRESIDENTE", "PRESIDENTA", "RELATOR", "RELATORA") && <Dropdown.Item href="/admissao">Admissão</Dropdown.Item>}
 
-                        {votar_comissoes.length !== 0 && <Dropdown.Item href="/votacao">Votação</Dropdown.Item>}
+                        {!Se("MEMBRO") && <Dropdown.Item href="/caderno">Cadernos</Dropdown.Item>}
+                        {!Se("MEMBRO") && <Dropdown.Item href="/inscricoes">Inscrições</Dropdown.Item>}
+                        {Se("ASSESSORIA", "PROGRAMADOR") && <Dropdown.Item href="/membros">Membros</Dropdown.Item>}
+                        
+                        {Se("PRESIDENTE", "PRESIDENTA", "RELATOR", "RELATORA") && <Dropdown.Item href="/telao">Telão</Dropdown.Item>}
+                        {Se("PRESIDENTE", "PRESIDENTA", "RELATOR", "RELATORA") && <Dropdown.Item href="/controle-votacao">Telão - Controle</Dropdown.Item>}
+
+                        {!Se("ASSESSORIA", "PROGRAMADOR") && <Dropdown.Item href="/votacao">Votação</Dropdown.Item>}
 
 
                         {/*<Dropdown.Divider />

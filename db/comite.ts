@@ -12,7 +12,7 @@ class ComiteDAO {
     }
 
     static async detalharPorUsuario(db: PoolConnection, usuario: Usuario){
-        const { administrar_comissoes, estatistica } = await PermissaoDAO.carregar(db, usuario);
+        const { votar_comissoes } = await PermissaoDAO.carregar(db, usuario);
 
         const SQL_GERAL = 
             `SELECT committee.*, count(statement_id) as enunciados
@@ -27,8 +27,10 @@ class ComiteDAO {
                 WHERE committee.committee_id in (?)
                 GROUP BY committee_id`;
 
-        const sql = estatistica ? SQL_GERAL : SQL_ESPECIFICO;
-        const params = estatistica ? [] : administrar_comissoes;
+        const GERAL = usuario.funcao === "ASSESSORIA" || usuario.funcao === "PROGRAMADOR";
+
+        const sql = GERAL ? SQL_GERAL : SQL_ESPECIFICO;
+        const params = GERAL ? [] : votar_comissoes;
 
         const [result] = await db.query( sql, params);
 

@@ -31,14 +31,24 @@ function Login(props){
 
         const usuario : Usuario = await resposta.json();
 
-        const {estatistica, administrar_comissoes} =  usuario.permissoes;
-
-        if(estatistica){
-            window.location.href = '/inscricoes'
-        }else if(administrar_comissoes.length !== 0){
-            window.location.href = '/admissao'
-        } else {
-            window.location.href = '/votacao'
+        switch(usuario.funcao){
+            case "ESPECIALISTA":
+                case "JURISTA":
+                    window.location.href = '/inscricoes';
+                    break;
+            
+            case "PRESIDENTE":
+                case "PRESIDENTA":
+                    case "RELATOR":
+                        case "RELATORA":
+                            window.location.href = '/admissao';
+                            break;
+                            
+            case "MEMBRO":
+                window.location.href = '/votacao';
+            
+            default:
+                alert(`${usuario.funcao} não deveria logar utilizando token.`);
         }
       }catch(err) {
         alert(err || "Erro ao se comunicar com servidor.");

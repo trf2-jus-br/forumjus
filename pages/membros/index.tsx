@@ -36,13 +36,15 @@ function Membros(){
             const { data : comites } = await api.get<Comite[]>('/api/comite');
             setComites(comites)
 
-            if(usuario.permissoes.estatistica){
-                setFiltro(comites[0].committee_id);
-            }
-
             const { data : membros } = await api.get<Membro[]>('/api/membro');
             setMembros(membros)
 
+            // Teoricamente a tela, só é permitida a 'ASSESSORIA' e 'PROGRAMADOR', mas essa verificação garante que funcionará independente do usuário.
+            if(usuario.funcao === "ASSESSORIA" || usuario.funcao === "PROGRAMADOR"){
+                setFiltro(comites[0].committee_id);
+            }else{
+                setFiltro(membros[0].comite)
+            }            
         }catch(err){
             // Apenas notifica o usuário que ocorreu um erro.
             // A página será montada com as outras informações, mas certamente não será funcional.
