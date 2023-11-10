@@ -46,6 +46,7 @@ function Login(props){
                             
             case "MEMBRO":
                 window.location.href = '/votacao';
+                break;
             
             default:
                 alert(`${usuario.funcao} não deveria logar utilizando token.`);
