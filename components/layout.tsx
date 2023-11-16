@@ -7,7 +7,11 @@ import { useState } from 'react';
 
 export const siteTitle = 'Jornada';
 
-export default function Layout({ children, fluid }) {
+type Props = React.PropsWithChildren & {
+    fluid?: boolean; 
+}
+
+export default function Layout({ children, fluid } : Props) {
     const {usuario, forum} = usarContexto();
     const [exibirMenu, setExibirMenu] = useState(false);
     const {api} = usarContexto();
@@ -89,6 +93,7 @@ export default function Layout({ children, fluid }) {
                         {!Se("MEMBRO") && <Dropdown.Item href="/caderno">Cadernos</Dropdown.Item>}
                         {!Se("MEMBRO") && <Dropdown.Item href="/inscricoes">Inscrições</Dropdown.Item>}
                         {Se("ASSESSORIA", "PROGRAMADOR") && <Dropdown.Item href="/membros">Membros</Dropdown.Item>}
+                        {Se("ASSESSORIA", "PROGRAMADOR") && <Dropdown.Item href="/notificar-participacao">Notificar Participantes</Dropdown.Item>}
                         
                         {Se("PRESIDENTE", "PRESIDENTA", "RELATOR", "RELATORA") && <Dropdown.Item href="/telao">Telão</Dropdown.Item>}
                         {Se("PRESIDENTE", "PRESIDENTA", "RELATOR", "RELATORA") && <Dropdown.Item href="/controle-votacao">Telão - Controle</Dropdown.Item>}

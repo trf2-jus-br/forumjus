@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBan, faCheck, faExchange, faIcons, faInfo, faTable } from '@fortawesome/free-solid-svg-icons'
+import { faBan, faCheck, faExchange, faIcons, faInfo, faPrint, faTable } from '@fortawesome/free-solid-svg-icons'
 import { Breadcrumb, Button, CloseButton, Form, Modal, Nav, Table } from 'react-bootstrap';
 import { Formik } from 'formik';
 import Usuario from '../../components/register/usuario';
@@ -13,14 +13,8 @@ import { formatarCodigo } from '../admissao/enunciado';
 import Registro from '../../components/register/registro';
 import comPermissao from '../../utils/com-permissao';
 import comRestricao from '../../utils/com-restricao';
+import RelatorioQuantidadeEnunciados from '../relatorios/relatorio-quantidade-enunciados';
 
-
-
-enum Status {
-    ACEITO = "Aceito",
-    REJEITADO = "Rejeitado",
-    PENDENTE = "Pendente",
-}
 
 type Aba = "enunciado" | "autor" | "registro" ;
 
@@ -54,7 +48,12 @@ function Inscricoes (props){
             });
 
         api.get<DetalheComite[]>("/api/comite?detalhes=true")
-            .then(({data}) => setComites(data))
+            .then(({data}) => {
+                if(data.length === 1){
+                    setFiltro(data[0].committee_id);
+                }
+                setComites(data)
+            })
             .catch(err => {
                 // Apenas notifica o usuário que ocorreu um erro.
                 // A página será montada com as outras informações, mas certamente não será funcional.
@@ -76,18 +75,26 @@ function Inscricoes (props){
         setExibirModalDetalhes(false)
     }
 
+    async function quantidadeEnunciados(){
+        RelatorioQuantidadeEnunciados(comites);
+    }
 
     const inscricoes_filtradas = inscricoes?.filter(k => filtro === -1 || k.committee_id === filtro);
     return <Layout>
         <div className='d-flex align-items-start justify-content-between'>
-            <Breadcrumb>
+            <Breadcrumb className='w-100'>
                 <Breadcrumb.Item onClick={()=> setFiltro(null)}  active={filtro === null}>Inscrições</Breadcrumb.Item>
                 {filtro !== null && <Breadcrumb.Item active>Detalhes</Breadcrumb.Item>}
 
                 {filtro == null &&
-                    <Tooltip mensagem='Exibe a estatística em forma de tabela.'>
-                        <FontAwesomeIcon onClick={()=> setTabela(!tabela)} style={{marginLeft: 5, marginTop: 5, cursor: "pointer"}} icon={faExchange} />
-                    </Tooltip>
+                    <div className='d-flex justify-content-between' style={{flex: 1}}>
+                        <Tooltip mensagem='Exibe a estatística em forma de tabela.'>
+                            <FontAwesomeIcon onClick={()=> setTabela(!tabela)} style={{marginLeft: 5, marginTop: 5, cursor: "pointer"}} icon={faExchange} />
+                        </Tooltip>
+                        <Tooltip mensagem='Imprimir relatório'>
+                            <FontAwesomeIcon style={{cursor: "pointer"}} onClick={quantidadeEnunciados} icon={faPrint} />
+                        </Tooltip>
+                    </div>
                 }
             </Breadcrumb>
 

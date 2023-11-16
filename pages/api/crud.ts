@@ -31,9 +31,9 @@ async function editar({req, res, db, usuario}: API){
         db,
         tabela,
         nome_id,
-        linha[nome_id],
         coluna, 
-        valor, 
+        valor,
+        linha[nome_id],
         usuario
     );
 

@@ -1,5 +1,5 @@
-import MembroDAO from "../../db/membro";
-import { apiHandler } from "../../utils/apis";
+import MembroDAO from "../../../db/membro";
+import { apiHandler } from "../../../utils/apis";
 
 async function listar({res, db, usuario} : API){
     res.send(

@@ -74,6 +74,15 @@ function Enunciado({ enunciado, trocarComite, filtro} : Props){
     if(!filtrar(filtro, admitido))
         return null;
 
+
+    function confirmarTroca(){
+        if(!confirm("Esta ação não poderá ser desfeita, deseja continuar?")){
+            return;
+        }
+
+        trocarComite(enunciado)
+    }
+
     return (
         <div  className={`col-lg-6 col-12`}>
             <Card className={`mb-3 ${borda}`} style={{paddingBottom: 12, height: 'calc(100% - 24px)'}}>
@@ -87,7 +96,7 @@ function Enunciado({ enunciado, trocarComite, filtro} : Props){
                                     size="sm"
                                     className={`btn-warning m-1`} 
                                     style={{opacity: 1, marginLeft: 'auto'}} 
-                                    onClick={()=> trocarComite(enunciado)}
+                                    onClick={confirmarTroca}
                                 >
                                     <FontAwesomeIcon color='white' icon={faRepeat} />
                                 </Button>

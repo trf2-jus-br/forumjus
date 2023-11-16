@@ -110,7 +110,7 @@ function CRUD<R> (props : CRUD.Props<R>){
                     </tr>
                 </thead>
                 <tbody>
-                    {dados.map( (linha, indice_linha) => <tr className='align-middle' key={indice_linha}>
+                    {dados.map( (linha, indice_linha) => <tr className='align-middle' key={indice_linha + Math.random()}>
                             { colunas.filter((e, indice) => colunasVisiveis[indice]).map( coluna => <CampoEditavel key={`${coluna.nome}`} api={api} coluna={coluna} linha={linha} />) }
                             <td>
                                 <Button size='sm' variant="outline-danger"  onClick={() => excluir(linha)}>
@@ -129,7 +129,7 @@ function CRUD<R> (props : CRUD.Props<R>){
                             <Modal.Title>{nome}</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            {colunas.map( coluna => <Form.Group key={Math.random() + coluna.banco} controlId={coluna.banco}>
+                            {colunas.map( coluna => <Form.Group key={coluna.banco} controlId={coluna.banco}>
                                     <Form.Label>{coluna.nome}</Form.Label>
                                     <Form.Control className='text-center' size='sm' onChange={handleChange} />
                                 </Form.Group>

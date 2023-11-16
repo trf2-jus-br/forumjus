@@ -1,6 +1,9 @@
+import nodemailer from 'nodemailer'; 
+import fs from "fs/promises";
 
-const nodemailer = require('nodemailer')
 import EmailConfirmacaoCadastro from './template-email/confirmacao-cadastro'
+import EmailNotificarAdmissao from "./template-email/notificar-admissao";
+import EmailNotificarRejeicao from "./template-email/notificar-rejeicao";
 
 const options = {
     host: process.env.SMTP_HOST,
@@ -21,13 +24,18 @@ export default {
     from: process.env.SMTP_FROM,
 
     send(message) {
-        this.transporter.sendMail(message, (err, info) => {
-            if (err) {
-                console.log(err)
-            } else {
-                 // console.log(info);
-            }
-        })
+        return new Promise((resolve, reject)=>{
+            this.transporter.sendMail(message, (err, info) => {
+                console.log({err, info});
+    
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                } else {
+                    resolve(null);
+                }
+            })
+        });
     },
 
     footer(electionId) {
@@ -162,6 +170,28 @@ Enunciado ${i}
         })
     },
 
+
+    async notificarProponente(email: string, admitido: 0 | 1){
+        try{
+            const content = await fs.readFile("./utils/template-email/saia.png")
+
+            this.send({
+                from: this.from,
+                to: email.trim(),
+                cc: process.env.SMTP_BCC === 'false' ? undefined : 'forumdhf@trf2.jus.br',
+                subject: `I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região`,
+                html: admitido ? EmailNotificarAdmissao() : EmailNotificarRejeicao(),
+                attachments: [{
+                    filename: 'image.png',
+                    content: content.toString("base64"),
+                    cid: 'imagem',
+                    encoding: 'base64'
+                }]
+            });
+        }catch(err){
+            console.log(err);
+        }
+    },
 
     enviarConfirmacaoCadastros(email, data, forum: Forum, ocupacoes: Ocupacao[], comites: Comite[]) {
         this.send({

@@ -3,13 +3,14 @@ import Layout from "../../components/layout";
 import { usarContexto } from "../../contexto";
 import { Breadcrumb, Button, Form, InputGroup, Modal, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faKey } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faKey } from '@fortawesome/free-solid-svg-icons';
 import { faCopy } from '@fortawesome/free-regular-svg-icons';
 
 import Tooltip from "../../components/tooltip";
 import pdfMake from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { QRCodeSVG } from "qrcode.react";
+import QRCode from "qrcode";
 import comPermissao from "../../utils/com-permissao";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
@@ -68,8 +69,6 @@ function Membros(){
 
     const membros_comuns = membro_filtrado.filter(m => m.funcao === "MEMBRO");
 
-    console.log(filtro);
-    
     function gerarPdf(){
         const pdf = pdfMake.createPdf({
             pageMargins: [10+20, 30],
@@ -134,6 +133,11 @@ function Membros(){
         pdf.open();
     }
 
+    async function ziparCredenciais(){
+        window.open("/api/membro/credenciais")
+        //const {data} = await api.get("/api/membro/credenciais")
+    }
+
     async function copiar(txt){
         navigator.clipboard.writeText(txt);
     }
@@ -145,7 +149,11 @@ function Membros(){
     return <Layout>
         <div className='d-flex align-items-start justify-content-between'>
             <Breadcrumb>
-                <Breadcrumb.Item active>Membros</Breadcrumb.Item>
+                <Breadcrumb.Item active>Membros
+                    <Tooltip mensagem=".zip com todas as credenciais">
+                        <FontAwesomeIcon onClick={ziparCredenciais} style={{marginLeft: 15, cursor:"pointer"}} icon={faDownload} />
+                    </Tooltip>
+                </Breadcrumb.Item>
             </Breadcrumb>
 
 

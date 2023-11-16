@@ -1,4 +1,5 @@
 import createHttpError from "http-errors"
+import mailer from "../utils/mailer";
 
 const forumId = 1;
 
@@ -16,6 +17,14 @@ interface RequisicaoCadastro {
     attendeeDisability: string,
     attendeeAffiliation: string
  }
+
+ interface Proponente {
+    nome : string,
+    email : string,
+    admitido : 0 | 1,
+    committee_name : string
+    committee_id: number,
+}
 
 class ProponenteDAO{
     static async criar(db: PoolConnection, data: RequisicaoCadastro){
@@ -60,6 +69,34 @@ class ProponenteDAO{
     static async listarPorId(db: PoolConnection, id: number){
         const [proponentes] = await db.query('SELECT * FROM attendee where attendee_id = ?;', [id]);
         return proponentes[0] as Proponente;
+    }
+
+    static async listar(db: PoolConnection, usuario: Usuario){
+        if(usuario.funcao !== "ASSESSORIA" && usuario.funcao !== "PROGRAMADOR")
+            throw createHttpError.BadRequest(`${usuario.funcao} não tem permissão para acessar a listagem de proponentes.`);
+
+        const [resultado] = await db.query(
+            `SELECT 
+                attendee.attendee_id,
+                attendee_name as nome,
+                attendee_email as email,
+                admitido,
+                committee_name,
+                committee.committee_id
+            FROM attendee
+            LEFT JOIN statement ON statement.attendee_id = attendee.attendee_id
+            LEFT JOIN committee ON statement.committee_id = committee.committee_id;`)
+
+        return resultado as Proponente[];
+    }
+
+    static async notificar(db: PoolConnection, usuario: Usuario){
+        if(usuario.funcao !== "ASSESSORIA" && usuario.funcao !== "PROGRAMADOR")
+            throw createHttpError.BadRequest(`${usuario.funcao} não tem permissão para acessar a listagem de proponentes.`);
+
+        const proponentes = await ProponenteDAO.listar(db, usuario);
+
+        proponentes.forEach( e => mailer.notificarProponente(e.email, e.admitido));
     }
 }
 
