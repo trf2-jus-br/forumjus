@@ -29,10 +29,7 @@ function NotificarParticipacao(){
             }else{
                 grupos[p.committee_name].push(p);
             }
-
         });
-
-
 
         setProponentes(Object.values(grupos).sort((a, b) => a[0].committee_id - b[0].committee_id  ));
     }
@@ -46,8 +43,6 @@ function NotificarParticipacao(){
     useEffect(()=>{
         carregar();
     }, [])
-
-    console.log(proponentes)
 
     return <Layout>
         <Breadcrumb>
@@ -64,8 +59,8 @@ function NotificarParticipacao(){
                     </thead>
                     <tbody>
                         {grupo?.map(m => <tr key={m.email}>
-                            <td style={{color: m.admitido ?"#060" : "#c00", fontWeight: 500}}>{m.nome}</td>
-                            <td style={{color: m.admitido ?"#060" : "#c00", fontWeight: 500}} className='text-center'>{m.email}</td>
+                            <td className='col-8' style={{color: m.admitido ?"#060" : "#c00", fontWeight: 500}}>{m.nome}</td>
+                            <td style={{color: m.admitido ?"#060" : "#c00", fontWeight: 500}} className='text-center col-4 align-middle'>{m.email}</td>
                         </tr>)
                         }
                     </tbody>

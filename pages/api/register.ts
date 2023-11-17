@@ -31,7 +31,7 @@ interface RequisicaoCadastro {
     attendeeAffiliation: string
  }
 
-const handler = async function ({req, res, db} : API) {
+export const handler = async function ({req, res, db} : API) {
     // Validar o Captcha
     const response_key = req.body.recaptchaToken;
     const secret_key = process.env.RECAPTCHA_SECRET_KEY;
