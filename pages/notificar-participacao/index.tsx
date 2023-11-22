@@ -4,6 +4,7 @@ import Layout from "../../components/layout";
 import { usarContexto } from '../../contexto';
 import Tooltip from '../../components/tooltip';
 import comPermissao from '../../utils/com-permissao';
+import { retornoAPI } from '../../utils/api-retorno';
 
 interface Proponente {
     nome : string,
@@ -16,28 +17,51 @@ interface Proponente {
 function NotificarParticipacao(){
     const [proponentes, setProponentes] = useState<Proponente[][]>([]);
 
-    const {api} = usarContexto();
+    const {api, exibirNotificacao} = usarContexto();
     
     async function carregar(){
-        const {data} = await api.get<Proponente[]>("/api/proponente");
-        
-        const grupos : {[key: string] : Proponente[]} = {};
+        try{
+            const {data} = await api.get<Proponente[]>("/api/proponente");
+            
+            const grupos : {[key: string] : Proponente[]} = {};
 
-        data.forEach(p => {
-            if(!grupos[p.committee_name]){
-                grupos[p.committee_name] = [p]
-            }else{
-                grupos[p.committee_name].push(p);
-            }
-        });
+            data.forEach(p => {
+                if(!grupos[p.committee_name]){
+                    grupos[p.committee_name] = [p]
+                }else{
+                    grupos[p.committee_name].push(p);
+                }
+            });
 
-        setProponentes(Object.values(grupos).sort((a, b) => a[0].committee_id - b[0].committee_id  ));
+            setProponentes(Object.values(grupos).sort((a, b) => a[0].committee_id - b[0].committee_id  ));
+        }catch(err){
+            exibirNotificacao({
+                titulo: "Não foi possível carregar os proponentes.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            }) 
+
+            setTimeout(carregar, 1000)
+        }
     }
 
-    function notificar(e){
+    async function notificar(e){
         e.preventDefault();
 
-        api.post("/api/proponente/notificar")
+        try{
+            await api.post("/api/proponente/notificar")
+            
+            exibirNotificacao({
+                texto: "E-mails enviados com sucesso!"
+            })
+        }catch(err){
+            // Apenas avisa sobre o erro.
+            exibirNotificacao({
+                titulo: "Não foi possível processar seu pedido.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
+        }
     }
 
     useEffect(()=>{

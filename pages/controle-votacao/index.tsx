@@ -4,6 +4,7 @@ import Layout from "../../components/layout";
 import { usarContexto } from "../../contexto";
 import Enunciado from "./enunciado";
 import comPermissao from "../../utils/com-permissao";
+import { retornoAPI } from "../../utils/api-retorno";
 
 type EnunciadoVotacao = Enunciado & {
     votacao_inicio: string,
@@ -15,22 +16,51 @@ function ControleVotacao(){
     const [enunciados, setEnunciados] = useState<EnunciadoVotacao[]>([]);
     const [filtro, setFiltro] = useState<number>(null)
 
-    const { api } = usarContexto();
+    const { api, exibirNotificacao } = usarContexto();
+
+
+    async function carregarComissoes(){
+        try{
+            const { data : comites } = await api.get<Comite[]>('/api/comite');
+            setComites(comites)
+        }catch(err){
+            // Avise sobre o erro.
+            exibirNotificacao({
+                titulo: "Nãoo foi possível carregar as comissões.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
+
+            // tenta recarregar as comissões.
+            setTimeout(carregarComissoes, 1000);
+        }
+    }
 
     async function carregar(){
         try{
             const {data} = await api.get<EnunciadoVotacao[]>(`/api/enunciado/votacao`);
             setEnunciados(data);
-
-            const { data : comites } = await api.get<Comite[]>('/api/comite');
-            setComites(comites)
         }catch(err){
-            // Não faz nada.
+             // Avise sobre o erro.
+             const texto = retornoAPI(err);
+
+             exibirNotificacao({
+                titulo: "Nãoo foi possível carregar os enunciados.",
+                texto,
+                tipo: "ERRO"
+            })
+
+             if(texto !== "Aguarde até a data da votação."){
+                // tenta recarregar as comissões.
+                setTimeout(carregar, 1000);
+             }
+                
         }
     }
 
     useEffect(()=>{
         carregar();
+        carregarComissoes();
     }, [])
 
 

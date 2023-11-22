@@ -7,6 +7,7 @@ import { usarContexto } from '../../contexto';
 import Tooltip from '../../components/tooltip';
 import gerarCadernoPreliminar from './caderno-preliminar';
 import comRestricao from '../../utils/com-restricao';
+import { retornoAPI } from '../../utils/api-retorno';
 
 
 
@@ -16,24 +17,41 @@ function Caderno (props){
 
     const { api, exibirNotificacao } = usarContexto();
 
+    async function carregarComissoes(){
+        api.get<DetalheComite[]>("/api/comite?detalhes=true")
+            .then(({data}) => setComites(data))
+            .catch((err) => {
+                // Notifica o usuário que ocorreu um erro.
+                exibirNotificacao({
+                    titulo: "Não foi possível carregar as comissões.",
+                    texto: retornoAPI(err),
+                    tipo: "ERRO"
+                })
+
+                // Tenta recarregar as comissões.
+                setTimeout(carregarComissoes, 1000)
+            });
+    }
+
     async function carregarInscricoes(){
         api.get<Inscricao[]>("/api/inscricao")
             .then(({data}) => setInscricoes(data))
-            .catch(() => {
-                // Apenas notifica o usuário que ocorreu um erro.
-                // A página será montada com as outras informações, mas certamente não será funcional.
-              });
+            .catch((err) => {
+                // Notifica o usuário que ocorreu um erro.
+                exibirNotificacao({
+                    titulo: "Não foi possível carregar as inscrições.",
+                    texto: retornoAPI(err),
+                    tipo: "ERRO"
+                })
 
-        api.get<DetalheComite[]>("/api/comite?detalhes=true")
-            .then(({data}) => setComites(data))
-            .catch(() => {
-                // Apenas notifica o usuário que ocorreu um erro.
-                // A página será montada com as outras informações, mas certamente não será funcional.
+                // Tenta recarregar as inscrições.
+                setTimeout(carregarInscricoes, 1000)
             });
     }
 
     useEffect(()=>{
         carregarInscricoes();
+        carregarComissoes();
     }, [])
 
 

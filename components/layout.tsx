@@ -4,6 +4,7 @@ import { faBars, faBuildingColumns } from '@fortawesome/free-solid-svg-icons'
 import { usarContexto } from '../contexto';
 import { Dropdown } from 'react-bootstrap';
 import { useState } from 'react';
+import { retornoAPI } from '../utils/api-retorno';
 
 export const siteTitle = 'Jornada';
 
@@ -14,7 +15,7 @@ type Props = React.PropsWithChildren & {
 export default function Layout({ children, fluid } : Props) {
     const {usuario, forum} = usarContexto();
     const [exibirMenu, setExibirMenu] = useState(false);
-    const {api} = usarContexto();
+    const {api, exibirNotificacao} = usarContexto();
 
     function logout(){
         api.delete('/api/login')
@@ -22,6 +23,12 @@ export default function Layout({ children, fluid } : Props) {
             window.location.href = '/assessoria/login';
         }).catch(err => {
             // Não faz nada, só notifica o usuário.
+            // Efeito do Erro: O usuário permanecerá na tela em que está, sem deslogar.
+            exibirNotificacao({
+                titulo: 'Não foi possível deslogar.',
+                texto: retornoAPI(err),
+                tipo: 'ERRO'
+            })
         })
     }
 

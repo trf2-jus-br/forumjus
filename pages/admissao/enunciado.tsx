@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBan, faCheck, faRepeat, faRotateBack } from '@fortawesome/free-solid-svg-icons';
 import { usarContexto } from '../../contexto';
 import Tooltip from '../../components/tooltip';
+import { retornoAPI } from '../../utils/api-retorno';
 
 enum Filtro {
     TODOS,
@@ -44,27 +45,71 @@ function Enunciado({ enunciado, trocarComite, filtro} : Props){
         statement_text, statement_justification, statement_id, committee_id
     } = enunciado;
 
-    const {api} = usarContexto();
+    const {api, exibirNotificacao} = usarContexto();
+
+    async function recarregarCodigo(){
+        try{
+            const {data} = await api.get<Enunciado>(`/api/enunciado?id=${statement_id}`);
+            setCodigo(formatarCodigo(data));
+
+            exibirNotificacao({
+                texto: "Enunciado atualizado com sucesso!",
+            })
+        }catch(err){
+
+            // Notifica que o código não foi atualizado.
+            exibirNotificacao({
+                titulo: "Não foi possível atualizar o enunciado.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
+
+            // Tenta reobter o código.
+            setTimeout(recarregarCodigo, 1000);
+        }
+    }
 
     async function votar({admitido}){
         try{
             await api.post('/api/admissao', { admitido, statement_id, committee_id});
             setAdmitido(admitido ? 1 : 0);
 
-            const {data} = await api.get<Enunciado>(`/api/enunciado?id=${statement_id}`);
-            setCodigo(formatarCodigo(data));
+            // atualiza o código que foi atribuído ao enunciado.
+            if(admitido){
+                await recarregarCodigo();
+            }else{
+                exibirNotificacao({
+                    texto: "Enunciado atualizado com sucesso!",
+                })
+                setCodigo(null);
+            }
         }catch(err){
             // Apenas notifica o usuário que ocorreu um erro.
-            // A página será montada com as outras informações, mas certamente não será funcional.
+            // Resultado do erro: Nada irá mudar.
+            exibirNotificacao({
+                titulo: "Não foi possível processar seu pedido.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
         }
     }
 
     function refazerAnalise(){
         api.delete(`/api/admissao?statement_id=${statement_id}`)
-        .then(()=> setAdmitido(null))
+        .then(()=> {
+            setAdmitido(null);
+            exibirNotificacao({
+                texto: "Enunciado atualizado com sucesso!"
+            })
+        })
         .catch(err => {
             // Apenas notifica o usuário que ocorreu um erro.
-            // A página será montada com as outras informações, mas certamente não será funcional.
+            // Resultado do erro: Nada irá mudar.
+            exibirNotificacao({
+                titulo: "Não foi possível processar seu pedido.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
         });
     }
 

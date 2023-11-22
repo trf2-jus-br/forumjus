@@ -69,14 +69,15 @@ interface Forum {
 
 interface Mensagem {
     texto: string;
-    titulo: string;
+    titulo?: string;
+    tipo?: "SUCESSO" | "ERRO";
     acao?: ()=> void;
 }
 
 interface Contexto {
     forum: Forum,
     usuario: Usuario,
-    exibirNotificacao: (msg: Mensagem) => void;
+    exibirNotificacao: (msg: Mensagem, modal?: boolean) => void;
     api: AxiosInstance;
 }
 

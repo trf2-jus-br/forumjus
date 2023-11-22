@@ -14,6 +14,7 @@ import Registro from '../../components/register/registro';
 import comPermissao from '../../utils/com-permissao';
 import comRestricao from '../../utils/com-restricao';
 import RelatorioQuantidadeEnunciados from '../relatorios/relatorio-quantidade-enunciados';
+import { retornoAPI } from '../../utils/api-retorno';
 
 
 type Aba = "enunciado" | "autor" | "registro" ;
@@ -37,16 +38,10 @@ function Inscricoes (props){
     const [filtro, setFiltro] = useState<null | -1 | number>(null);
     const [tabela, setTabela] = useState(false);
 
-    const { api, usuario } = usarContexto();
+    const { api, usuario, exibirNotificacao } = usarContexto();
 
-    async function carregarInscricoes(){
-        api.get<Inscricao[]>("/api/inscricao")
-            .then(({data}) => setInscricoes(data))
-            .catch(err => {
-                // Apenas notifica o usuário que ocorreu um erro.
-                // A página será montada com as outras informações, mas certamente não será funcional.
-            });
 
+    async function carregarComissoes(){
         api.get<DetalheComite[]>("/api/comite?detalhes=true")
             .then(({data}) => {
                 if(data.length === 1){
@@ -55,13 +50,37 @@ function Inscricoes (props){
                 setComites(data)
             })
             .catch(err => {
-                // Apenas notifica o usuário que ocorreu um erro.
-                // A página será montada com as outras informações, mas certamente não será funcional.
+                // Notifica o usuário que ocorreu um erro.
+                exibirNotificacao({
+                    titulo: 'Não foi possível carregar as comissões.',
+                    texto: retornoAPI(err),
+                    tipo: 'ERRO'
+                })
+
+                // Tenta recarregar as comissões.
+                setTimeout(carregarComissoes, 1000);
+            });
+    }
+
+    async function carregarInscricoes(){
+        api.get<Inscricao[]>("/api/inscricao")
+            .then(({data}) => setInscricoes(data))
+            .catch(err => {
+                // Notifica o usuário que ocorreu um erro.
+                exibirNotificacao({
+                    titulo: "Não foi possível carregar as inscrições.",
+                    texto: retornoAPI(err),
+                    tipo: "ERRO"   
+                })
+
+                // Tenta recarregar as inscrições.
+                setTimeout(carregarInscricoes, 1000);
             });
     }
 
     useEffect(()=>{
         carregarInscricoes();
+        carregarComissoes();
     }, [])
 
     function mostrarDetalhes(i : Inscricao){

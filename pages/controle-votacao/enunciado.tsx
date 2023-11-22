@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBan, faCheck, faComments, faListCheck, faRepeat, faRotateBack, faStop } from '@fortawesome/free-solid-svg-icons';
 import { usarContexto } from '../../contexto';
 import Tooltip from '../../components/tooltip';
+import { retornoAPI } from '../../utils/api-retorno';
 
 type EnunciadoVotacao = Enunciado & {
     votacao_inicio: string,
@@ -33,7 +34,7 @@ function Enunciado({ enunciado, filtro, acao} : Props){
         statement_text, statement_justification, committee_id, statement_id,
     } = enunciado;
 
-    const { api } = usarContexto();
+    const { api, exibirNotificacao } = usarContexto();
 
     async function iniciarVotacao(){
         try{
@@ -41,8 +42,18 @@ function Enunciado({ enunciado, filtro, acao} : Props){
                 enunciado: statement_id
             })
             setAtivo(true);
+
+            exibirNotificacao({
+                texto: "Votação iniciada com sucesso!",
+            })
+
         }catch(err){
-            // Não faz nada.
+            // Notifica que ocorreu um erro.            
+            exibirNotificacao({
+                titulo: "Não foi possível processar seu pedido.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
         }
     }
 
@@ -52,8 +63,17 @@ function Enunciado({ enunciado, filtro, acao} : Props){
             setEstilo(e.oculto);
             setAtivo(false);
             setTimeout(()=> setEstilo(e =>({...e, display: 'none'})), 251)
+
+            exibirNotificacao({
+                texto: "Votação encerrada com sucesso!",
+            })
         }catch(err){
-            //Não faz nada.
+            // Notifica que ocorreu um erro.            
+            exibirNotificacao({
+                titulo: "Não foi possível processar seu pedido.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
         }
     }
 

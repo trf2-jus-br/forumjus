@@ -5,6 +5,7 @@ import { Breadcrumb, Card, Collapse, Form, Modal, Table } from 'react-bootstrap'
 import { usarContexto } from '../../contexto';
 import comPermissao from '../../utils/com-permissao';
 import comRestricao from '../../utils/com-restricao';
+import { retornoAPI } from '../../utils/api-retorno';
 
 enum Filtro {
     TODOS,
@@ -19,27 +20,44 @@ function Votacao(props){
     const [enunciado, trocarComite] = useState<Enunciado>(null)
     const [filtro, setFiltro] = useState<Filtro>(Filtro.TODOS);
 
-    const {api} = usarContexto();
+    const {api, exibirNotificacao} = usarContexto();
 
-    function carregar(){
+    function carregarEnunciados(){
         api.get<Enunciado[]>(`/api/admissao`)
             .then(({data}) => setEnunciados(data))
             .catch(err => {
-                // Apenas notifica o usuário que ocorreu um erro.
-                // A página será montada com as outras informações, mas certamente não será funcional.
-            });
+                // Notifica o usuário que ocorreu um erro.
+                exibirNotificacao({
+                    titulo: "Não foi possível carregar os enunciados.",
+                    texto: retornoAPI(err),
+                    tipo: 'ERRO'
+                })
 
+                // Tenta recarregar os enunciados.
+                setTimeout(carregarEnunciados, 1000);
+            });
+    }
+
+    function carregarComissoes(){
         api.get<Comite[]>(`/api/comite`)
             .then(({data}) => setComites(data))
             .catch(err => {
-                // Apenas notifica o usuário que ocorreu um erro.
-                // A página será montada com as outras informações, mas certamente não será funcional.
+                // Notifica o usuário que ocorreu um erro.
+                exibirNotificacao({
+                    titulo: "Não foi possível carregar as comissões.",
+                    texto: retornoAPI(err),
+                    tipo: "ERRO"
+                })
+
+                // Tenta recarregar as comissões.
+                setTimeout(carregarComissoes, 1000);
             });
     }
 
     useEffect(()=>{
-                    carregar();
-            }, []);
+        carregarEnunciados();
+        carregarComissoes();
+    }, []);
 
     function alterarComite(committee_id){
         api.put('/api/enunciado', {
@@ -47,12 +65,21 @@ function Votacao(props){
             statement_id: enunciado.statement_id
         })
         .then(()=> {
+            exibirNotificacao({
+                texto: "Enunciado atualizado com sucesso!"
+            })
+
             trocarComite(null)
-            carregar();
+            carregarEnunciados();
         })
         .catch(err => {
             // Apenas notifica o usuário que ocorreu um erro.
-            // A página será montada com as outras informações, mas certamente não será funcional.
+            // Resultado do error: Nada irá acontecer.
+            exibirNotificacao({
+                titulo: "Não foi possível processar seu pedido.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
         });
     }
 

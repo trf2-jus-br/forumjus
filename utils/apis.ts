@@ -48,6 +48,23 @@ export function apiHandler(handler: ApiMethodHandlers) {
         let usuario : Usuario = null; 
         
         try {
+            // abre uma conexão e inicia uma transação.
+            db = await pool.getConnection();
+            db.beginTransaction();
+
+            // Visando analisar a estabilidade do sistema, lanço exceções intencionamente.
+            if(process.env.HOMOLOGACAO === "true" && process.env.TEORIA_DO_CAOS === "true"){
+                const r = Math.random();                 
+                if(r > 0.8){
+                    switch(Math.floor(Math.random() * 4 )){
+                        case 0: throw new Error("Teoria do Caos - Error");
+                        case 1: throw "Teoria do Caos - String";
+                        case 2: throw createHttpError.BadRequest("Teoria do Caos - Bad Request");
+                        case 3: throw createHttpError.InternalServerError("Teoria do Caos - Internal Server Error");
+                    }
+                }
+            }
+
             // valida o JWT e carrega o usuário presente nele.
             usuario = await carregarUsuario(req);
 
@@ -61,10 +78,6 @@ export function apiHandler(handler: ApiMethodHandlers) {
                 );
             }
 
-            // abre uma conexão e inicia uma transação.
-            db = await pool.getConnection();
-            db.beginTransaction();
-
             // tenta executar a api
             await methodHandler({req, res, db, usuario});
 
@@ -76,7 +89,6 @@ export function apiHandler(handler: ApiMethodHandlers) {
 
             // tento registrar o problema ocorrido
             try{
-                console.log(err);
                 db.beginTransaction();
                 await LogDAO.registrar(db, usuario, "Erro", JSON.stringify({
                     message: err.message,
@@ -84,7 +96,7 @@ export function apiHandler(handler: ApiMethodHandlers) {
                 }));
                 db.commit();
             }catch(err){
-                console.log("Errrrr", err);
+                console.log("Não foi possível registrar o log.", err);
             }
 
             // formata a mensagem que será enviada pra página web.
@@ -97,31 +109,10 @@ export function apiHandler(handler: ApiMethodHandlers) {
 
 }
 
-// defino as rotas que dispensam autenticação.
-const rotas_publicas = [
-    "/api/login", 
-    "/api/register",
-    "/api/forum",
-    "/api/ocupacao",
-    "/api/comite",
-];
-
-
 async function carregarUsuario(req: NextApiRequest) : Promise<Usuario | null>{
-     // verifico se estou tentado acessar é uma das rotas publicas.
-    //const url = req.url.replace(/\?.*/, '');
-    //const rota_publica = rotas_publicas.some(r => r === url);
-
     try {
         return await jwt.parseJwt( req.cookies['forum_token'] ) as any;
     } catch(err) {
         return null;
-        /*
-        // no caso de rotas protegidas, verifico se o usuário está autenticado.
-        if(!rota_publica){
-            console.log(req.url, 'Rota privada!');
-             throw createHttpError.Forbidden(null)    
-        }
-        */
     }
 }

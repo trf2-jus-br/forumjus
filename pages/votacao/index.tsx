@@ -6,23 +6,23 @@ import { usarContexto } from "../../contexto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck, faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import comRestricao from '../../utils/com-restricao';
+import { retornoAPI } from '../../utils/api-retorno';
 
 interface Props {
     telao?: boolean
 }
 
 function Votacao({telao}: Props){
-    const { api, usuario } = usarContexto();
     const [votacao, setVotacao] = useState<Votacao>(null);
     const [votoUsuario, setVotoUsuario] = useState(null);
     const [processandoVoto, setProcessandoVoto] = useState(false);
     const [estilo, setEstilo] = useState({});
 
-
+    const { api, usuario, exibirNotificacao } = usarContexto();
+    
     async function carregar(){
         try{
             const {data} = await api.get<Votacao>('/api/votacao');
-
 
             setEstilo(!data ? e.ocultar: e.exibir)
 
@@ -34,7 +34,12 @@ function Votacao({telao}: Props){
                 setVotoUsuario(votoUsuario.voto);
             }
         }catch(err){
-
+            // avisa sobre o erro.
+            exibirNotificacao({
+                titulo: "Não foi possível carregar a votação.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
         }
     }
 
@@ -52,7 +57,11 @@ function Votacao({telao}: Props){
             })
             setVotoUsuario(favoravel ? 1 : 0);
         }catch(err){
-            alert("Coisa errada!");
+            exibirNotificacao({
+                titulo: "Não foi possível processar o seu pedido.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
         } finally {
             setProcessandoVoto(false);
         }

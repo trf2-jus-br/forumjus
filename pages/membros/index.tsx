@@ -12,6 +12,7 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { QRCodeSVG } from "qrcode.react";
 import QRCode from "qrcode";
 import comPermissao from "../../utils/com-permissao";
+import { retornoAPI } from "../../utils/api-retorno";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -30,7 +31,7 @@ function Membros(){
     const [filtro, setFiltro] = useState<number>();
     const [membroSelecionado, setMembroSelecionado] = useState<Membro>(null);
 
-    const { api, usuario } = usarContexto();
+    const { api, usuario, exibirNotificacao } = usarContexto();
 
     async function carregar(){
         try{
@@ -47,8 +48,15 @@ function Membros(){
                 setFiltro(membros[0].comite)
             }            
         }catch(err){
-            // Apenas notifica o usuário que ocorreu um erro.
-            // A página será montada com as outras informações, mas certamente não será funcional.
+            // Notifica o usuário que ocorreu um erro.
+            exibirNotificacao({
+                titulo: "Não foi possível carregar as comissões ou os membros.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
+            
+            // Tenta recarregar as listagens.
+            setTimeout(carregar, 1000)
         }
     }
 
@@ -135,7 +143,6 @@ function Membros(){
 
     async function ziparCredenciais(){
         window.open("/api/membro/credenciais")
-        //const {data} = await api.get("/api/membro/credenciais")
     }
 
     async function copiar(txt){

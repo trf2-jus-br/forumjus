@@ -1,12 +1,13 @@
 import React, { FormEvent, useEffect, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { usarContexto } from '../../contexto';
+import { retornoAPI } from '../../utils/api-retorno';
 
 function Login(props){
     const [senha, setSenha] = useState("");
     const [matricula, setMatricula] = useState("");
     
-    const { api } = usarContexto();
+    const { api, exibirNotificacao } = usarContexto();
 
     async function logar(event: FormEvent){
         event.preventDefault();
@@ -14,7 +15,7 @@ function Login(props){
         try{
             const auth = 'Basic ' + btoa(matricula.toUpperCase() + ':' + senha)
             
-            const {data: usuario} = await api.post<Usuario>(`/api/login`, null, {
+            await api.post<Usuario>(`/api/login`, null, {
                 headers: {
                     Authorization: auth
                 }
@@ -23,15 +24,28 @@ function Login(props){
             // Apenas a COSADM e a ASSESSORIA logam com as credenciais do SIGA.
             window.location.href = '/inscricoes'
         }catch(err) {
+            // gambiarra para ajustar a mensagem enviada pelo siga.
+            const msg = retornoAPI(err).replace('Erro no login: ', '').replace(' Tente novamente, ou clique <a href="/siga/public/app/usuario/senha/reset" class="alert-link">Esqueci minha senha</a>', '');
+
             // Apenas notifica o usuário que ocorreu um erro.
+            // Efeito do Erro: Usuário continua deslogado, na tela de login.
+            exibirNotificacao({
+                titulo: 'Não foi possível logar',
+                texto: msg, 
+                tipo: "ERRO"
+            });
         }
     }
 
     useEffect(()=>{
-        api.delete('/api/login')
-        .catch(err => {
+        api.delete('/api/login').catch(err => {
             // Apenas notifica o usuário que ocorreu um erro.
-            // A página será montada com as outras informações, mas certamente não será funcional.
+            // Efeito do Erro: Usuário continua logado, apesar de estar na tela de login.
+            exibirNotificacao({
+                titulo: `Não foi possível deslogar`, 
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
         });
     }, [])
 

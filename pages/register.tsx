@@ -9,6 +9,7 @@ import { Modal } from 'react-bootstrap';
 import PrivacyPolicy from '../components/modalPrivacyPolice';
 import Regimento from '../components/modalRegimento';
 import { usarContexto } from '../contexto';
+import { retornoAPI } from '../utils/api-retorno';
 
 const recaptchaRef = React.createRef();
 
@@ -26,11 +27,10 @@ export default function Create() {
   const privacyPolicyRef = useRef()
   const regimentoRef = useRef();
 
-  const {api} = usarContexto();
+  const {api, exibirNotificacao} = usarContexto();
 
 
-  
-  useEffect(()=>{
+  function carregarOcupacoes(){
     // carrrega as ocupações.
     api.get<Ocupacao[]>('/api/ocupacao').then(({data}) => {
       
@@ -42,13 +42,22 @@ export default function Create() {
 
       setOccupation(_ocupacoes);
     }).catch(err => {
-      // Apenas notifica o usuário que ocorreu um erro.
-      // A página será montada com as outras informações, mas certamente não será funcional.
-    });
+        // Notifica o usuário que ocorreu um erro.
+        exibirNotificacao({
+          titulo: "Não foi possível carregar as ocupações.",
+          texto: retornoAPI(err),
+          tipo: "ERRO"    
+        });
 
+        // Tenta recarregar as ocupações.
+        setTimeout(carregarOcupacoes, 4000);
+    });
+  }
+
+  function carregarComissoes(){
     // carrega os comites.
     api.get<Comite[]>('/api/comite').then(({data}) => {
-      
+          
       // converse a lista de ocupações em uma hashtable.
       const _comites = data.reduce((acc, curr) => {
         acc[curr.committee_id] = {
@@ -63,9 +72,21 @@ export default function Create() {
       setCommittee(_comites);
     }).catch(err => {
       // Apenas notifica o usuário que ocorreu um erro.
-      // A página será montada com as outras informações, mas certamente não será funcional.
-    });
+      exibirNotificacao({
+        titulo: 'Não foi possível carregar as comissões',
+        texto: retornoAPI(err),
+        tipo: "ERRO"
+      })
 
+      setTimeout(carregarComissoes, 4000);
+
+    });
+  }
+
+  
+  useEffect(()=>{
+    carregarOcupacoes();
+    carregarComissoes();
   }, []);
 
 
@@ -108,6 +129,11 @@ export default function Create() {
       setCreated(true)
     } catch (e) {
         //não executa nenhuma ação, apenas notifica o usuário do erro.
+        exibirNotificacao({
+          titulo: "Atenção",
+          texto: retornoAPI(e)
+        }, 
+        true)
     }
 
     try {
@@ -289,7 +315,7 @@ export default function Create() {
                           <div className="col col-12 col-lg-12">
                             <Form.Group className="mb-3" controlId={`statement[${i}].committeeId`}>
                               <Form.Label>Comissão</Form.Label>
-                              <div className="custom-select" onClick={()=> setEdittingCommittee(i)}>
+                              <div className="custom-select" onClick={()=> Object.keys(committee).length !== 0 && setEdittingCommittee(i)}>
                                 <div className={`form-control ${touched.statement && touched.statement[i] && errors.statement && errors.statement[i] && errors.statement[i].committeeId && 'border-danger'}`}>
                                   {renderCommittee(values.statement[i].committeeId)}
                                 </div>
