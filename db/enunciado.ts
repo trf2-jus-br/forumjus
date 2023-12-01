@@ -180,12 +180,6 @@ class EnunciadoDAO {
     }
 
     static async listarPorVotacao(db: PoolConnection, usuario: Usuario){
-        // Verifica a permissão do usuário.
-        const permissoes = await PermissaoDAO.carregar(db, usuario);
-        
-        if(permissoes.administrar_comissoes.length === 0)
-            throw createHttpError.BadRequest( "Usuário não tem permissão para gerenciar uma votação"); 
-
         // Busca no banco a data e hora das votações.
         const calendario = await CalendarioDAO.hoje(db);
                 
@@ -224,11 +218,11 @@ class EnunciadoDAO {
                     FROM votacao
                     LEFT JOIN voto on votacao.id = voto.votacao
                     GROUP BY votacao.enunciado
-                ) V on V.enunciado = statement_id
-                WHERE favor > contra`;
+                    HAVING favor > contra
+                ) V on V.enunciado = statement_id`;
 
         const SQL = por_comissao ? SQL_POR_COMISSAO : SQL_GERAL;
-        const params = por_comissao ? permissoes.administrar_comissoes : [];
+        const params = por_comissao ? usuario.permissoes.administrar_comissoes : [];
 
         const [enunciados] = await db.query( SQL, params);
 

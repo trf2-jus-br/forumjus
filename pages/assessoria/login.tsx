@@ -25,7 +25,10 @@ function Login(props){
             window.location.href = '/inscricoes'
         }catch(err) {
             // gambiarra para ajustar a mensagem enviada pelo siga.
-            const msg = retornoAPI(err).replace('Erro no login: ', '').replace(' Tente novamente, ou clique <a href="/siga/public/app/usuario/senha/reset" class="alert-link">Esqueci minha senha</a>', '');
+            const msg = retornoAPI(err)
+                .replace('Erro no login: ', '')
+                .replace('usuario', 'usuário')
+                .replace(' Tente novamente, ou clique <a href="/siga/public/app/usuario/senha/reset" class="alert-link">Esqueci minha senha</a>', '');
 
             // Apenas notifica o usuário que ocorreu um erro.
             // Efeito do Erro: Usuário continua deslogado, na tela de login.

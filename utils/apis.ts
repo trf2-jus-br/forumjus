@@ -109,6 +109,23 @@ export function apiHandler(handler: ApiMethodHandlers) {
 
 }
 
+export function apiPermitidaAo(usuario?: Usuario, ...funcoes_permitidas: FuncaoMembro[]){
+    if(!usuario)
+        throw createHttpError("Rota privada.");
+
+    if(funcoes_permitidas.indexOf(usuario.funcao) === -1){
+        throw createHttpError(`${usuario.funcao} não tem permissão para acessar a api.`);
+    }
+}
+
+export function apiNegadaAo(usuario?: Usuario, ...funcoes_permitidas: FuncaoMembro[]){
+    if(!usuario)
+        throw createHttpError("Rota privada.");
+
+    if(funcoes_permitidas.indexOf(usuario.funcao) !== -1){
+        throw createHttpError(`${usuario.funcao} não tem permissão para acessar a api.`);
+    }
+}
 async function carregarUsuario(req: NextApiRequest) : Promise<Usuario | null>{
     try {
         return await jwt.parseJwt( req.cookies['forum_token'] ) as any;

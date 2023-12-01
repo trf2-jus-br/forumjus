@@ -5,14 +5,12 @@ import CalendarioDAO from "./calendario";
 
 class VotacaoDAO {
     static async listar(db: PoolConnection, usuario: Usuario){
-        const permissoes = await PermissaoDAO.carregar(db, usuario);
+        const calendario = await CalendarioDAO.hoje(db);
+        const votacao_geral = calendario.find(c => c.evento === "VOTAÇÃO GERAL");
 
-        if(permissoes.votar_comissoes.length === 0)
-            throw createHttpError.Forbidden("Usuário sem Permissão.");
+        const comissao = usuario.permissoes.votar_comissoes[0];
 
-        const comissao = permissoes.votar_comissoes[0];
-
-        const SQL_ENUNCIADO = 
+        const SQL_ENUNCIADO_POR_COMISSAO = 
             `SELECT 
                 votacao.id as votacao,
                 statement_text as texto,
@@ -26,25 +24,35 @@ class VotacaoDAO {
                 inicio < now() AND
                 fim IS NULL;`
 
+        const SQL_ENUNCIADO_GERAL = 
+            `SELECT 
+                votacao.id as votacao,
+                statement_text as texto,
+                statement_justification as justificativa,
+                committee_name as comissao
+            FROM votacao
+                LEFT JOIN statement on statement_id = votacao.enunciado
+                LEFT JOIN committee on statement.committee_id = committee.committee_id
+            WHERE fim IS NULL`;
+        
+        const SQL_ENUNCIADO = votacao_geral ? SQL_ENUNCIADO_GERAL : SQL_ENUNCIADO_POR_COMISSAO;
+        const params_enunciados = votacao_geral ? [] : [comissao];
+
+        const [enunciados] = await db.query(SQL_ENUNCIADO, params_enunciados);
+
+        if(enunciados.length === 0)
+            return null;
+        
         const SQL_VOTO = 
             `SELECT 
                 membro.id,
                 membro.nome,
                 CAST(V.voto as SIGNED) voto
             FROM membro
-                LEFT JOIN (
-                    SELECT * FROM voto where votacao = ?
-                ) V on V.membro = membro.id
-            WHERE 
-                comite = ?
+            LEFT JOIN (
+                SELECT * FROM voto where votacao = ?
+            ) V on V.membro = membro.id
             ORDER BY V.data DESC;`
-
-
-        const [enunciados] = await db.query(SQL_ENUNCIADO, [comissao]);
-
-        if(enunciados.length === 0)
-            return null;
-        
 
         const [votos] = await db.query(SQL_VOTO, [
             enunciados[0].votacao,
@@ -73,12 +81,6 @@ class VotacaoDAO {
 
 
     static async iniciar(db: PoolConnection, usuario: Usuario, id_enunciado: number){
-        // Verifica a permissão do usuário.
-        const permissoes = await PermissaoDAO.carregar(db, usuario);
-
-        if(permissoes.administrar_comissoes.length === 0)
-            throw createHttpError.BadRequest("Usuário não tem permissão para iniciar votação.");
-
         // Busca no banco a data e hora das votações.
         const calendario = await CalendarioDAO.hoje(db);
         
@@ -93,25 +95,17 @@ class VotacaoDAO {
         if(!geral && !por_comissao)
             throw "Aguarde até a data da votação.";
 
-        const enunciado = await EnunciadoDAO.listarPorId(db, usuario, id_enunciado);
-        
-        // Na votação por comissão, verifica se o administrador pode iniciar o dado enunciado.
-        if(por_comissao && permissoes.administrar_comissoes.indexOf(enunciado.committee_id) === -1)
-            throw createHttpError.BadRequest("Usuário não tem permissão para iniciar votação");
-
         // Verifica os enunciados que já foram votados na etapa atual, seja 1º ou 2º dia.
         const [votacoes] = await db.query(
             `SELECT 
-                    enunciado, inicio, fim 
-                FROM votacao 
-                WHERE 
-                    ? < inicio;`, 
+                enunciado, inicio, fim 
+            FROM votacao 
+            WHERE 
+                ? > inicio;`, 
             [ 
                 (por_comissao || geral).inicio
             ]
         ) as any[]
-
-        console.log(votacoes);
 
         // Verifica se não há nenhuma votação em andamento.
         const votacao_andamento = votacoes.find(e => e.fim == null);
@@ -120,7 +114,11 @@ class VotacaoDAO {
             throw createHttpError.BadRequest("Já há uma votação em andamento.");
 
         // Verifica se o enunciado já foi votado.
-        if( votacoes.find(e => e.enunciado == id_enunciado) ){
+        // Na 1ª votação, o enunciado numa foi votado.
+        // Na 2ª votação, o enunciado possui um voto.
+        const num_votacoes = votacoes.filter(e => e.enunciado == id_enunciado).length;
+
+        if(por_comissao && num_votacoes > 0 || geral && votacao_andamento > 1 ){
             throw createHttpError.BadRequest("Enunciado já foi votado.");
         }
 

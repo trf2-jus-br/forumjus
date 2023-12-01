@@ -1,5 +1,3 @@
-import PermissaoDAO from "./permissao";
-
 type ComiteDetalhado = Comite & {
     enunciados: number;
 }
@@ -11,32 +9,17 @@ class ComiteDAO {
         return result as Comite[];
     }
 
-    static async detalharPorUsuario(db: PoolConnection, usuario: Usuario){
-        const { votar_comissoes } = await PermissaoDAO.carregar(db, usuario);
-
-        const SQL_GERAL = 
+    static async detalhar(db: PoolConnection){
+        const SQL = 
             `SELECT committee.*, count(statement_id) as enunciados
             FROM committee
             LEFT JOIN statement on committee.committee_id = statement.committee_id
             GROUP BY committee_id`;
 
-        const SQL_ESPECIFICO = 
-            `SELECT committee.*, count(statement_id) as enunciados
-                FROM committee
-                LEFT JOIN statement on committee.committee_id = statement.committee_id
-                WHERE committee.committee_id in (?)
-                GROUP BY committee_id`;
-
-        const GERAL = usuario.funcao === "ASSESSORIA" || usuario.funcao === "PROGRAMADOR";
-
-        const sql = GERAL ? SQL_GERAL : SQL_ESPECIFICO;
-        const params = GERAL ? [] : votar_comissoes;
-
-        const [result] = await db.query( sql, params);
-
+        
+        const [result] = await db.query( SQL);
         return result as ComiteDetalhado[];
     }
-
 }
 
 export default ComiteDAO;

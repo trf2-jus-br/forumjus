@@ -7,7 +7,9 @@ import ComiteDAO from "../../db/comite";
 async function listar({req, res, db, usuario}: API){
     const {detalhes} = req.query;
 
-    const comites = detalhes ? await ComiteDAO.detalharPorUsuario(db, usuario) : await ComiteDAO.listar(db);
+    const comites = detalhes ? 
+        await ComiteDAO.detalhar(db, usuario) : 
+        await ComiteDAO.listar(db);
     res.send(comites);
 }
 

@@ -1,7 +1,9 @@
-import VotacaoDAO from "../../db/votacao";
-import { apiHandler } from "../../utils/apis";
+import VotacaoDAO from "../../../db/votacao";
+import { apiHandler, apiNegadaAo, apiPermitidaAo } from "../../../utils/apis";
 
 async function listar({res, usuario, db}: API){
+    apiNegadaAo(usuario, "PROGRAMADOR", "ASSESSORIA");
+
     res.send(
         await VotacaoDAO.listar(db, usuario)
     )
@@ -15,6 +17,8 @@ async function votar({res, req, usuario, db}: API){
 }
 
 async function iniciarVotacao({res, req, usuario, db} : API){
+    apiPermitidaAo(usuario, "PRESIDENTE", "PRESIDENTA", "RELATOR", "RELATORA");
+
     const {enunciado} = req.body;
 
     await VotacaoDAO.iniciar(db, usuario, enunciado);

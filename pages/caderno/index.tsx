@@ -9,16 +9,19 @@ import gerarCadernoPreliminar from './caderno-preliminar';
 import comRestricao from '../../utils/com-restricao';
 import { retornoAPI } from '../../utils/api-retorno';
 
-
+enum CADERNO{
+    ADMITIDO = 0,
+    PRIMEIRA_VOTACAO = 1,
+    SEGUNDA_VOTACAO = 2,
+}
 
 function Caderno (props){
-    const [inscricoes, setInscricoes] = useState<Inscricao[]>()    
-    const [comites, setComites] = useState<DetalheComite[]>([]);
+    const [comites, setComites] = useState<Comite[]>([]);
 
     const { api, exibirNotificacao } = usarContexto();
 
     async function carregarComissoes(){
-        api.get<DetalheComite[]>("/api/comite?detalhes=true")
+        api.get<Comite[]>("/api/comite")
             .then(({data}) => setComites(data))
             .catch((err) => {
                 // Notifica o usuário que ocorreu um erro.
@@ -33,62 +36,68 @@ function Caderno (props){
             });
     }
 
-    async function carregarInscricoes(){
-        api.get<Inscricao[]>("/api/inscricao")
-            .then(({data}) => setInscricoes(data))
-            .catch((err) => {
-                // Notifica o usuário que ocorreu um erro.
-                exibirNotificacao({
-                    titulo: "Não foi possível carregar as inscrições.",
-                    texto: retornoAPI(err),
-                    tipo: "ERRO"
-                })
-
-                // Tenta recarregar as inscrições.
-                setTimeout(carregarInscricoes, 1000)
-            });
+    async function carregarInscricoes(nivel: CADERNO, comissao?: number){
+        try{
+            const {data} = await api.get<Inscricao[]>(`/api/caderno?nivel=${nivel}&comissao=${comissao}`)
+            return data;
+        }catch(err){
+            // Apenas notifica o usuário que ocorreu um erro.
+            // Consequência do erro: Nada acontece, usuário deve clicar novamente para tentar outra vez.
+            exibirNotificacao({
+                titulo: "Não foi possível carregar as inscrições.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
+        }
     }
 
     useEffect(()=>{
-        carregarInscricoes();
         carregarComissoes();
     }, [])
 
 
-    function abrirCadernoJornada(){
-        const filtro = inscricoes.filter(i => i.admitido && 
-            i.votos_afavor_1 > i.votos_contra_1.toString() 
-            && i.votos_afavor_2 > i.votos_contra_2
-        );
+    async function abrirAprovadosVotacaoGeral(comissao: number){
+        try{
+            const inscricoes = await carregarInscricoes(CADERNO.SEGUNDA_VOTACAO);
+           
+            console.log(
+                JSON.stringify(inscricoes, null, 3)
+            );
 
-        if(filtro.length === 0)
-            return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível'});
-        
-        gerarCadernoPreliminar(inscricoes, comites, 'Caderno da Jornada')
+            if(inscricoes.length === 0)
+                return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
+            
+            gerarCadernoPreliminar(inscricoes, comites, 'Caderno da Jornada')
+        }catch(err){
+            console.log(err);
+            // A função carregarInscricoes já notifica o usuário.
+        }
     }
 
-    function abrirCadernoPreliminar(comissao: number){
-        const filtro = inscricoes.filter(i => i.committee_id === comissao && i.admitido);
-
-        console.log(inscricoes, comissao);
-
-        if(filtro.length === 0)
-            return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível'});
-        
-        gerarCadernoPreliminar(filtro, comites, 'Caderno Preliminar')
+    async function abrirAdmitidos(comissao: number){
+        try{
+            const inscricoes = await carregarInscricoes(CADERNO.ADMITIDO, comissao);
+            
+            if(inscricoes.length === 0)
+                return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
+            
+            gerarCadernoPreliminar(inscricoes, comites, 'Caderno Preliminar')
+        }catch(err){
+            // A função carregarInscricoes já notifica o usuário.
+        }
     }
 
-    function abrirCaderno(comissao: number){
-        const filtro = inscricoes.filter(i => i.committee_id === comissao && 
-            i.admitido && 
-            i.votos_afavor_1 > i.votos_contra_1.toString() && 
-            i.votos_afavor_2 > i.votos_contra_2
-        );
+    async function abrirAprovadosComissao(comissao: number){
+        try{
+            const inscricoes = await carregarInscricoes(CADERNO.PRIMEIRA_VOTACAO, comissao);
+            
+            if(inscricoes.length === 0)
+                return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
 
-        if(filtro.length === 0)
-            return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível'});
-
-        gerarCadernoPreliminar(filtro, comites, 'Caderno da Jornada')
+            gerarCadernoPreliminar(inscricoes, comites, 'Caderno da Jornada')
+        }catch(err){
+            // A função carregarInscricoes já notifica o usuário.
+        }
     }
 
 
@@ -100,10 +109,12 @@ function Caderno (props){
         </div>
         
         <div className='d-flex justify-content-center' >
-            <Button onClick={abrirCadernoJornada}>
-                <FontAwesomeIcon icon={faFileCircleCheck} />
-                <span style={{marginLeft: 10}}>Caderno da Jornada</span>
-            </Button>
+            <Tooltip mensagem='aprovados na votação geral'>
+                <Button onClick={abrirAprovadosVotacaoGeral}>
+                    <FontAwesomeIcon icon={faFileCircleCheck} />
+                    <span style={{marginLeft: 10}}>Caderno da Jornada</span>
+                </Button>
+            </Tooltip>
         </div>
 
         <Table hover={true}>
@@ -117,21 +128,21 @@ function Caderno (props){
                 {comites?.map( c => <tr key={c.committee_id}>
                     <td>{c.committee_name}</td>
                     <td className='text-center' >
-                        <Tooltip mensagem='Caderno Preliminar' posicao='bottom'>
+                        <Tooltip mensagem='Admitidos' posicao='bottom'>
                             <FontAwesomeIcon 
-                                onClick={() => abrirCadernoPreliminar(c.committee_id)}
+                                onClick={() => abrirAdmitidos(c.committee_id)}
                                 color='#b55e5e' 
                                 style={{cursor: 'pointer', marginRight: 10}} 
                                 icon={faFile} 
                             />
                         </Tooltip>
 
-                        <Tooltip mensagem='Caderno Aprovado' posicao='bottom'>
+                        <Tooltip mensagem='Aprovados na comissão' posicao='bottom'>
                             <FontAwesomeIcon 
                                 style={{cursor: 'pointer'}} 
                                 color='#060' 
                                 icon={faFileCircleCheck} 
-                                onClick={() => abrirCaderno(c.committee_id)}
+                                onClick={() => abrirAprovadosComissao(c.committee_id)}
                             />
                         </Tooltip>
                     </td>

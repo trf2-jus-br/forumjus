@@ -131,7 +131,7 @@ function Votacao({telao}: Props){
                         
                     </div>
 
-                    <div className="d-flex">
+                    <div className="d-flex w-100">
                         {telao && <div className="col-2"></div>}
                         <div className={telao ? "col-8" : "col-12"}>
                             <div style={{...estilo, ...e.enunciado}}>{votacao.texto}</div>
@@ -147,7 +147,7 @@ function Votacao({telao}: Props){
                                 </h6>
                             </h5>
                             {
-                                votacao.votos.slice(0, 5).map(m => {
+                                votacao.votos.slice(0, 7).map(m => {
                                     const cor = m.voto === null ? "#999" : m.voto === 0 ? "#900" : "#070";
                                     const icone = m.voto === 0 ? faCircleXmark : faCircleCheck;
 

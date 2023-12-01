@@ -42,24 +42,28 @@ function Inscricoes (props){
 
 
     async function carregarComissoes(){
-        api.get<DetalheComite[]>("/api/comite?detalhes=true")
-            .then(({data}) => {
-                if(data.length === 1){
-                    setFiltro(data[0].committee_id);
-                }
-                setComites(data)
-            })
-            .catch(err => {
-                // Notifica o usuário que ocorreu um erro.
-                exibirNotificacao({
-                    titulo: 'Não foi possível carregar as comissões.',
-                    texto: retornoAPI(err),
-                    tipo: 'ERRO'
-                })
+        const exibirTodas = usuario.funcao === "PROGRAMADOR" || usuario.funcao === "ASSESSORIA";
 
-                // Tenta recarregar as comissões.
-                setTimeout(carregarComissoes, 1000);
-            });
+        try{
+            let {data} = await api.get<DetalheComite[]>("/api/comite?detalhes=true");
+
+            if(!exibirTodas){
+                setFiltro(usuario.permissoes.votar_comissoes[0]);
+                data = data.filter(d => d.committee_id === usuario.permissoes.votar_comissoes[0]);
+            }
+
+            setComites(data)
+        }catch(err){
+            // Notifica o usuário que ocorreu um erro.
+            exibirNotificacao({
+                titulo: 'Não foi possível carregar as comissões.',
+                texto: retornoAPI(err),
+                tipo: 'ERRO'
+            })
+
+            // Tenta recarregar as comissões.
+            setTimeout(carregarComissoes, 1000);
+        }
     }
 
     async function carregarInscricoes(){
@@ -97,7 +101,7 @@ function Inscricoes (props){
     async function quantidadeEnunciados(){
         RelatorioQuantidadeEnunciados(comites);
     }
-
+    
     const inscricoes_filtradas = inscricoes?.filter(k => filtro === -1 || k.committee_id === filtro);
     return <Layout>
         <div className='d-flex align-items-start justify-content-between'>
@@ -182,9 +186,13 @@ function Inscricoes (props){
                 <Nav.Item>
                     <Nav.Link eventKey="autor">Autor</Nav.Link>
                 </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link eventKey="registro">Registros</Nav.Link>
-                </Nav.Item>
+                {
+                    (usuario.funcao === "ASSESSORIA" || usuario.funcao === "PROGRAMADOR" || usuario.funcao === "PRESIDENTA" || 
+                    usuario.funcao === "PRESIDENTE" ||  usuario.funcao === "RELATOR" ||  usuario.funcao === "RELATORA") && 
+                    <Nav.Item>
+                        <Nav.Link eventKey="registro">Registros</Nav.Link>
+                    </Nav.Item>
+                }
                 <CloseButton style={{position: 'absolute', right: 10, top: 10}} onClick={ocultarDetalhes} />
             </Nav>
             <Modal.Body>

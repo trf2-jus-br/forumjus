@@ -25,13 +25,15 @@ function NotificarParticipacao(){
             
             const grupos : {[key: string] : Proponente[]} = {};
 
-            data.forEach(p => {
-                if(!grupos[p.committee_name]){
-                    grupos[p.committee_name] = [p]
-                }else{
-                    grupos[p.committee_name].push(p);
-                }
-            });
+            data
+                .sort( (a,b) => a.nome > b.nome ? 1 : -1)
+                .forEach(p => {
+                    if(!grupos[p.committee_name]){
+                        grupos[p.committee_name] = [p]
+                    }else{
+                        grupos[p.committee_name].push(p);
+                    }
+                });
 
             setProponentes(Object.values(grupos).sort((a, b) => a[0].committee_id - b[0].committee_id  ));
         }catch(err){

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Table } from "react-bootstrap";
 import { usarContexto } from "../../contexto";
 import moment from "moment";
@@ -20,8 +20,9 @@ function acao(log: Log){
 
 function Registro({id} : Props){
     const [logs, setLogs] = useState<Log[]>([]);
-
     const { api, exibirNotificacao } = usarContexto();
+
+    const interval = useRef(null);
 
     function carregarRegistros(){
         api.get<Log[]>(`/api/enunciado/log?id=${id}`)
@@ -35,12 +36,14 @@ function Registro({id} : Props){
                 })
 
                 // Tenta recarregar os registros.
-                setTimeout(carregarRegistros, 1000);
+                interval.current = setTimeout(carregarRegistros, 1000);
             });
     }
 
     useEffect(()=>{
         carregarRegistros();
+
+        return ()=> clearTimeout(interval.current)
     }, [])
 
     return <Table striped>

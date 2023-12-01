@@ -86,12 +86,12 @@ async function logarSiga(db: PoolConnection, auth: string) : Promise<Usuario>{
 
         // Ao logar pelo siga, o usuário terá a permissão 'estatística' e
         // caso seja da COSADM terá acesso a 'CRUD'
-        const COSADM = data.usuario.lotaTitularSigla === "COSADM";
+        const COSADM = data.usuario.lotaTitularSigla === "COSADM" && process.env.SIMULAR_ASSESSORIA !== "true";
         return {
             funcao: COSADM ? "PROGRAMADOR" : "ASSESSORIA",
             nome: data.usuario.titularNome,
             matricula: data.usuario.titularSigla,
-            lotacao: data.usuario.lotaTitularSigla,
+            lotacao: process.env.SIMULAR_ASSESSORIA === "true" ? "ASSESSORIA" : data.usuario.lotaTitularSigla,
             permissoes : {
                 administrar_comissoes: [],
                 votar_comissoes: [],
