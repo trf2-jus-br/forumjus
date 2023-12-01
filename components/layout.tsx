@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBars, faBuildingColumns } from '@fortawesome/free-solid-svg-icons'
+import { faBars, faBuildingColumns, faSkull } from '@fortawesome/free-solid-svg-icons'
 import { usarContexto } from '../contexto';
 import { Dropdown } from 'react-bootstrap';
 import { useState } from 'react';
@@ -86,6 +86,9 @@ export default function Layout({ children, fluid } : Props) {
                             <Dropdown.Header>
                                 <h6 style={{color: '#a00'}}>admin</h6>
                             
+                                <Dropdown.Item href="/admin/db" style={{color: '#a00'}}>
+                                    <FontAwesomeIcon style={{marginRight: 10}} icon={faSkull} />DB<FontAwesomeIcon style={{marginLeft: 10}} icon={faSkull} />
+                                </Dropdown.Item>
                                 <Dropdown.Item href="/admin/comite" style={{color: '#a00'}}>Comissões</Dropdown.Item>
                                 <Dropdown.Item href="/admin/enunciado"  style={{color: '#a00'}}>Enunciados</Dropdown.Item>
                                 <Dropdown.Item href="/admin/forum"  style={{color: '#a00'}}>Fóruns</Dropdown.Item>
