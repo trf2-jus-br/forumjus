@@ -17,6 +17,11 @@ function gerarCadernoPreliminar(inscricoes : Inscricao[], comites: Comite[], tit
             alignment: 'center' 
         }),
         content: [
+            {
+                image: `caderno_${inscricoes[0].committee_id}`,
+                width: 595,
+                margin: [-40,-41,-40,-40]
+            },
             {text: 'I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região', bold: true, fontSize: 14, alignment: 'center', marginBottom: 0},
             { text: titulo, bold: true, fontSize: 14, alignment: 'center', marginBottom: 35, marginTop: 50},
 
@@ -39,7 +44,16 @@ function gerarCadernoPreliminar(inscricoes : Inscricao[], comites: Comite[], tit
                     //pageBreak: 'after'
                 }
             ))
-        ]
+        ],
+        images: {
+            caderno_1 : { url: `${window.location.origin}/1.jpg`},
+            caderno_2 : { url: `${window.location.origin}/2.jpg`},
+            caderno_3 : { url: `${window.location.origin}/3.jpg`},
+            caderno_4 : { url: `${window.location.origin}/4.jpg`},
+            caderno_5 : { url: `${window.location.origin}/5.jpg`},
+            caderno_6 : { url: `${window.location.origin}/6.jpg`},
+            caderno_7 : { url: `${window.location.origin}/7.jpg`},
+        }
     })
 
     pdf.open();
