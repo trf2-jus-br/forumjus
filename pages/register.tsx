@@ -162,6 +162,12 @@ export default function Create() {
     </div>
   }
 
+  return <Layout>
+    <h1 className='mb-4'>Formulário de inscrição de proposta(s) de enunciado(s)</h1>
+    <p className='alert alert-warning'>As inscrições já foram encerradas!</p>
+  </Layout>
+
+
   return (
     <Layout>
       <h1 className='mb-4'>Formulário de inscrição de proposta(s) de enunciado(s)</h1>

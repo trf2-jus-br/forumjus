@@ -67,5 +67,5 @@ export const handler = async function ({req, res, db} : API) {
 }
 
 export default apiHandler({
-    'POST': handler
+    //'POST': handler
 });
