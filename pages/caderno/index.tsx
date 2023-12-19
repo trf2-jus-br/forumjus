@@ -10,6 +10,7 @@ import comRestricao from '../../utils/com-restricao';
 import { retornoAPI } from '../../utils/api-retorno';
 
 enum CADERNO{
+    TODOS = -1,
     ADMITIDO = 0,
     PRIMEIRA_VOTACAO = 1,
     SEGUNDA_VOTACAO = 2,
@@ -60,14 +61,25 @@ function Caderno (props){
         try{
             const inscricoes = await carregarInscricoes(CADERNO.SEGUNDA_VOTACAO);
            
-            console.log(
-                JSON.stringify(inscricoes, null, 3)
-            );
-
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
             gerarCadernoPreliminar(inscricoes, comites, 'Caderno da Jornada')
+        }catch(err){
+            console.log(err);
+            // A função carregarInscricoes já notifica o usuário.
+        }
+    }
+
+
+    async function abrirTodasInscricoesRecebidas(comissao: number){
+        try{
+            const inscricoes = await carregarInscricoes(CADERNO.TODOS, comissao);
+           
+            if(inscricoes.length === 0)
+                return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
+            
+            gerarCadernoPreliminar(inscricoes, comites, 'Caderno de Propostas da Jornada')
         }catch(err){
             console.log(err);
             // A função carregarInscricoes já notifica o usuário.
@@ -128,6 +140,15 @@ function Caderno (props){
                 {comites?.map( c => <tr key={c.committee_id}>
                     <td>{c.committee_name}</td>
                     <td className='text-center' >
+                        <Tooltip mensagem='Todas Inscrições' posicao='bottom'>
+                            <FontAwesomeIcon 
+                                onClick={() => abrirTodasInscricoesRecebidas(c.committee_id)}
+                                color='#009' 
+                                style={{cursor: 'pointer', marginRight: 10}} 
+                                icon={faFile} 
+                            />
+                        </Tooltip>
+
                         <Tooltip mensagem='Admitidos' posicao='bottom'>
                             <FontAwesomeIcon 
                                 onClick={() => abrirAdmitidos(c.committee_id)}

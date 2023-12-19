@@ -1,14 +1,46 @@
 import createHttpError from "http-errors";
 
 class CadernoDAO {
+    static async cadernoTodasInscricoes(db: PoolConnection, usuario: Usuario, comissao : number){
+        if(usuario.funcao === "MEMBRO")
+            throw createHttpError.BadRequest(`${usuario.funcao} não tem permissão para acessar os cadernos.`)
+
+        //-1, 0, 1, 2: Todos, Premilinar, 1ª votação, 2ª votação
+        const SQL = 
+            `SELECT 
+                statement.*,
+                attendee.attendee_name,
+                attendee.attendee_chosen_name,
+                attendee.attendee_timestamp,
+                attendee.attendee_affiliation,
+                occupation_name
+            FROM statement
+            INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
+            INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
+            WHERE committee_id = ?
+            ORDER BY statement.statement_id ASC;`
+
+        const [resultado] = await db.query(SQL, [comissao]);
+
+        return resultado as Enunciado[];        
+    }
+    
     static async cadernoPrelinar(db: PoolConnection, usuario: Usuario, comissao : number){
         if(usuario.funcao === "MEMBRO")
             throw createHttpError.BadRequest(`${usuario.funcao} não tem permissão para acessar os cadernos.`)
 
         //0, 1, 2: Premilinar, 1ª votação, 2ª votação
         const SQL = 
-            `SELECT statement.* 
+            `SELECT 
+                statement.*,
+                attendee.attendee_name,
+                attendee.attendee_chosen_name,
+                attendee.attendee_timestamp,
+                attendee.attendee_affiliation,
+                occupation_name
             FROM statement
+            INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
+            INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
             WHERE committee_id = ? AND admitido = 1
             ORDER BY codigo ASC;`
 
@@ -25,8 +57,14 @@ class CadernoDAO {
         const SQL_GERAL = 
             `SELECT 
                 statement.*,
-                attendee.*
+                attendee.attendee_name,
+                attendee.attendee_chosen_name,
+                attendee.attendee_timestamp,
+                attendee.attendee_affiliation,
+                occupation_name
             FROM statement
+            INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
+            INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
             INNER JOIN (
                 SELECT 
                     votacao.id, 
@@ -39,8 +77,6 @@ class CadernoDAO {
                 HAVING favor > contra        
             ) as resultado_votacao 
                 ON statement_id = resultado_votacao.enunciado
-            INNER JOIN attendee 
-                ON attendee.attendee_id = statement.attendee_id
             INNER JOIN committee 
                 ON committee.committee_id = statement.committee_id
             GROUP BY statement_id
@@ -48,8 +84,16 @@ class CadernoDAO {
             ORDER BY codigo asc;`
 
         const SQL_ESPECIFICO = 
-            `SELECT statement.* 
+            `SELECT
+                statement.*,
+                attendee.attendee_name,
+                attendee.attendee_chosen_name,
+                attendee.attendee_timestamp,
+                attendee.attendee_affiliation,
+                occupation_name
             FROM statement
+            INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
+            INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
             INNER JOIN (
                 SELECT 
                     votacao.id, 

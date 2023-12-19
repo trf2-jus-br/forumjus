@@ -1,6 +1,7 @@
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { formatarCodigo } from "../admissao/enunciado";
+import moment from "moment";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -20,39 +21,79 @@ function gerarCadernoPreliminar(inscricoes : Inscricao[], comites: Comite[], tit
             {
                 image: `caderno_${inscricoes[0].committee_id}`,
                 width: 595,
-                margin: [-40,-41,-40,-40]
+                margin: [-40,-40,-40,-40]
             },
             {text: 'I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região', bold: true, fontSize: 14, alignment: 'center', marginBottom: 0},
             { text: titulo, bold: true, fontSize: 14, alignment: 'center', marginBottom: 35, marginTop: 50},
 
             //@ts-ignore
-            ...inscricoes.map((e, i) => (
-                {   
+            ...inscricoes.map((e, i) => {
+                let body = [
+                [ {
+                    text: `${formatarCodigo({committee_id: e.committee_id, codigo: i + 1})}  ${comite(e.committee_id)}`, 
+                    alignment: "center", 
+                    fillColor: '#eeeeee',
+                    border: [true, true, true, true]
+                    } ],
+                    [  {
+                    text: "Enunciado", 
+                    fontSize: 11,
+                    marginTop: 10, 
+                    preserveLeadingSpaces: true, 
+                    lineHeight: 1.25,
+                } ],
+                [  {
+                    text: e.statement_text, 
+                    marginLeft: 20,
+                    preserveLeadingSpaces: true, 
+                    alignment: "justify", 
+                    lineHeight: 1.25,
+                    bold: true
+                } ],
+                [  {
+                    text: "Justificativa",
+                    fontSize: 11,
+                    marginTop: 10, 
+                    preserveLeadingSpaces: true, 
+                    lineHeight: 1.25,
+                } ],
+                [ {text: e.statement_justification, marginLeft: 20, marginBottom: 10, preserveLeadingSpaces: true, alignment: "justify", lineHeight: 1.25} ],
+                [ { text: e.attendee_name, alignment: "right", bold:true, marginTop: 1}  ],                
+            ]
+
+            if(e.occupation_name !== "Outros")
+                body.push([ { text: e.occupation_name, alignment: "right", marginTop: 1}  ],)
+
+            if(e.attendee_affiliation?.trim()?.length)
+                body.push([ { text: e.attendee_affiliation, alignment: "right", marginTop: 1}  ]);
+
+            body.push([ { text: `${moment(e.attendee_timestamp).format("DD/MM/YYYY")}`, alignment: "right", marginTop: 1, fontSize:10} ])
+
+
+
+            return {   
                     unbreakable: true,
                     marginTop: 15,
                     table: {
                         unbreakable: true,
                         widths:["*"],
-                        body: [
-                            [ {text: `${formatarCodigo(e)}  ${comite(e.committee_id)}`, alignment: "center", fillColor: '#eeeeee' } ],
-                            [  {text: e.statement_text, marginTop: 10, preserveLeadingSpaces: true, alignment: "justify", lineHeight: 1.25} ],
-                            [ {text: e.statement_justification, marginTop: 10, marginBottom: 10, preserveLeadingSpaces: true, alignment: "justify", lineHeight: 1.25} ],
-                            [ { text: e.attendee_name, alignment: "right", bold:true, marginTop: 1}  ],
-                        ],
+                        body,
                     },
-                    layout: 'noBorders',
+                    layout: {
+                        defaultBorder: false,
+                    }
                     //pageBreak: 'after'
                 }
-            ))
+            })
         ],
         images: {
-            caderno_1 : { url: `${window.location.origin}/1.jpg`},
-            caderno_2 : { url: `${window.location.origin}/2.jpg`},
-            caderno_3 : { url: `${window.location.origin}/3.jpg`},
-            caderno_4 : { url: `${window.location.origin}/4.jpg`},
-            caderno_5 : { url: `${window.location.origin}/5.jpg`},
-            caderno_6 : { url: `${window.location.origin}/6.jpg`},
-            caderno_7 : { url: `${window.location.origin}/7.jpg`},
+            caderno_1 : { url: `${window.location.origin}/1.png`},
+            caderno_2 : { url: `${window.location.origin}/2.png`},
+            caderno_3 : { url: `${window.location.origin}/3.png`},
+            caderno_4 : { url: `${window.location.origin}/4.png`},
+            caderno_5 : { url: `${window.location.origin}/5.png`},
+            caderno_6 : { url: `${window.location.origin}/6.png`},
+            caderno_7 : { url: `${window.location.origin}/7.png`},
         }
     })
 
