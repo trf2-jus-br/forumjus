@@ -18,13 +18,13 @@ async function manipulacao_perigosa_do_banco({req, res, db, usuario} : API){
             break;
 
         case "iniciarVotacaoPorComissao":
-            await db.query("UPDATE calendario SET inicio = now(), fim = date_add(now(), interval 1 day) WHERE evento = 'VOTAÇÃO POR COMISSÃO';");
-            await db.query("UPDATE calendario SET fim = now() WHERE evento = 'VOTAÇÃO GERAL';");
+            await db.query("UPDATE calendario SET inicio = date_add(utc_timestamp(), interval -3 hour), fim = date_add(now(), interval 1 month) WHERE evento = 'VOTAÇÃO POR COMISSÃO';");
+            await db.query("UPDATE calendario SET fim = date_add(utc_timestamp(), interval -3 hour) WHERE evento = 'VOTAÇÃO GERAL';");
             break;
 
         case "iniciarVotacaoGeral":
-            await db.query("UPDATE calendario SET inicio = now(), fim = date_add(now(), interval 1 day) WHERE evento = 'VOTAÇÃO GERAL';");
-            await db.query("UPDATE calendario SET fim = now() WHERE evento = 'VOTAÇÃO POR COMISSÃO';");
+            await db.query("UPDATE calendario SET inicio = date_add(utc_timestamp(), interval -3 hour), fim = date_add(now(), interval 1 month) WHERE evento = 'VOTAÇÃO GERAL';");
+            await db.query("UPDATE calendario SET fim = date_add(utc_timestamp(), interval -3 hour) WHERE evento = 'VOTAÇÃO POR COMISSÃO';");
             break;
 
         default:

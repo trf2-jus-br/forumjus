@@ -194,6 +194,8 @@ class EnunciadoDAO {
         if(!geral && !por_comissao)
             throw "Aguarde até a data da votação.";
 
+        console.log(geral, por_comissao)
+
         // Lista todos os enunciados que foram admitidos em dada comissão;
         const SQL_POR_COMISSAO = 
             `SELECT 
@@ -207,19 +209,31 @@ class EnunciadoDAO {
 
         // Seleciona todos os enunciados que foram aprovados ( mais votos positivos do que negativos)
         const SQL_GERAL =
-            `SELECT statement.*
-                FROM 
-                    statement
-                INNER JOIN (    
-                    SELECT 
-                        votacao.enunciado,
-                        sum(IF(voto.voto = 1, 1, 0)) as favor,
-                        sum(IF(voto.voto = 1, 0, 1)) as contra
-                    FROM votacao
-                    LEFT JOIN voto on votacao.id = voto.votacao
-                    GROUP BY votacao.enunciado
-                    HAVING favor > contra
-                ) V on V.enunciado = statement_id`;
+            `SELECT 
+                statement.*,
+                (select votacao.inicio from votacao where votacao.enunciado = statement.statement_id LIMIT 1 OFFSET 1) as votacao_inicio,
+                (select votacao.fim from votacao where votacao.enunciado = statement.statement_id LIMIT 1 OFFSET 1)  as votacao_fim
+            FROM 
+                statement
+            INNER JOIN (
+                SELECT 
+                    enunciado, 
+                    COUNT(*) numero_votacao 
+                FROM votacao 
+                WHERE fim IS NOT NULL
+                GROUP BY enunciado 
+                HAVING numero_votacao = 1
+            ) N on N.enunciado = statement_id 
+            INNER JOIN (    
+                SELECT 
+                    votacao.enunciado,
+                    sum(IF(voto.voto = 1, 1, 0)) as favor,
+                    sum(IF(voto.voto = 0, 1, 0)) as contra
+                FROM votacao
+                LEFT JOIN voto on votacao.id = voto.votacao
+                GROUP BY votacao.enunciado
+                HAVING favor > contra
+            ) V on V.enunciado = statement_id;`;
 
         const SQL = por_comissao ? SQL_POR_COMISSAO : SQL_GERAL;
         const params = por_comissao ? usuario.permissoes.administrar_comissoes : [];

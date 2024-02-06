@@ -5,7 +5,7 @@ import { faFile, faFileCircleCheck } from '@fortawesome/free-solid-svg-icons'
 import { Breadcrumb, Button, Table } from 'react-bootstrap';
 import { usarContexto } from '../../contexto';
 import Tooltip from '../../components/tooltip';
-import gerarCadernoPreliminar from './caderno-preliminar';
+import gerarCaderno from './caderno-preliminar';
 import comRestricao from '../../utils/com-restricao';
 import { retornoAPI } from '../../utils/api-retorno';
 
@@ -64,7 +64,7 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
-            gerarCadernoPreliminar(inscricoes, comites, 'Caderno da Jornada')
+            gerarCaderno(inscricoes, comites, 'Caderno da Jornada', false)
         }catch(err){
             console.log(err);
             // A função carregarInscricoes já notifica o usuário.
@@ -79,7 +79,7 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
-            gerarCadernoPreliminar(inscricoes, comites, 'Caderno de Propostas da Jornada')
+            gerarCaderno(inscricoes, comites, 'Caderno de Propostas da Jornada', true)
         }catch(err){
             console.log(err);
             // A função carregarInscricoes já notifica o usuário.
@@ -93,7 +93,7 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
-            gerarCadernoPreliminar(inscricoes, comites, 'Caderno Preliminar')
+            gerarCaderno(inscricoes, comites, 'Caderno Preliminar', true)
         }catch(err){
             // A função carregarInscricoes já notifica o usuário.
         }
@@ -106,7 +106,7 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
 
-            gerarCadernoPreliminar(inscricoes, comites, 'Caderno da Jornada')
+            gerarCaderno(inscricoes, comites, 'Caderno da Jornada', true)
         }catch(err){
             // A função carregarInscricoes já notifica o usuário.
         }

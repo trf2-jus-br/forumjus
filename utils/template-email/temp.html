@@ -1,21 +1,20 @@
-const EmailNotificarAdmissao = () => `
 <html>
     <head>
         <title>I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região</title>
     </head>
     <body>
         <div style="max-width:601px; margin: 0 auto">
-            ${process.env.HOMOLOGACAO === "true" ? '<h3 style="color: red; text-align: center;">E-mail de homologação de funcionalidades.<br/>Sem valor real para Jornada.</h3>' : '' }
-            <img width="100%" src="cid:imagem" />
+            <h3 style="color: red; text-align: center;">E-mail de homologação de funcionalidades.<br/>Sem valor real para Jornada.</h3>
+            <img width="100%" height="200px" src="cid:imagem" />
 
             <p>Prezado(a),</p>
                 
             <p style="text-indent: 30px;">Bem-vindo(a) ao evento <span style="font-weight: bold;">I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da Segunda Região</span>.</p>
             <p style="text-indent: 30px;">Informamos que sua proposta de enunciado, abaixo transcrita, foi admitida. Deste modo, sua inscrição foi efetivada junto à Comissão Temática <span style="font-weight: bold;">Direito digital, acesso à informação e proteção de dados</span>.</p>
 
-            <p style="padding: 10px 0px; text-align: justify; font-style: italic;">
-                ´A comercialização de dispositivos neurotecnológicos infanto-juvenis e o uso de técnicas de imagem cerebral em crianças e adolescentes para fins diversos da pesquisa científica e dos tratamentos médicos são incompatíveis com o texto constitucional vigente.\`
-            </p>
+            <blockquote style="text-align: justify;">
+                A comercialização de dispositivos neurotecnológicos infanto-juvenis e o uso de técnicas de imagem cerebral em crianças e adolescentes para fins diversos da pesquisa científica e dos tratamentos médicos são incompatíveis com o texto constitucional vigente.
+            </blockquote>
 
             <p style="text-indent: 30px;">Estamos muito felizes em contar com sua participação nesta I Jornada, que certamente produzirá excelentes frutos, tendo em vista os relevantes temas a serem debatidos por profissionais qualificados.</p>
             <p style="text-indent: 30px;">O evento acontecerá no auditório do Tribunal Regional da 2ª Região, localizado à Rua Acre, 80, 3º andar, Centro, Rio de Janeiro.</p>
@@ -94,6 +93,3 @@ const EmailNotificarAdmissao = () => `
         </div>
     </body>
 </html>
-`;
-
-export default EmailNotificarAdmissao;

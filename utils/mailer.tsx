@@ -171,7 +171,22 @@ Enunciado ${i}
 
     async notificarProponente(email: string, admitido: 0 | 1){
         try{
-            const content = await fs.readFile("./utils/template-email/saia.png")
+            const bufferSaia = await fs.readFile("./utils/template-email/saia.png")
+            const bufferRegulamento = await fs.readFile("./utils/template-email/TRF2PTP202300348C.pdf")
+
+            let anexos = [{
+                filename: 'image.png',
+                content: bufferSaia.toString("base64"),
+                cid: 'imagem',
+                encoding: 'base64'
+            }];
+
+            if(admitido){
+                anexos.push({
+                    filename: 'TRF2PTP202300348C.pdf',
+                    content: bufferRegulamento
+                });
+            }
 
             this.send({
                 from: this.from,
@@ -179,12 +194,7 @@ Enunciado ${i}
                 cc: process.env.SMTP_BCC === 'false' ? undefined : 'forumdhf@trf2.jus.br',
                 subject: `I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região`,
                 html: admitido ? EmailNotificarAdmissao() : EmailNotificarRejeicao(),
-                attachments: [{
-                    filename: 'image.png',
-                    content: content.toString("base64"),
-                    cid: 'imagem',
-                    encoding: 'base64'
-                }]
+                attachments: anexos
             });
         }catch(err){
             console.log(err);

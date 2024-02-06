@@ -1,6 +1,5 @@
 import createHttpError from "http-errors";
 import PermissaoDAO from "./permissao";
-import EnunciadoDAO from "./enunciado";
 import CalendarioDAO from "./calendario";
 
 class VotacaoDAO {
@@ -15,7 +14,8 @@ class VotacaoDAO {
                 votacao.id as votacao,
                 statement_text as texto,
                 statement_justification as justificativa,
-                committee_name as comissao
+                committee_name as comissao,
+                timestampdiff(second, votacao.inicio, now()) as inicio_defesa
             FROM votacao
                 LEFT JOIN statement on statement_id = votacao.enunciado
                 LEFT JOIN committee on statement.committee_id = committee.committee_id
@@ -30,6 +30,7 @@ class VotacaoDAO {
                 statement_text as texto,
                 statement_justification as justificativa,
                 committee_name as comissao
+                timestampdiff(second, votacao.inicio, now()) as inicio_defesa
             FROM votacao
                 LEFT JOIN statement on statement_id = votacao.enunciado
                 LEFT JOIN committee on statement.committee_id = committee.committee_id
@@ -64,6 +65,7 @@ class VotacaoDAO {
             texto: enunciados[0].texto,
             justificativa: enunciados[0].justificativa,
             comissao: enunciados[0].comissao,
+            inicio_defesa: enunciados[0].inicio_defesa,
             votos : votos
         }
     }
@@ -95,32 +97,31 @@ class VotacaoDAO {
         if(!geral && !por_comissao)
             throw "Aguarde até a data da votação.";
 
-        // Verifica os enunciados que já foram votados na etapa atual, seja 1º ou 2º dia.
-        const [votacoes] = await db.query(
-            `SELECT 
-                enunciado, inicio, fim 
+        // Antes de iniciar um enunciado, verifica se há algum outro em votação.
+        const SQL_VOTACAO_ANDAMENTO_POR_COMISSAO = `
+            SELECT 
+                votacao.*,
+                statement.committee_id
             FROM votacao 
+            INNER JOIN statement ON statement_id = enunciado
             WHERE 
-                ? > inicio;`, 
-            [ 
-                (por_comissao || geral).inicio
-            ]
-        ) as any[]
+                committee_id = (
+                    SELECT committee_id FROM statement WHERE statement_id = ?
+                ) AND 
+                fim IS NULL;`
 
-        // Verifica se não há nenhuma votação em andamento.
-        const votacao_andamento = votacoes.find(e => e.fim == null);
+        const SQL_VOTACAO_ANDAMENTO_GERAL = 'SELECT * FROM votacao WHERE fim IS NULL;'
+         
 
-        if(votacao_andamento)
+        const SQL_VOTACAO_ANDAMENTO = por_comissao ? SQL_VOTACAO_ANDAMENTO_POR_COMISSAO : SQL_VOTACAO_ANDAMENTO_GERAL;
+        const params = por_comissao ? [id_enunciado] : []
+
+        const [votacao_andamento] = await db.query(SQL_VOTACAO_ANDAMENTO, params) as any[]
+
+        // Notifica o usuário caso haja outra votação em andamento.
+        if(votacao_andamento.length !== 0)
             throw createHttpError.BadRequest("Já há uma votação em andamento.");
 
-        // Verifica se o enunciado já foi votado.
-        // Na 1ª votação, o enunciado numa foi votado.
-        // Na 2ª votação, o enunciado possui um voto.
-        const num_votacoes = votacoes.filter(e => e.enunciado == id_enunciado).length;
-
-        if(por_comissao && num_votacoes > 0 || geral && votacao_andamento > 1 ){
-            throw createHttpError.BadRequest("Enunciado já foi votado.");
-        }
 
         // Caso esteja tudo certo, inicia a votação.
         const SQL = `INSERT INTO votacao(enunciado, iniciada_por) VALUES (?, ?);`

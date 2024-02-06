@@ -6,13 +6,13 @@ import moment from "moment";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 
-function gerarCadernoPreliminar(inscricoes : Inscricao[], comites: Comite[], titulo: string){
+function gerarCaderno(inscricoes : Inscricao[], comites: Comite[], titulo: string, preliminar: boolean){
     function comite(id : number){
         return comites.find(c => c.committee_id === id).committee_name;
     }
 
     const pdf = pdfMake.createPdf({
-        pageMargins: [40, 40, 40, 40],
+        pageMargins: [30, 30, 30, 30],
         footer: (currentPage, pageCount) => ({
             text: currentPage /* + '/' + pageCount*/,
             alignment: 'center' 
@@ -21,7 +21,7 @@ function gerarCadernoPreliminar(inscricoes : Inscricao[], comites: Comite[], tit
             {
                 image: `caderno_${inscricoes[0].committee_id}`,
                 width: 595,
-                margin: [-40,-40,-40,-40]
+                margin: -30
             },
             {text: 'I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região', bold: true, fontSize: 14, alignment: 'center', marginBottom: 0},
             { text: titulo, bold: true, fontSize: 14, alignment: 'center', marginBottom: 35, marginTop: 50},
@@ -30,7 +30,7 @@ function gerarCadernoPreliminar(inscricoes : Inscricao[], comites: Comite[], tit
             ...inscricoes.map((e, i) => {
                 let body = [
                 [ {
-                    text: `${formatarCodigo({committee_id: e.committee_id, codigo: i + 1})}  ${comite(e.committee_id)}`, 
+                    text: `${formatarCodigo({committee_id: !preliminar ? "" : e.committee_id, codigo: i + 1})}  ${comite(e.committee_id)}`, 
                     alignment: "center", 
                     fillColor: '#eeeeee',
                     border: [true, true, true, true]
@@ -43,7 +43,7 @@ function gerarCadernoPreliminar(inscricoes : Inscricao[], comites: Comite[], tit
                     lineHeight: 1.25,
                 } ],
                 [  {
-                    text: e.statement_text, 
+                    text: e.statement_text.replaceAll('\n\n\n', '\n').replaceAll('\n\n','\n'), 
                     marginLeft: 20,
                     preserveLeadingSpaces: true, 
                     alignment: "justify", 
@@ -57,7 +57,7 @@ function gerarCadernoPreliminar(inscricoes : Inscricao[], comites: Comite[], tit
                     preserveLeadingSpaces: true, 
                     lineHeight: 1.25,
                 } ],
-                [ {text: e.statement_justification, marginLeft: 20, marginBottom: 10, preserveLeadingSpaces: true, alignment: "justify", lineHeight: 1.25} ],
+                [ {text: e.statement_justification.replaceAll('\n\n\n', '\n').replaceAll('\n\n','\n'), marginLeft: 20, marginBottom: 10, preserveLeadingSpaces: true, alignment: "justify", lineHeight: 1.25} ],
                 [ { text: e.attendee_name, alignment: "right", bold:true, marginTop: 1}  ],                
             ]
 
@@ -100,4 +100,4 @@ function gerarCadernoPreliminar(inscricoes : Inscricao[], comites: Comite[], tit
     pdf.open();
 }
 
-export default gerarCadernoPreliminar;
+export default gerarCaderno;

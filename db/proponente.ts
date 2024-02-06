@@ -96,7 +96,9 @@ class ProponenteDAO{
 
         const proponentes = await ProponenteDAO.listar(db, usuario);
 
-        proponentes.forEach( e => mailer.notificarProponente(e.email, e.admitido));
+        await mailer.notificarProponente('walace.pereira@trf2.jus.br', 0);
+        await mailer.notificarProponente('walace.pereira@trf2.jus.br', 1);
+        //proponentes.forEach( e => mailer.notificarProponente(e.email, e.admitido));
     }
 }
 
