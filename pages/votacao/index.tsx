@@ -14,7 +14,7 @@ interface Props {
     telao?: boolean
 }
 
-const tempoMaximo = 30;
+const tempoMaximo = 10;
 
 function Votacao({telao}: Props){
     const [votacao, setVotacao] = useState<Votacao>(null);
@@ -25,6 +25,8 @@ function Votacao({telao}: Props){
 
     const { api, usuario, exibirNotificacao } = usarContexto();
     
+
+    const [exibirResultado, setExibirResultado] = useState(false);
 
     async function carregar(){
         try{
@@ -43,10 +45,15 @@ function Votacao({telao}: Props){
 
                 if(temporizadorAtualizado > 0){
                     setTempoziador(temporizadorAtualizado);
+
+                    
                 }else if(temporizadorAtualizado <= 0 && temporizador > 0) {
                     setTempoziador(0);
                     alert("Simulando audio!")
+                    setTimeout(() => setExibirResultado(true), 2000)
                 }
+            }else{
+                setExibirResultado(false)
             }
         }catch(err){
             console.log(err)
@@ -113,16 +120,16 @@ function Votacao({telao}: Props){
                         <div style={{...estilo}}>{votacao.comissao}</div>
                         
                         <div className="d-flex align-items-center">
-                            {temporizador > 0 ? 
+                            {/*temporizador > 0 ? */}
                                 <FontAwesomeIcon fontSize={30} className="m-1" color={'#d8d013'} icon={faStopwatch}/>
-                                :
+                            {/*}    :
                                 <>
                                     <span style={{fontSize: 30}}>{votos_favoraveis}</span>
                                     <FontAwesomeIcon fontSize={30} className="m-1" color={'#070'} icon={faCircleCheck}/>
                                     <span style={{fontSize: 30}}>{votos_contrarios}</span>
                                     <FontAwesomeIcon fontSize={30} className="m-1" color={'#900'} icon={faCircleXmark}/>    
                                 </>
-                            }
+                            */}
                         </div>
                     </div>
                     
@@ -201,7 +208,10 @@ function Votacao({telao}: Props){
                             }
                         </div>*/}
                     </div>
-                    <div style={e.containerGrafico}>
+                    <div style={{
+                        ...e.containerGrafico, 
+                        opacity: exibirResultado ? 1 : 0
+                    }}>
                         <Chart 
                             chartType='PieChart' 
                             data={[
@@ -253,7 +263,7 @@ function Votacao({telao}: Props){
 const e : {[key: string]: React.CSSProperties} = {
     containerGrafico: {
         position: 'absolute',
-        bottom: 2,
+        bottom: 32,
         transition: 'all 1s', 
         width: '100%',
         display: 'flex',
