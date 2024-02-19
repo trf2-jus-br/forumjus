@@ -8,10 +8,18 @@ async function listar({req, res, db, usuario}: API){
 }
 
 async function analisar({req, res, db, usuario}: API){
-    const { statement_id, admitido } = req.body;
+    const { statement_id, admitido, justificativa } = req.body;
 
     res.send(
-        await EnunciadoDAO.analisar(db, usuario, statement_id, admitido)
+        await EnunciadoDAO.analisar(db, usuario, statement_id, admitido, justificativa)
+    )
+}
+
+async function justificar({req, res, db, usuario} : API){
+    let { justificativa, statement_id } = req.body;
+
+    res.send(
+        await EnunciadoDAO.justitificar(db, usuario, statement_id, justificativa)
     )
 }
 
@@ -27,4 +35,5 @@ export default apiHandler({
     "GET" : listar,
     "POST": analisar,
     "DELETE": desfazer,
+    "PUT": justificar
 }) 

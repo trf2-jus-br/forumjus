@@ -28,6 +28,26 @@ interface RequisicaoCriacao {
 
 class EnunciadoDAO {
 
+    // Permite justificar um enunciado que já foi aprovado ou rejeitado.
+    static async justitificar(db: PoolConnection, usuario: Usuario, statement_id: number, justificativa: string){
+        // carrega as permissões do usuário logado
+        const permissao = await PermissaoDAO.carregar(db, usuario);
+
+        // carrega as informações do enunciado, que o usuário deseja alterar.
+        const enunciado = await EnunciadoDAO.listarPorId(db, usuario, statement_id);
+
+        // verifica se este enunciado pertence a um dos comites que o usuário tem permissão para alterar.
+        if(permissao.administrar_comissoes.indexOf(enunciado.committee_id) === -1){
+            throw "Usuário sem permissão para analisar."
+        }
+
+        // registra quem fez a analise
+        await LogDAO.registrar(db, usuario, "justificar enunciado", { statement_id, justificativa });
+
+        // atualiza o registro.
+        await db.query("UPDATE statement SET justificativa_analise = ? WHERE statement_id = ?;", [justificativa, statement_id]);
+    }
+
     static async log(db: PoolConnection, usuario: Usuario, statement_id: number){
         const permissoes = await PermissaoDAO.carregar(db, usuario);
         
@@ -57,7 +77,7 @@ class EnunciadoDAO {
         );
     }
 
-    static async analisar(db: PoolConnection, usuario: Usuario, statement_id: number, admitido: boolean){
+    static async analisar(db: PoolConnection, usuario: Usuario, statement_id: number, admitido: boolean, justificativa: string){
         // carrega as permissões do usuário logado
         const permissao = await PermissaoDAO.carregar(db, usuario);
 
@@ -70,16 +90,17 @@ class EnunciadoDAO {
         }
 
         // registra quem fez a analise
-        await LogDAO.registrar(db, usuario, "analisar enunciado", { statement_id, admitido });
+        await LogDAO.registrar(db, usuario, "analisar enunciado", { statement_id, admitido, justificativa });
 
         // grava os dados no banco de dados
         if(admitido == false){
             await db.query( 
                 `UPDATE statement 
                     SET admitido = ?, 
-                    data_analise=now()
+                    data_analise=now(),
+                    justificativa_analise = ?
                 WHERE statement_id = ?;`,
-                [admitido, statement_id]
+                [admitido, justificativa, statement_id]
             );
         }else{
             // Gera um ID, quando o enunciado é aprovado.
@@ -96,9 +117,10 @@ class EnunciadoDAO {
                 SET 
                     admitido = ?,
                     S.codigo = C.codigo,
-                    data_analise=now()
+                    data_analise=now(),
+                    justificativa_analise = ?
                 WHERE statement_id = ?;`,
-                [enunciado.committee_id, admitido, statement_id]
+                [enunciado.committee_id, admitido, justificativa, statement_id]
             );
         }
 
@@ -124,6 +146,7 @@ class EnunciadoDAO {
             `UPDATE statement 
                 SET admitido = NULL, 
                 codigo = null,
+                justificativa_analise = NULL,
                 data_analise = NULL
             WHERE statement_id = ?;`,
             [statement_id]
