@@ -9,8 +9,10 @@ interface Props {
 }
 
 function acao(log: Log){
-    if(log.acao === "analisar enunciado")
-        return log.detalhes.admitido ? 'Admitiu' : 'Rejeitou';
+    
+    if(log.acao === "analisar enunciado"){
+        return JSON.parse(log.detalhes).admitido ? 'Admitiu' : 'Rejeitou';
+    }
 
     if(log.acao === "desfazer analise")
         return "Desfez a análise";

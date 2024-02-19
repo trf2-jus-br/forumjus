@@ -100,7 +100,7 @@ function Admissao(props){
         let justificativa = null;
         try{
             //exibe modal para preenchimento da justificativa.
-            justificativa  = await justificativaRef.current.exibir(enunciado.justificativa_analise); 
+            justificativa  = await justificativaRef.current.exibir(enunciado.justificativa_analise, !enunciado.admitido); 
         }catch(err){
             return exibirNotificacao({ texto: "Atualização cancelada pelo usuário", tipo: 'ERRO'});
         }
@@ -128,7 +128,7 @@ function Admissao(props){
         let justificativa = null;
         try{
             //exibe modal para preenchimento da justificativa.
-            justificativa  = await justificativaRef.current.exibir(); 
+            justificativa  = await justificativaRef.current.exibir("", !admitido); 
         }catch(err){
             return exibirNotificacao({ texto: "Atualização cancelada pelo usuário", tipo: 'ERRO'});
         }

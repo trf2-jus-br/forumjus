@@ -152,10 +152,15 @@ class EnunciadoDAO {
             [statement_id]
         );
 
+        const [todosEnunciados] = await db.query('SELECT * FROM statement WHERE committee_id = ? AND attendee_id = ? AND admitido;', [enunciado.committee_id, enunciado.attendee_id])
+
         // Se o enunciado for aceito, o proponente é automaticamente adiciona, como membro, à comissão que aprovou seu enunciado.
-        // Portanto devemos remover o membro ao desfazer a análise.
-        const proponente = await ProponenteDAO.listarPorId(db, enunciado.attendee_id);
-        await MembroDAO.deletar(db, usuario, proponente.attendee_name, enunciado.committee_id);        
+        // Caso o enunciado que está sendo desconsiderado seja o único enunciado aceito do Proponente, devemos remover o membro.
+        if(todosEnunciados.length == 0){
+            await MembroDAO.deletar(db, usuario, enunciado.attendee_id, enunciado.committee_id);        
+        }else{
+            await LogDAO.registrar(db, usuario, "remoção do membro (duplicado)", {enunciado});
+        }
     }
 
     static async listar(db: PoolConnection, usuario: Usuario){

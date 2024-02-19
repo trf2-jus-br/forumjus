@@ -9,6 +9,7 @@ interface Acoes {
 function ModalJustificativa(props, ref){
     const [justificativa, setJustificativa] = useState("");
     const [acoes, setAcoes] = useState<Acoes>(null);
+    const [obrigatorio, setObrigatorio] = useState(true);
 
     function cancelar(){
         acoes.reject();
@@ -21,9 +22,10 @@ function ModalJustificativa(props, ref){
     }
 
     useImperativeHandle(ref, ()=>({
-        exibir: (justificativa) => new Promise((resolve, reject)=>{
+        exibir: (justificativa, obrigatorio) => new Promise((resolve, reject)=>{
             setJustificativa(justificativa || "");
             setAcoes({resolve, reject});
+            setObrigatorio(obrigatorio);
         })
     }))
 
@@ -37,7 +39,7 @@ function ModalJustificativa(props, ref){
         </Modal.Body>
         <Modal.Footer>
             <Button variant="secondary" onClick={cancelar}>Cancelar</Button>
-            <Button variant="primary" onClick={confirmar} disabled={justificativa.trim().length === 0}>OK</Button>
+            <Button variant="primary" onClick={confirmar} disabled={obrigatorio && justificativa.trim().length === 0}>OK</Button>
         </Modal.Footer>
     </Modal>
 }
