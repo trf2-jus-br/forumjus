@@ -79,10 +79,15 @@ export function apiHandler(handler: ApiMethodHandlers) {
             }
 
             // tenta executar a api
-            await methodHandler({req, res, db, usuario});
+            const resposta = await methodHandler({req, res, db, usuario});
 
             // caso tudo ocorra bem, salva as informações no banco.
             db.commit();
+
+            // envia a resposta pro usuário.
+            if(!res.headersSent){
+                res.send(resposta);
+            }
         } catch (err) {
             // em caso de erro, desfaz as alterações propostas pela api no banco de dados.
             db?.rollback();
