@@ -103,6 +103,7 @@ interface Enunciado {
     committee_id: number;
     statement_text: string;
     statement_justification: string;
+    justificativa_analise: string; /* Justificativa dada ao rejeitar ou aprovar um enunciado. */
     
     admitido: 0 | 1 | null;
     codigo: number | null;

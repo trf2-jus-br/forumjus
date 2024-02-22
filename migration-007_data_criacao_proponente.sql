@@ -1,0 +1,1 @@
+ALTER TABLE attendee ADD attendee_timestamp timestamp DEFAULT current_timestamp;

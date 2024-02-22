@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Layout from '../../components/layout';
 import Enunciado from './enunciado';
-import { Breadcrumb, Card, Collapse, Form, Modal, Table } from 'react-bootstrap';
+import { Breadcrumb, Button, Card, Collapse, Form, Modal, Table } from 'react-bootstrap';
 import { usarContexto } from '../../contexto';
 import comPermissao from '../../utils/com-permissao';
 import comRestricao from '../../utils/com-restricao';
 import { retornoAPI } from '../../utils/api-retorno';
+import ModalJustificativa from './justificativa';
 
 enum Filtro {
     TODOS,
@@ -14,17 +15,29 @@ enum Filtro {
     REJEITADOS
 }
 
-function Votacao(props){
+function Admissao(props){
     const [enunciados, setEnunciados] = useState<Enunciado[]>([]);
     const [comites, setComites] = useState<Comite[]>()
     const [enunciado, trocarComite] = useState<Enunciado>(null)
     const [filtro, setFiltro] = useState<Filtro>(Filtro.TODOS);
 
+    const justificativaRef = useRef(null);
+
     const {api, exibirNotificacao} = usarContexto();
 
     function carregarEnunciados(){
         api.get<Enunciado[]>(`/api/admissao`)
-            .then(({data}) => setEnunciados(data))
+            .then(({data}) => {
+                // recarregar os enunciados não altera a ordenação.
+                data.sort((a, b) => {
+                    const indA = enunciados.findIndex(({statement_id}) => a.statement_id == statement_id);
+                    const indB = enunciados.findIndex(({statement_id}) => b.statement_id == statement_id);
+                
+                    return indA < indB ? -1 : 1;
+                })
+
+                setEnunciados(data)
+            })
             .catch(err => {
                 // Notifica o usuário que ocorreu um erro.
                 exibirNotificacao({
@@ -83,6 +96,80 @@ function Votacao(props){
         });
     }
 
+    async function justificar(enunciado: Enunciado){
+        let justificativa = null;
+        try{
+            //exibe modal para preenchimento da justificativa.
+            justificativa  = await justificativaRef.current.exibir(enunciado.justificativa_analise, !enunciado.admitido); 
+        }catch(err){
+            return exibirNotificacao({ texto: "Atualização cancelada pelo usuário", tipo: 'ERRO'});
+        }
+
+        try{
+            await api.put('/api/admissao', { justificativa, statement_id: enunciado.statement_id});
+
+            exibirNotificacao({ texto: "Enunciado atualizado com sucesso!"})
+            carregarEnunciados();
+        }catch(err){
+            // Apenas notifica o usuário que ocorreu um erro.
+            // Resultado do error: Nada irá acontecer.
+            exibirNotificacao({
+                titulo: "Não foi possível processar seu pedido.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
+            
+        }
+    }
+
+    async function analisar(enunciado: Enunciado, admitido){
+        const {statement_id, committee_id} = enunciado;
+
+        let justificativa = null;
+        try{
+            //exibe modal para preenchimento da justificativa.
+            justificativa  = await justificativaRef.current.exibir("", !admitido); 
+        }catch(err){
+            return exibirNotificacao({ texto: "Atualização cancelada pelo usuário", tipo: 'ERRO'});
+        }
+
+        try{
+            // atualiza o registro no servidor.
+            await api.post('/api/admissao', { admitido, statement_id, committee_id, justificativa});
+
+            exibirNotificacao({ texto: "Enunciado atualizado com sucesso!",})
+
+            // atualiza a tela, mantendo a posição dos elementos.
+            carregarEnunciados();
+        }catch(err){
+            // Apenas notifica o usuário que ocorreu um erro.
+            // Resultado do erro: Nada irá mudar.
+            exibirNotificacao({
+                titulo: "Não foi possível processar seu pedido.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
+        }
+    }
+
+    function refazerAnalise(enunciado: Enunciado){
+        api.delete(`/api/admissao?statement_id=${enunciado.statement_id}`)
+        .then(()=> {
+            // atualiza a tela, mantendo a posição dos elementos.
+            carregarEnunciados();
+            exibirNotificacao({texto: "Enunciado atualizado com sucesso!"})
+        })
+        .catch(err => {
+            // Apenas notifica o usuário que ocorreu um erro.
+            // Resultado do erro: Nada irá mudar.
+            exibirNotificacao({
+                titulo: "Não foi possível processar seu pedido.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
+        });
+    }
+
     return <Layout>
         <div className='d-flex align-items-start justify-content-between'>
             <Breadcrumb>
@@ -103,8 +190,13 @@ function Votacao(props){
                 key={e.statement_id} 
                 enunciado={e} 
                 trocarComite={trocarComite}
+                justificar={justificar}
+                analisar={analisar}
+                refazerAnalise={refazerAnalise}
             />)}
         </div>
+
+        <ModalJustificativa ref={justificativaRef} />
 
         <Modal show={enunciado != null} size='xl' scrollable onHide={()=> trocarComite(null)}>
             <Modal.Header closeButton>
@@ -124,4 +216,4 @@ function Votacao(props){
     </Layout>
 }
 
-export default comPermissao(Votacao, 'RELATOR', 'RELATORA', 'PRESIDENTA', 'PRESIDENTE');
+export default comPermissao(Admissao, 'RELATOR', 'RELATORA', 'PRESIDENTA', 'PRESIDENTE');

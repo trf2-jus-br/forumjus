@@ -39,7 +39,7 @@ async function criarUsuario({db, usuario} : API){
     }
 
     const mockRes = {
-        send: (obj) => console.log(obj)
+        send: (obj) => null
     }
 
     await handler({
@@ -50,9 +50,9 @@ async function criarUsuario({db, usuario} : API){
 }
 
 
-async function mock({res, db} : API){
+async function mock({res, db, req, usuario} : API){
     for(let i = 0; i < 100; i++){
-        await criarUsuario({db});
+        await criarUsuario({res, db, req, usuario});
     }
 
     res.send(200);

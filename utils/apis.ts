@@ -79,22 +79,27 @@ export function apiHandler(handler: ApiMethodHandlers) {
             }
 
             // tenta executar a api
-            await methodHandler({req, res, db, usuario});
+            const resposta = await methodHandler({req, res, db, usuario});
 
             // caso tudo ocorra bem, salva as informações no banco.
-            db.commit();
+            await db.commit();
+
+            // envia a resposta pro usuário.
+            if(!res.headersSent){
+                res.send(resposta);
+            }
         } catch (err) {
             // em caso de erro, desfaz as alterações propostas pela api no banco de dados.
-            db?.rollback();
+            await db?.rollback();
 
             // tento registrar o problema ocorrido
             try{
-                db.beginTransaction();
+                await  db.beginTransaction();
                 await LogDAO.registrar(db, usuario, "Erro", JSON.stringify({
                     message: err.message,
                     stack: err.stack,
                 }));
-                db.commit();
+                await db.commit();
             }catch(err){
                 console.log("Não foi possível registrar o log.", err);
             }
