@@ -14,13 +14,13 @@ async function listar({res, db, usuario} : API){
 
     const arquivo = archiver("zip");
 
-    const url = process.env.HOMOLOGACAO ? "https://jornada-hmg.trf2.jus.br" : "https://jornada.trf2.jus.br";
+    const url = process.env.HOMOLOGACAO === "true" ? "https://jornada-hmg.trf2.jus.br" : "https://jornada.trf2.jus.br";
 
     for(let i = 0; i < membros.length; i++){
         const indice = (i + 1).toString().padStart(3, "0");
         const nome = accents.remove(membros[i].nome);
 
-        const buffer = await QRCode.toBuffer(`${url}/${membros[i].token}`, {scale: 16});
+        const buffer = await QRCode.toBuffer(`${url}/comissao/login/${membros[i].token}`, {scale: 16});
 
         arquivo.append(buffer, {name : `${membros[i].comite} - ${nome}.png`})
     }
