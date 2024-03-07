@@ -1,7 +1,7 @@
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
-import { Capitalize } from "../../utils/string";
-import { formatarCodigo } from "../admissao/enunciado";
+import { Capitalize } from "./string";
+import { formatarCodigo } from "../pages/admissao/enunciado";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../../components/layout";
 import comPermissao from "../../utils/com-permissao";
-import * as Ato from './ato';
+import * as Ato from '../../utils/ato';
 import { usarContexto } from "../../contexto";
 import { Breadcrumb, Button, Table } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
