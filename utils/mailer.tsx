@@ -4,6 +4,7 @@ import fs from "fs/promises";
 import EmailConfirmacaoCadastro from './template-email/confirmacao-cadastro'
 import EmailNotificarAdmissao from "./template-email/notificar-admissao";
 import EmailNotificarRejeicao from "./template-email/notificar-rejeicao";
+import EmailNotificarDivergencia from './template-email/notificar-divergencia';
 
 const options = {
     host: process.env.SMTP_HOST,
@@ -169,8 +170,12 @@ Enunciado ${i}
     },
 
 
-    async notificarProponente(email: string, admitido: 0 | 1){
+    async notificarProponente(email: string, enunciados: any[], enunciados_reprovados: any[], nome: string){
         try{
+            const admitido = enunciados.length !== 0 && enunciados.every(e => e.committee_id === enunciados[0].committee_id); 
+            const rejeitado = enunciados.length === 0; 
+
+            
             const bufferSaia = await fs.readFile("./utils/template-email/saia.png")
             const bufferRegulamento = await fs.readFile("./utils/template-email/TRF2PTP202300348C.pdf")
 
@@ -193,11 +198,11 @@ Enunciado ${i}
                 to: email.trim(),
                 cc: process.env.SMTP_BCC === 'false' ? undefined : 'forumdhf@trf2.jus.br',
                 subject: `I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região`,
-                html: admitido ? EmailNotificarAdmissao() : EmailNotificarRejeicao(),
+                html: admitido ? EmailNotificarAdmissao(enunciados, nome) : rejeitado ? EmailNotificarRejeicao(enunciados_reprovados, nome) : EmailNotificarDivergencia(enunciados, nome),
                 attachments: anexos
             });
         }catch(err){
-            console.log(err);
+            throw err;
         }
     },
 

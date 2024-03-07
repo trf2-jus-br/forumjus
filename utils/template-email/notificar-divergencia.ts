@@ -3,7 +3,7 @@ interface Enunciado {
     statement_text: string,
 }
 
-const EmailNotificarAdmissao = (enunciados : Enunciado[], nome: string) => `
+const EmailNotificarDivergencia = (enunciados : Enunciado[], nome: string) => `
 <html>
     <head>
         <title>I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região</title>
@@ -25,10 +25,11 @@ const EmailNotificarAdmissao = (enunciados : Enunciado[], nome: string) => `
             <p>Prezado(a),</p>
                 
             <p style="text-indent: 30px;">Bem-vindo(a) ao evento <span style="font-weight: bold;">I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da Segunda Região</span>.</p>
-            <p style="text-indent: 30px;">Informamos que somente sua(s) proposta(s) de enunciado, abaixo transcrita(s), foi(ram) admitida(s). Deste modo, sua inscrição foi efetivada junto à Comissão Temática <span style="font-weight: bold;">${enunciados[0].committee_name}</span>.</p>
+            <p style="text-indent: 30px;">Informamos que somente sua(s) proposta(s) de enunciado, abaixo transcrita(s), foi(ram) admitida(s). Contudo para que sua inscrição seja efetivada, é necessário indicar a qual Comissão Temática deseja integrar impreterivelmente até o dia 04/03/2024 através do e-mail <a href="mailto:forumdhf@trf2.jus.br">forumdhf@trf2.jus.br.</a>.</p>
 
             ${enunciados.map(e => (
-                `<p style="padding: 10px 0px; text-align: justify; font-style: italic;">
+                `<div style="font-weight: bold;">(   ) ${e.committee_name}</div>
+                <p style="padding-top: 10px; text-align: justify; font-style: italic;">
                     ´${e.statement_text}\`
                 </p>`
             )).join('\n')}
@@ -105,7 +106,7 @@ const EmailNotificarAdmissao = (enunciados : Enunciado[], nome: string) => `
             <p style="text-indent: 30px;">Enviamos anexo o Regulamento da Jornada, aprovado pela Portaria nº TRF2-PTP-2023/00348, que, nos Capítulos V e VI, esclarece os procedimentos para discussão e votação das proposições de enunciados nas Comissões Temáticas e na Sessão Plenária.</p>
             <p style="text-indent: 30px;">Em caso de dúvida, entre em contato através do e-mail <a href="mailto:forumdhf@trf2.jus.br">forumdhf@trf2.jus.br.</a> ou do telefone (21) 2282-8374.</p>
 
-            <p style="text-indent: 30px; font-weight: bold;">Solicitamos que responda este e-mail indicando o recebimento do mesmo.</p>
+            <p style="text-indent: 30px; font-weight: bold;">Solicitamos que responda este e-mail indicando o recebimento do mesmo e a qual Comissão Temática deseja integrar impreterivelmente até o dia 04/03/2024.</p>
 
             <div style="margin-top: 25px;">Atenciosamente,</div>
             <div style="margin-top: 25px; margin-bottom: 25px;">Equipe I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região.</div>
@@ -114,4 +115,4 @@ const EmailNotificarAdmissao = (enunciados : Enunciado[], nome: string) => `
 </html>
 `;
 
-export default EmailNotificarAdmissao;
+export default EmailNotificarDivergencia;

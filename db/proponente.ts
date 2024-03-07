@@ -19,11 +19,13 @@ interface RequisicaoCadastro {
  }
 
  interface Proponente {
+    attendee_id: number,
     nome : string,
     email : string,
     admitido : 0 | 1,
     committee_name : string
     committee_id: number,
+    statement_text: string
 }
 
 class ProponenteDAO{
@@ -82,7 +84,8 @@ class ProponenteDAO{
                 attendee_email as email,
                 admitido,
                 committee_name,
-                committee.committee_id
+                committee.committee_id,
+                statement.statement_text
             FROM attendee
             LEFT JOIN statement ON statement.attendee_id = attendee.attendee_id
             LEFT JOIN committee ON statement.committee_id = committee.committee_id;`)
@@ -91,14 +94,53 @@ class ProponenteDAO{
     }
 
     static async notificar(db: PoolConnection, usuario: Usuario){
+        // verifica as credênciais
         if(usuario.funcao !== "ASSESSORIA" && usuario.funcao !== "PROGRAMADOR")
             throw createHttpError.BadRequest(`${usuario.funcao} não tem permissão para acessar a listagem de proponentes.`);
 
+        // lista todos os enunciados, com as informações do proponente do dado enunciado.
         const proponentes = await ProponenteDAO.listar(db, usuario);
 
-        await mailer.notificarProponente('walace.pereira@trf2.jus.br', 0);
-        await mailer.notificarProponente('walace.pereira@trf2.jus.br', 1);
-        //proponentes.forEach( e => mailer.notificarProponente(e.email, e.admitido));
+        // agrupa todos os enunciados do mesmo proponente.
+        const proponentes_resumidos = proponentes.reduce((prev, curr) => {
+            if(!prev[curr.attendee_id]){
+                prev[curr.attendee_id] = {
+                    attendee_id: curr.attendee_id,
+                    nome: curr.nome,
+                    email: curr.email,
+                    enunciados: [],
+                    enunciados_reprovados: []
+                }
+            }
+
+            // separa os enunciados admitidos dos rejeitados.
+            if(curr.admitido){
+                prev[curr.attendee_id].enunciados.push({
+                    committee_name: curr.committee_name,
+                    committee_id: curr.committee_id,
+                    statement_text: curr.statement_text
+                })
+            }else{
+                prev[curr.attendee_id].enunciados_reprovados.push({
+                    committee_name: curr.committee_name,
+                    committee_id: curr.committee_id,
+                    statement_text: curr.statement_text
+                })
+            }
+
+            return prev;
+        }, {});
+        
+        const listagem = Object.values(proponentes_resumidos);
+
+        // Por diversas razoes os administradores podem não notificar alguns e-mail.
+        const emails_bloqueados = [];
+
+        for(let i = 0; i < listagem.length; i++){
+            if(emails_bloqueados.indexOf(listagem[i].email.trim()) === -1){
+                await mailer.notificarProponente(listagem[i].email, listagem[i].enunciados, listagem[i].enunciados_reprovados, `${listagem[i].nome}<br/>${listagem[i].email}`);
+            }
+        }
     }
 }
 
