@@ -15,7 +15,7 @@ type Props = React.PropsWithChildren & {
 }
 
 export default function Layout({ children, fluid, cabecalho } : Props) {
-    const container = fluid ? 'container-fluid px-5' : 'container';
+    const container = fluid ? 'container-fluid px-2 px-sm-5' : 'container';
 
     return (<div className='d-flex flex-column' style={{minHeight: '100vh'}}>
         <Head>

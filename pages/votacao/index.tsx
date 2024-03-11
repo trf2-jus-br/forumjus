@@ -118,9 +118,9 @@ function Votacao({telao}: Props){
             <div className="d-flex flex-column align-items-center w-100" 
             style={{opacity: estilo.opacity, transition: "all 0.5s", flex: 1, overflow: 'hidden'}}
         >
-            <div className="d-flex justify-content-between w-100 align-items-center" style={{height: 50}}>
+            <div className="d-flex justify-content-between w-100 align-items-center" style={{minHeight: 50}}>
                 <div className='col-1'></div>
-                <h5 className='col-10 text-center' style={{...estilo}}>{votacao.comissao}</h5>
+                <h5 className='votacao-comissao col-10 text-center' style={{...estilo}}>{votacao.comissao}</h5>
                 
                 <div className="d-flex align-items-center justify-content-end col-1 tex">
                     {(estadoVotacao === EstadoVotacao.APRESENTACAO_ENUNCIADO || estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA) ? 
@@ -173,9 +173,9 @@ function Votacao({telao}: Props){
                 {/*telao && <div className="col-2"></div>*/}
 
                 <div className={/*telao ? "col-8" : */"col-12"}>
-                    <div style={{...estilo, ...e.enunciado}}>{votacao.texto}</div>
+                    <div className='votacao-texto' style={{...estilo, ...e.enunciado}}>{votacao.texto}</div>
                     <hr className="w-100" />
-                    <div style={{ ...estilo,  ...e.justificativa, opacity: estilo.opacity}}>
+                    <div className='votacao-justificativa' style={{ ...estilo,  ...e.justificativa, opacity: estilo.opacity}}>
                         {votacao.justificativa}
                         <hr className="w-100" />
                     </div>
@@ -225,7 +225,7 @@ function Votacao({telao}: Props){
                             position: 'right',
                             alignment: 'center',
                         },
-                        chartArea: {'width': 400, 'height': '80%'},
+                        chartArea: {'width': '100%', 'height': '80%'},
                     }}
                     width={'100%'}
                     height={"300px"} 
@@ -265,13 +265,13 @@ const e : {[key: string]: React.CSSProperties} = {
         position: 'absolute',
         bottom: 32,
         transition: 'all 1s', 
-        width: 1024,
+        width: '100%',
+        maxWidth: 1024,
         display: 'flex',
         flexDirection:'column',
         alignItems: 'center'
     },
     enunciado: {
-        fontSize: 20,
         textAlign: "center",
         margin: 5,
         textIndent: 50,

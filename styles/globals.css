@@ -1,10 +1,73 @@
-@media (max-width:961px)  { 
+
+.votacao-bem-vindo {
+  font-size: 30px !important;
+}
+
+.votacao-titulo {
+ font-size: 12px !important;
+}
+
+.votacao-icone {
+  width: 30px;
+  margin-right: 10px
+}
+
+.votacao-comissao {
+  font-size: 15px;
+}
+
+.votacao-texto {
+  font-size: 15px;
+}
+
+.votacao-justificativa {
+  font-size: 15px;
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) { 
   .votacao-bem-vindo {
-     font-size: 60px !important;
+    font-size: 60px !important;
+  }
+
+  .votacao-icone {
+    width: 50px;
+    margin-right: 20px,
+  }
+
+  .votacao-titulo {
+    font-size: 28px !important;
+  }
+    
+  .votacao-comissao {
+    font-size: 20px;
+  }
+
+  .votacao-texto {
+    font-size: 20px;
+  }
+
+  .votacao-justificativa {
+    font-size: 20px;
   }
 }
-@media (max-width:641px)  { 
-  .votacao-bem-vindo {
-     font-size: 30px !important;
-  }
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+
 }
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) { 
+  
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) { 
+
+}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) { 
+
+ }
