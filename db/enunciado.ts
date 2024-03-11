@@ -222,8 +222,6 @@ class EnunciadoDAO {
         if(!geral && !por_comissao)
             throw "Aguarde até a data da votação.";
 
-        console.log(geral, por_comissao)
-
         // Lista todos os enunciados que foram admitidos em dada comissão;
         const SQL_POR_COMISSAO = 
             `SELECT 

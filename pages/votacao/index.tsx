@@ -5,16 +5,21 @@ import Layout from "../../components/layout";
 import { useEffect, useState } from "react";
 import { usarContexto } from "../../contexto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleCheck, faCircleXmark, faClock, faStopwatch } from "@fortawesome/free-solid-svg-icons";
+import { faCircleCheck, faCircleXmark, faClock, faStopwatch, faUser } from "@fortawesome/free-solid-svg-icons";
 import comRestricao from '../../utils/com-restricao';
 import { retornoAPI } from '../../utils/api-retorno';
-import Script from 'next/script';
+import Abertura from './abertura';
+import Cabecalho from './cabecalho';
+import Encerramento from './encerramento';
+import Carregamento from './carregamento';
+
+import {EstadoVotacao} from '../../utils/enums';
 
 interface Props {
     telao?: boolean
 }
 
-const tempoMaximo = 10;
+const tempoMaximo = 180;
 
 function Votacao({telao}: Props){
     const [votacao, setVotacao] = useState<Votacao>(null);
@@ -25,14 +30,30 @@ function Votacao({telao}: Props){
 
     const { api, usuario, exibirNotificacao } = usarContexto();
     
+    function atualizarTemporizador(votacao: Votacao){
+        const temporizadorAtualizado = tempoMaximo - votacao.inicio_defesa;
 
-    const [exibirResultado, setExibirResultado] = useState(false);
+        if(votacao.estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA){
+            if(temporizadorAtualizado > 0){
+                setTempoziador(temporizadorAtualizado);
+            }else if(temporizadorAtualizado <= 0 && temporizador > 0) {
+                setTempoziador(0);
+            }
+        }
+    }
 
     async function carregar(){
         try{
             const {data} = await api.get<Votacao>('/api/votacao');
 
-            setEstilo(!data ? e.ocultar: e.exibir)
+            atualizarTemporizador(data);
+
+            console.log(data.justificativa, votacao?.justificativa)
+            if(!data || data.justificativa != votacao?.justificativa){
+                setEstilo(e.ocultar)
+            }else{
+                setEstilo(e.exibir)
+            }
 
             // Só atualizo o objeto votação, nunca deixo ele nulo.
             // Fiz isso para viabilizar as animações.
@@ -40,23 +61,9 @@ function Votacao({telao}: Props){
                 setVotacao(!data ? null : data);
                 const votoUsuario = data.votos.find(({id})=> id === usuario.id);
                 setVotoUsuario(votoUsuario.voto);
-
-                const temporizadorAtualizado = tempoMaximo - data.inicio_defesa;
-
-                if(temporizadorAtualizado > 0){
-                    setTempoziador(temporizadorAtualizado);
-
-                    
-                }else if(temporizadorAtualizado <= 0 && temporizador > 0) {
-                    setTempoziador(0);
-                    alert("Simulando audio!")
-                    setTimeout(() => setExibirResultado(true), 2000)
-                }
-            }else{
-                setExibirResultado(false)
             }
         }catch(err){
-            console.log(err)
+            console.log(err);
             // avisa sobre o erro.
             exibirNotificacao({
                 titulo: "Não foi possível carregar a votação.",
@@ -96,155 +103,148 @@ function Votacao({telao}: Props){
         return () => {
             clearInterval(interval);
         }
-    }, [temporizador])
-
-    if(!votacao)
-        return <Layout fluid>
-            <div className='d-flex justify-content-center align-items-center' style={{flex: 1}}>
-                <Spinner style={{color: "#0003"}} />
-            </div>
-        </Layout>
-
+    }, [temporizador, votacao])
 
     const votos_contrarios = votacao?.votos?.filter(({voto}) => voto === 0)?.length || 0;
     const votos_favoraveis = votacao?.votos?.filter(({voto}) => voto === 1)?.length || 0;
+    const aprovado = votos_favoraveis && votos_favoraveis / (votos_favoraveis + votos_contrarios) >= 0.75
 
-    return <Layout fluid>
-        {
-             votacao &&
-                <div className="d-flex flex-column align-items-center w-100" 
-                    style={{opacity: estilo.opacity, transition: "all 0.5s", flex: 1, overflow: 'hidden'}}
-                >
-                    <div className="d-flex justify-content-between w-100 align-items-center">
-                        <div></div>
-                        <div style={{...estilo}}>{votacao.comissao}</div>
-                        
-                        <div className="d-flex align-items-center">
-                            {/*temporizador > 0 ? */}
-                                <FontAwesomeIcon fontSize={30} className="m-1" color={'#d8d013'} icon={faStopwatch}/>
-                            {/*}    :
-                                <>
-                                    <span style={{fontSize: 30}}>{votos_favoraveis}</span>
-                                    <FontAwesomeIcon fontSize={30} className="m-1" color={'#070'} icon={faCircleCheck}/>
-                                    <span style={{fontSize: 30}}>{votos_contrarios}</span>
-                                    <FontAwesomeIcon fontSize={30} className="m-1" color={'#900'} icon={faCircleXmark}/>    
-                                </>
-                            */}
-                        </div>
-                    </div>
-                    
-                    <div className="w-100 d-flex flex-row" style={{position: 'relative',}}>
-                        {
-                            (votos_contrarios !== 0 || votos_favoraveis !== 0) ? <>
-                                <hr style={{
-                                    display: votos_favoraveis == 0 ? 'none' : 'block',
-                                    border: 'solid 3px green', 
-                                    transition: 'width 1s',
-                                    width: `${100* votos_favoraveis / (votos_favoraveis + votos_contrarios)}%`
-                                }} />
+    const estadoVotacao = votacao?.estadoVotacao;
 
-                                <hr style={{
-                                    display: votos_contrarios == 0 ? 'none' : 'block',
-                                    border: 'solid 3px red', 
-                                    transition: 'width 1s',
-                                    width: `${100* votos_contrarios / (votos_favoraveis + votos_contrarios)}%`}} 
-                                />    
-                            </> : 
-                            
-                            <>
-                                <hr style={{
-                                    border: 'solid 3px #999', 
-                                    width: `${100}%`}} 
-                                />
-
-                                {temporizador > 0 && <hr style={{
-                                    position: 'absolute',
-                                    left: 0,
-                                    border: 'solid 3px #d8d013', 
-                                    transition: "all 1.5s",
-                                    width: `${100 * temporizador/tempoMaximo}%`}} 
-                                />}
-                            </> 
-                        }
-                        
-                    </div>
-
-                    <div className="d-flex w-100">
-                        {/*telao && <div className="col-2"></div>*/}
-                        <div className={/*telao ? "col-8" : */"col-12"}>
-                            <div style={{...estilo, ...e.enunciado}}>{votacao.texto}</div>
-                            <hr className="w-100" />
-                            <div style={{
-                                ...estilo, 
-                                ...e.justificativa,
-                                opacity: estilo.opacity && temporizador > 0 ? 1 : 0
-                            }}>
-                                {votacao.justificativa}
-                                <hr className="w-100" />
-                            </div>
-                            
-                        </div>
-                        {/*telao && <div className="col-2 d-flex flex-column text-center px-5" style={estilo}>
-                            <h5 className="">
-                                Votos 
-                                <h6 className='d-block'>
-                                    { votos_contrarios + votos_favoraveis } / {votacao.votos.length}
-                                </h6>
-                            </h5>
-                            {
-                                votacao.votos.slice(0, 7).map(m => {
-                                    const cor = m.voto === null ? "#999" : m.voto === 0 ? "#900" : "#070";
-                                    const icone = m.voto === 0 ? faCircleXmark : faCircleCheck;
-
-                                    return (
-                                        <React.Fragment key={m.id}>
-                                        <div className="flex-row d-flex align-items-center justify-content-center">
-                                            <div style={{...e.membro, color: cor}} >{m.nome}</div>
-                                            {m.voto !== null && <FontAwesomeIcon className="m-1" color={cor} icon={icone}/>}
-                                        </div>
-                                        <hr className="w-100"/>
-                                    </React.Fragment>)
-                                })
-                            }
-                        </div>*/}
-                    </div>
-                    <div style={{
-                        ...e.containerGrafico, 
-                        opacity: exibirResultado ? 1 : 0
-                    }}>
-                        <Chart 
-                            chartType='PieChart' 
-                            data={[
-                                ["", ""],
-                                ["Favoráveis", 9],
-                                ["Contrários", 6],
-                            ]} 
-                            options={{
-                                theme: 'maximized',
-                                pieStartAngle: 180,
-                                colors: ['#070', '#700'],
-                                legend: {
-                                    position: 'top',
-                                    alignment: 'center',
-                                },
-                                chartArea: {'width': '100%', 'height': '80%'},
-                            }}
-                            width={"100%"}
-                            height={"300px"} 
-                        />
-                        <div>Aprovado</div>
-                    </div>
-                    
-                    {
-                        !telao && (
-                            <div className="d-flex w-100 justify-content-between" style={{marginTop: "auto", position:'sticky', bottom:'1rem'}}>
-                                <Button variant="danger" style={{width: '49.5%'}} onClick={()=> votar(false)}>Contra</Button>
-                                <Button variant="success" style={{width: '49.5%'}} onClick={()=> votar(true)}>A favor</Button>
-                            </div>
-                        )
+    return <Layout fluid cabecalho={<Cabecalho/>}>
+        {votacao == null && <Abertura />}
+        {/*estadoVotacao === EstadoVotacao.ENCERRAMENTO && <Encerramento />*/}
+        {votacao && (
+            <div className="d-flex flex-column align-items-center w-100" 
+            style={{opacity: estilo.opacity, transition: "all 0.5s", flex: 1, overflow: 'hidden'}}
+        >
+            <div className="d-flex justify-content-between w-100 align-items-center" style={{height: 50}}>
+                <div className='col-1'></div>
+                <h5 className='col-10 text-center' style={{...estilo}}>{votacao.comissao}</h5>
+                
+                <div className="d-flex align-items-center justify-content-end col-1 tex">
+                    {(estadoVotacao === EstadoVotacao.APRESENTACAO_ENUNCIADO || estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA) ? 
+                        <FontAwesomeIcon fontSize={30} className="m-1" color={'#d8d013'} icon={faStopwatch}/>
+                        :
+                        <>
+                            {telao && <span style={{fontSize: 18}} className="p-2">{ votos_contrarios + votos_favoraveis } / {votacao.votos.length}</span>}
+                        </>
                     }
                 </div>
-        }
+            </div>
+            
+            <div className="w-100 d-flex flex-row" style={{position: 'relative',}}>
+                {
+                    (estadoVotacao === EstadoVotacao.FINALIZADO) ? <>
+                        <hr style={{
+                            display: votos_favoraveis == 0 ? 'none' : 'block',
+                            border: 'solid 3px green', 
+                            transition: 'width 1s',
+                            width: `${100* votos_favoraveis / (votos_favoraveis + votos_contrarios)}%`
+                        }} />
+
+                        <hr style={{
+                            display: votos_contrarios == 0 ? 'none' : 'block',
+                            border: 'solid 3px red', 
+                            transition: 'width 1s',
+                            width: `${100* votos_contrarios / (votos_favoraveis + votos_contrarios)}%`}} 
+                        />    
+                    </> : 
+                    
+                    <>
+                        <hr style={{
+                            border: 'solid 3px #999', 
+                            width: `${100}%`}} 
+                        />
+
+                        {<hr style={{
+                            position: 'absolute',
+                            left: 0,
+                            border: 'solid 3px #d8d013', 
+                            transition: estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA ? "all 1.5s" : '',
+                            width: `${estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA ? 100 * temporizador/tempoMaximo : 100}%`}} 
+                        />}
+                    </> 
+                }
+                
+            </div>
+
+            <div className="d-flex w-100">
+                {/*telao && <div className="col-2"></div>*/}
+
+                <div className={/*telao ? "col-8" : */"col-12"}>
+                    <div style={{...estilo, ...e.enunciado}}>{votacao.texto}</div>
+                    <hr className="w-100" />
+                    <div style={{ ...estilo,  ...e.justificativa, opacity: estilo.opacity}}>
+                        {votacao.justificativa}
+                        <hr className="w-100" />
+                    </div>
+                </div>
+            </div>
+            {/*estadoVotacao === EstadoVotacao.VOTACAO &&  telao && <div className="col-12 d-flex flex-column text-center px-5" style={{position: 'absolute', bottom: 10}}>
+                <h5 className="">
+                    Votos registrados
+                    <h6 className='d-block'>
+                        { votos_contrarios + votos_favoraveis } / {votacao.votos.length}
+                    </h6>
+                </h5>
+                <div className='d-flex flex-wrap w-100 justify-content-between' style={{}}>
+                {votacao.votos.slice(0, 0).map(m => {
+                        const cor = m.voto === null ? "#999" : m.voto === 0 ? "#900" : "#070";
+                        const icone = m.voto === 0 ? faCircleXmark : faCircleCheck;
+
+                        return (
+                        <div key={m.id} style={{width: '23%'}}>
+                            <div className="flex-row d-flex align-items-center justify-content-center w-100">
+                                <div style={{...e.membro, color: cor}} >{m.nome}</div>
+                                {m.voto !== null && <FontAwesomeIcon className="m-1" color={cor} icon={icone}/>}
+                            </div>
+                            <hr className="w-100"/>
+                        </div>)
+                    })
+                }
+                </div>
+            </div>*/}
+ 
+            <div style={{
+                ...e.containerGrafico, 
+                opacity: estadoVotacao === EstadoVotacao.FINALIZADO && telao ? 1 : 0
+            }}>
+                <Chart 
+                    chartType='PieChart' 
+                    data={[
+                        ["", ""],
+                        [`${votos_favoraveis} favoráveis`, votos_favoraveis],
+                        [`${votos_contrarios} contrários`, votos_contrarios],
+                    ]} 
+                    options={{
+                        theme: 'maximized',
+                        pieStartAngle: 180,
+                        colors: ['#070', '#700'],
+                        legend: {
+                            position: 'right',
+                            alignment: 'center',
+                        },
+                        chartArea: {'width': 400, 'height': '80%'},
+                    }}
+                    width={'100%'}
+                    height={"300px"} 
+                />
+                <h3 style={{position: 'absolute', right:'32%', top: '27%', color:  aprovado ? '#070' : '#700' }}>{aprovado? 'Aprovado' : 'Rejeitado'}</h3>
+            </div>
+            
+            {
+                !telao && (
+                    <div className="d-flex w-100 justify-content-between" style={{marginTop: "auto", position:'sticky', bottom:'1rem'}}>
+                        <Button variant="danger" style={{width: '49.5%'}} onClick={()=> votar(false)}>Contra</Button>
+                        <Button variant="success" style={{width: '49.5%'}} onClick={()=> votar(true)}>A favor</Button>
+                    </div>
+                )
+            }
+        </div>
+        )}
+
+
         <Modal show={!telao && votoUsuario !== null} centered>
             <Modal.Body style={{ 
                 justifyContent: "center",
@@ -265,7 +265,7 @@ const e : {[key: string]: React.CSSProperties} = {
         position: 'absolute',
         bottom: 32,
         transition: 'all 1s', 
-        width: '100%',
+        width: 1024,
         display: 'flex',
         flexDirection:'column',
         alignItems: 'center'
@@ -276,7 +276,7 @@ const e : {[key: string]: React.CSSProperties} = {
         margin: 5,
         textIndent: 50,
         lineHeight: 1.5,
-        fontWeight: 600,
+        fontWeight: 500,
     },
     justificativa: {
         //fontSize: 18,

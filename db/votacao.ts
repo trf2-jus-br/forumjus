@@ -1,6 +1,7 @@
 import createHttpError from "http-errors";
 import PermissaoDAO from "./permissao";
 import CalendarioDAO from "./calendario";
+import { EstadoVotacao } from "../utils/enums";
 
 class VotacaoDAO {
     static async listar(db: PoolConnection, usuario: Usuario){
@@ -15,14 +16,15 @@ class VotacaoDAO {
                 statement_text as texto,
                 statement_justification as justificativa,
                 committee_name as comissao,
-                timestampdiff(second, votacao.inicio, now()) as inicio_defesa
+                timestampdiff(second, votacao.inicio, now()) as inicio_defesa,
+                votacao.status
             FROM votacao
                 LEFT JOIN statement on statement_id = votacao.enunciado
                 LEFT JOIN committee on statement.committee_id = committee.committee_id
             WHERE 
-                statement.committee_id = ? AND
-                inicio < now() AND
-                fim IS NULL;`
+                statement.committee_id = ?
+            ORDER BY id DESC 
+            LIMIT 1;`
 
         const SQL_ENUNCIADO_GERAL = 
             `SELECT 
@@ -62,12 +64,19 @@ class VotacaoDAO {
 
         return {
             votacao: enunciados[0].votacao,
+            estadoVotacao: enunciados[0].status,
             texto: enunciados[0].texto,
             justificativa: enunciados[0].justificativa,
             comissao: enunciados[0].comissao,
             inicio_defesa: enunciados[0].inicio_defesa,
             votos : votos
         }
+    }
+
+    static async existeVotacaoEmAndamento(db: PoolConnection, enunciado: number){
+        const [votacao] = await db.query('SELECT * FROM votacao WHERE enunciado = ? AND fim IS NULL;', [enunciado]);
+
+        return votacao[0] != undefined;
     }
 
     static async votar(db: PoolConnection, usuario: Usuario, votacao: number, favoravel: boolean){
@@ -81,8 +90,12 @@ class VotacaoDAO {
         await db.query(`INSERT INTO voto (votacao, membro, voto) VALUES (?, ?, ?)`, [votacao, usuario.id, favoravel]);
     }
 
+    static async alterar(db: PoolConnection, enunciado: number, estadoVotacao: EstadoVotacao){
+        const SQL = `UPDATE votacao SET status = ?, inicio = now() WHERE enunciado = ? ORDER BY id DESC LIMIT 1;`
+        await db.query(SQL, [estadoVotacao, enunciado]);  
+    }
 
-    static async iniciar(db: PoolConnection, usuario: Usuario, id_enunciado: number){
+    static async criar(db: PoolConnection, usuario: Usuario, id_enunciado: number){
         // Busca no banco a data e hora das votações.
         const calendario = await CalendarioDAO.hoje(db);
         
@@ -124,9 +137,9 @@ class VotacaoDAO {
 
 
         // Caso esteja tudo certo, inicia a votação.
-        const SQL = `INSERT INTO votacao(enunciado, iniciada_por) VALUES (?, ?);`
+        const SQL = `INSERT INTO votacao(enunciado, iniciada_por, status) VALUES (?, ?, ?);`
 
-        await db.query(SQL, [id_enunciado, usuario.id]);
+        await db.query(SQL, [id_enunciado, usuario.id, EstadoVotacao.APRESENTACAO_ENUNCIADO]);
     }
 
     
@@ -153,12 +166,12 @@ class VotacaoDAO {
             throw "Aguarde até a data da votação.";
 
         // Determina o SQL que deve ser executado.
-        const SQL_GERAL = `UPDATE votacao SET fim = now();`
+        const SQL_GERAL = `UPDATE votacao SET fim = now(), status = ${EstadoVotacao.FINALIZADO};`
 
         const SQL_POR_COMISSAO = 
             `UPDATE votacao
                 INNER JOIN statement on votacao.enunciado = statement_id
-                SET votacao.fim = now()
+                SET votacao.fim = now(), status = ${EstadoVotacao.FINALIZADO}
                 WHERE committee_id = ?;`
 
         const SQL = por_comissao ? SQL_POR_COMISSAO : SQL_GERAL;

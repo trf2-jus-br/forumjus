@@ -16,6 +16,7 @@ interface Props {
     enunciado: EnunciadoVotacao,
     filtro: number,
     acao: Function,
+    gerenciarEnunciado: (id) => void;
 }
 
 export function formatarCodigo({committee_id, codigo}: Enunciado){
@@ -25,58 +26,16 @@ export function formatarCodigo({committee_id, codigo}: Enunciado){
     return committee_id + codigo.toString().padStart(3, "0");
 }
 
-function Enunciado({ enunciado, filtro, acao} : Props){
+function Enunciado({ enunciado, filtro, acao, gerenciarEnunciado} : Props){
     const [mostrarMais, setMostrarMais] = useState(false);
-    const [ativo, setAtivo] = useState(enunciado.votacao_inicio != null && enunciado.votacao_fim == null);
     const [estilo, setEstilo] = useState({});
 
     const {
         statement_text, statement_justification, committee_id, statement_id,
     } = enunciado;
 
-    const { api, exibirNotificacao } = usarContexto();
-
-    async function iniciarVotacao(){
-        try{
-            await api.put('/api/votacao', {
-                enunciado: statement_id
-            })
-            setAtivo(true);
-
-            exibirNotificacao({
-                texto: "Votação iniciada com sucesso!",
-            })
-
-        }catch(err){
-            // Notifica que ocorreu um erro.            
-            exibirNotificacao({
-                titulo: "Não foi possível processar seu pedido.",
-                texto: retornoAPI(err),
-                tipo: "ERRO"
-            })
-        }
-    }
-
-    async function pararVotacao(){
-        try{
-            await api.delete('/api/votacao')
-            setEstilo(e.oculto);
-            setAtivo(false);
-            setTimeout(()=> setEstilo(e =>({...e, display: 'none'})), 251)
-
-            exibirNotificacao({
-                texto: "Votação encerrada com sucesso!",
-            })
-        }catch(err){
-            // Notifica que ocorreu um erro.            
-            exibirNotificacao({
-                titulo: "Não foi possível processar seu pedido.",
-                texto: retornoAPI(err),
-                tipo: "ERRO"
-            })
-        }
-    }
-
+    const ativo = enunciado.votacao_inicio != null && enunciado.votacao_fim == null;
+   
     if(filtro !== null && filtro != committee_id)
         return <></>;
 
@@ -104,7 +63,7 @@ function Enunciado({ enunciado, filtro, acao} : Props){
                         <Button 
                             className={`btn m-1`} 
                             style={{opacity: 1}} 
-                            onClick={ativo ? pararVotacao : iniciarVotacao}
+                            onClick={() => gerenciarEnunciado(enunciado)}
                             variant={ativo? 'danger' : 'primary'}
                         >
                             <FontAwesomeIcon fontSize={18} icon={ativo ? faStop: faListCheck} />
