@@ -5,9 +5,9 @@ async function manipulacao_perigosa_do_banco({req, res, db, usuario} : API){
     if(usuario?.funcao !== "PROGRAMADOR")
         throw createHttpError.BadRequest(`${usuario?.funcao} não tem permissão para acessar essa API.`);
 
-    if(process.env.HOMOLOGACAO !== "true"){
-        throw createHttpError.BadRequest(`Essa api só pode ser utilizada em HOMOLOGAÇÃO.`);
-    }
+    //if(process.env.HOMOLOGACAO !== "true"){
+    //    throw createHttpError.BadRequest(`Essa api só pode ser utilizada em HOMOLOGAÇÃO.`);
+    //}
 
     const { acao } = req.query;
 
