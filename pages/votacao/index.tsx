@@ -124,7 +124,7 @@ function Votacao({telao}: Props){
                 
                 <div className="d-flex align-items-center justify-content-end col-1 tex">
                     {(estadoVotacao === EstadoVotacao.APRESENTACAO_ENUNCIADO || estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA) ? 
-                        <FontAwesomeIcon fontSize={30} className="m-1" color={'#d8d013'} icon={faStopwatch}/>
+                        <FontAwesomeIcon fontSize={30} className="m-1" color={'#1390d8'} icon={faStopwatch}/>
                         :
                         <>
                             {telao && <span style={{fontSize: 18}} className="p-2">{ votos_contrarios + votos_favoraveis } / {votacao.votos.length}</span>}
@@ -160,7 +160,7 @@ function Votacao({telao}: Props){
                         {<hr style={{
                             position: 'absolute',
                             left: 0,
-                            border: 'solid 3px #d8d013', 
+                            border: 'solid 3px #1390d8', 
                             transition: estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA ? "all 1.5s" : '',
                             width: `${estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA ? 100 * temporizador/tempoMaximo : 100}%`}} 
                         />}
