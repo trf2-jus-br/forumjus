@@ -31,12 +31,14 @@ class VotacaoDAO {
                 votacao.id as votacao,
                 statement_text as texto,
                 statement_justification as justificativa,
-                committee_name as comissao
-                timestampdiff(second, votacao.inicio, now()) as inicio_defesa
+                committee_name as comissao,
+                timestampdiff(second, votacao.inicio, now()) as inicio_defesa,
+                votacao.status
             FROM votacao
                 LEFT JOIN statement on statement_id = votacao.enunciado
                 LEFT JOIN committee on statement.committee_id = committee.committee_id
-            WHERE fim IS NULL`;
+            ORDER BY id DESC 
+            LIMIT 1;`;
         
         const SQL_ENUNCIADO = votacao_geral ? SQL_ENUNCIADO_GERAL : SQL_ENUNCIADO_POR_COMISSAO;
         const params_enunciados = votacao_geral ? [] : [comissao];
@@ -46,7 +48,7 @@ class VotacaoDAO {
         if(enunciados.length === 0)
             return null;
         
-        const SQL_VOTO = 
+        const SQL_VOTO_GERAL = 
             `SELECT 
                 membro.id,
                 membro.nome,
@@ -57,10 +59,23 @@ class VotacaoDAO {
             ) V on V.membro = membro.id
             ORDER BY V.data DESC;`
 
-        const [votos] = await db.query(SQL_VOTO, [
-            enunciados[0].votacao,
-            comissao
-        ])
+        const SQL_VOTO_POR_COMISSAO = 
+            `SELECT 
+                membro.id,
+                membro.nome,
+                CAST(V.voto as SIGNED) voto
+            FROM membro
+            LEFT JOIN (
+                SELECT * FROM voto where votacao = ?
+            ) V on V.membro = membro.id
+            WHERE comite = ?
+            ORDER BY V.data DESC;`
+
+
+        const SQL_VOTO = votacao_geral ? SQL_VOTO_GERAL : SQL_VOTO_POR_COMISSAO;
+        const params_votos = votacao_geral ? [enunciados[0].votacao, comissao] : [enunciados[0].votacao,comissao,comissao];
+
+        const [votos] = await db.query(SQL_VOTO, params_votos);
 
         return {
             votacao: enunciados[0].votacao,
