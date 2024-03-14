@@ -24,7 +24,7 @@
         "jsonwebtoken": "^9.0.2",
         "moment": "^2.29.4",
         "mysql2": "^3.0.1",
-        "next": "latest",
+        "next": "^13.1.6",
         "nodemailer": "^6.9.0",
         "pdfmake": "^0.2.7",
         "qrcode": "^1.5.3",
