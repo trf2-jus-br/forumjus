@@ -14,10 +14,13 @@ import Encerramento from './encerramento';
 import Carregamento from './carregamento';
 
 import {EstadoVotacao} from '../../utils/enums';
+import Grafico from './grafico';
 
 interface Props {
     telao?: boolean
 }
+
+type Visibilidade = 'visivel' | 'oculto';
 
 const tempoMaximo = 180;
 
@@ -25,7 +28,7 @@ function Votacao({telao}: Props){
     const [votacao, setVotacao] = useState<Votacao>(null);
     const [votoUsuario, setVotoUsuario] = useState(null);
     const [processandoVoto, setProcessandoVoto] = useState(false);
-    const [estilo, setEstilo] = useState({});
+    const [visibilidade, setVisibilidade] = useState<Visibilidade>('oculto');
     const [temporizador, setTempoziador] = useState(null);
 
     const { api, usuario, exibirNotificacao } = usarContexto();
@@ -48,22 +51,19 @@ function Votacao({telao}: Props){
 
             atualizarTemporizador(data);
 
-            console.log(data.justificativa, votacao?.justificativa)
-            if(!data || data.justificativa != votacao?.justificativa){
-                setEstilo(e.ocultar)
-            }else{
-                setEstilo(e.exibir)
+            if(visibilidade === 'visivel' && votacao.justificativa != data?.justificativa){
+                return setVisibilidade('oculto')
             }
 
             // Só atualizo o objeto votação, nunca deixo ele nulo.
             // Fiz isso para viabilizar as animações.
             if(data){
+                setVisibilidade('visivel')
                 setVotacao(!data ? null : data);
                 const votoUsuario = data.votos.find(({id})=> id === usuario.id);
                 setVotoUsuario(votoUsuario.voto);
             }
         }catch(err){
-            console.log(err);
             // avisa sobre o erro.
             exibirNotificacao({
                 titulo: "Não foi possível carregar a votação.",
@@ -103,24 +103,25 @@ function Votacao({telao}: Props){
         return () => {
             clearInterval(interval);
         }
-    }, [temporizador, votacao])
+    }, [temporizador, votacao, visibilidade])
 
     const votos_contrarios = votacao?.votos?.filter(({voto}) => voto === 0)?.length || 0;
     const votos_favoraveis = votacao?.votos?.filter(({voto}) => voto === 1)?.length || 0;
-    const aprovado = votos_favoraveis && votos_favoraveis / (votos_favoraveis + votos_contrarios) >= 0.75
 
     const estadoVotacao = votacao?.estadoVotacao;
+
+    const classeJustificativa = estadoVotacao === EstadoVotacao.FINALIZADO && telao ? 'opacity-0' : 'opacity-100';
 
     return <Layout fluid cabecalho={<Cabecalho/>}>
         {votacao == null && <Abertura />}
         {/*estadoVotacao === EstadoVotacao.ENCERRAMENTO && <Encerramento />*/}
         {votacao && (
-            <div className="d-flex flex-column align-items-center w-100" 
-            style={{opacity: estilo.opacity, transition: "all 0.5s", flex: 1, overflow: 'hidden'}}
+            <div className={`d-flex flex-column align-items-center w-100 ${visibilidade === 'oculto' ? 'opacity-0' : 'opacity-100'}`} 
+            style={{transition: "all 0.5s", flex: 1, overflow: 'hidden'}}
         >
             <div className="d-flex justify-content-between w-100 align-items-center" style={{minHeight: 50}}>
                 <div className='col-1'></div>
-                <h5 className='votacao-comissao col-10 text-center' style={{...estilo}}>{votacao.comissao}</h5>
+                <h5 className={`votacao-comissao col-10 text-center ${visibilidade}`}>{votacao.comissao}</h5>
                 
                 <div className="d-flex align-items-center justify-content-end col-1 tex">
                     {(estadoVotacao === EstadoVotacao.APRESENTACAO_ENUNCIADO || estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA) ? 
@@ -172,10 +173,10 @@ function Votacao({telao}: Props){
             <div className="d-flex w-100">
                 {/*telao && <div className="col-2"></div>*/}
 
-                <div className={/*telao ? "col-8" : */"col-12"}>
-                    <div className='votacao-texto' style={{...estilo, ...e.enunciado}}>{votacao.texto}</div>
+                <div className={`col-12 ${visibilidade}`}>
+                    <div className='votacao-texto' style={{...e.enunciado}}>{votacao.texto}</div>
                     <hr className="w-100" />
-                    <div className='votacao-justificativa' style={{ ...estilo,  ...e.justificativa, opacity: estilo.opacity}}>
+                    <div className={`votacao-justificativa ${classeJustificativa}`}>
                         {votacao.justificativa}
                         <hr className="w-100" />
                     </div>
@@ -206,38 +207,32 @@ function Votacao({telao}: Props){
                 </div>
             </div>*/}
  
-            <div style={{
-                ...e.containerGrafico, 
-                opacity: estadoVotacao === EstadoVotacao.FINALIZADO && telao ? 1 : 0
-            }}>
-                <Chart 
-                    chartType='PieChart' 
-                    data={[
-                        ["", ""],
-                        [`${votos_favoraveis} favoráveis`, votos_favoraveis],
-                        [`${votos_contrarios} contrários`, votos_contrarios],
-                    ]} 
-                    options={{
-                        theme: 'maximized',
-                        pieStartAngle: 180,
-                        colors: ['#070', '#700'],
-                        legend: {
-                            position: 'right',
-                            alignment: 'center',
-                        },
-                        chartArea: {'width': '100%', 'height': '80%'},
-                    }}
-                    width={'100%'}
-                    height={"300px"} 
-                />
-                <h3 style={{position: 'absolute', right:'32%', top: '27%', color:  aprovado ? '#070' : '#700' }}>{aprovado? 'Aprovado' : 'Rejeitado'}</h3>
-            </div>
+            <Grafico 
+                visivel={estadoVotacao === EstadoVotacao.FINALIZADO && telao} 
+                key={votacao.justificativa} 
+                votos_favoraveis={votos_favoraveis} 
+                votos_contrarios={votos_contrarios} 
+            />
             
             {
                 !telao && (
                     <div className="d-flex w-100 justify-content-between" style={{marginTop: "auto", position:'sticky', bottom:'1rem'}}>
-                        <Button variant="danger" style={{width: '49.5%'}} onClick={()=> votar(false)}>Contra</Button>
-                        <Button variant="success" style={{width: '49.5%'}} onClick={()=> votar(true)}>A favor</Button>
+                        <Button 
+                            className={estadoVotacao === EstadoVotacao.VOTACAO ? 'opacity-100' : 'opacity-0'} 
+                            variant="danger" 
+                            style={{width: '49.5%'}} 
+                            onClick={()=> votar(false)}
+                        >
+                            Contra
+                        </Button>
+                        <Button 
+                            className={estadoVotacao === EstadoVotacao.VOTACAO ? 'opacity-100' : 'opacity-0'} 
+                            variant="success" 
+                            style={{width: '49.5%'}} 
+                            onClick={()=> votar(true)}
+                        >
+                            A favor
+                        </Button>
                     </div>
                 )
             }
@@ -261,16 +256,6 @@ function Votacao({telao}: Props){
 }
 
 const e : {[key: string]: React.CSSProperties} = {
-    containerGrafico: {
-        position: 'absolute',
-        bottom: 32,
-        transition: 'all 1s', 
-        width: '100%',
-        maxWidth: 1024,
-        display: 'flex',
-        flexDirection:'column',
-        alignItems: 'center'
-    },
     enunciado: {
         textAlign: "center",
         margin: 5,
@@ -278,25 +263,8 @@ const e : {[key: string]: React.CSSProperties} = {
         lineHeight: 1.5,
         fontWeight: 500,
     },
-    justificativa: {
-        //fontSize: 18,
-        textAlign: "justify",
-        margin: 10,
-        textIndent: 50,
-        lineHeight: 1.75
-    },
     membro: {
         fontSize: 14
-    },
-    exibir: {
-        transition: "all 1s",
-        transform: "scale(1)",
-        opacity: 1,
-    },
-    ocultar: {
-        transition: "all 1s",
-        transform: "scale(0.75)",
-        opacity: 0,
     },
 }
 
