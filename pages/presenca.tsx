@@ -20,23 +20,35 @@ export default function Home() {
       });
     }
     useEffect(()=>{carregarMembros();}, []);
-    
+
+    /*
     function limpaSugestoeoesAutocompletar(){
         //setMembros([]); //Limpa lista de sugestões
         //carregarMembros(); //Atualiza se usuario apagar o que digitou
     }
+    */
 
-    function cadastrarPresenca(membro: Membro){
-      limpaSugestoeoesAutocompletar();
-      api.post<Membro>('/api/presenca', {membroId: membro.id}).then(({data}) => {
+    function cadastrarPresenca(membro) {
+      //limpaSugestoeoesAutocompletar()
+      const presenca = {
+          membroId: membro.id,
+          dia: '1ª VOTAÇÃO' // ou '2ª VOTAÇÃO', dependendo da lógica
+      };
+
+      api.post('/api/presenca', presenca).then(response => {
+          exibirNotificacao({
+              titulo: "Presença cadastrada com sucesso",
+              texto: "A presença foi cadastrada com sucesso.",
+              tipo: "SUCESSO"    
+          });
       }).catch(err => {
           exibirNotificacao({
-            titulo: "Não foi possível executar o procedimento",
-            texto: retornoAPI(err),
-            tipo: "ERRO"    
+              titulo: "Não foi possível cadastrar a presença",
+              texto: retornoAPI(err),
+              tipo: "ERRO"    
           });
       });
-    }
+  }
   
     return (
       <div>

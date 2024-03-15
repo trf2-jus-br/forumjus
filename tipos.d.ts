@@ -169,3 +169,13 @@ interface Calendario {
     inicio: string,
     fim : string,
 }
+
+type DiaVotacao = '1ª VOTAÇÃO' | '2ª VOTAÇÃO';
+
+interface Presenca {
+    id: number;
+    membro: number;
+    entrada: Date;
+    saida?: Date;  // O ponto de interrogação indica que o campo é opcional
+    dia: DiaVotacao;
+}
