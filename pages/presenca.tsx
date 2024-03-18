@@ -87,22 +87,32 @@ export default function Home() {
     IdDoMembroSelecionado = id;
   }
   
-    return (
-      <div>
-          <h1>Autocomplete</h1>
-          <Autocomplete dataList={membro} 
-          render={m => m.nome} 
-          onclick={m => selecionarMembro(m.id)}/>
-          {/* Botão de Presença */}
-          <button onClick={
-            () => cadastrarPresenca(IdDoMembroSelecionado)}>
-              Cadastrar Presença
-          </button>
-          {/* Botão de Saída */}
-          <button onClick={
-            () => cadastrarSaida(IdDoMembroSelecionado)}>
-              Cadastrar Saída
-          </button>
+    return <>
+      <div className="container content">
+        <div className="px-4 py-5 my-5 text-center">
+          <div className="col-lg-6 mx-auto">
+            <h1 className="mb-4 mt-4">Cadastro de Presença</h1>
+            <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
+              <div>
+                  <Autocomplete dataList={membro} 
+                  render={m => m.nome} 
+                  onclick={m => selecionarMembro(m.id)}/>
+                  {/* Botão de Presença */}
+                  <button className="btn btn-primary btn-lg px-4" style={{ "color": "white" }} onClick={
+                    () => cadastrarPresenca(IdDoMembroSelecionado)}>
+                      Registrar Entrada
+                  </button>
+                  &nbsp;
+                  &nbsp;
+                  {/* Botão de Saída */}
+                  <button className="btn btn-primary btn-lg px-4" style={{ "color": "white" }} onClick={
+                    () => cadastrarSaida(IdDoMembroSelecionado)}>
+                      Registrar Saída
+                  </button>
+                </div>
+          </div>
+        </div>
       </div>
-  );
+    </div>
+  </>
 }
