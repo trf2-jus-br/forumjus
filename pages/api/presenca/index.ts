@@ -13,10 +13,15 @@ async function atualizar({req, res, db, usuario}: API) {
 }
 
 async function listar({req, res, db, usuario} : API){
-    let saida = await PresencaDAO.listarMembrosPresentes(db, usuario)
-    res.send(saida);
+    let comite = Number(req.query.comissaoId); 
+    if (comite) {
+        let saida = await PresencaDAO.listarMembrosPresentesPorComite(db, usuario, comite);
+        res.send(saida);
+    } else {
+        let saida = await PresencaDAO.listarMembrosPresentes(db, usuario);
+        res.send(saida);
+    }
 }
-
 
 export default apiHandler({
     POST: criar,

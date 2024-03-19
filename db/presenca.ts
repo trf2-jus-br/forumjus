@@ -24,6 +24,27 @@ class PresencaDAO {
         const [result] = await db.query(query);
         return result as Presenca[];
     }
+
+    static async listarMembrosPresentesPorComite(db: PoolConnection, usuario: Usuario, comite: number){
+        let query = `
+            SELECT 
+                m.nome, 
+                m.funcao, 
+                m.comite,
+                DATE_FORMAT(p.entrada, '%d/%m/%Y %H:%i:%s') as entrada,
+                DATE_FORMAT(p.saida, '%d/%m/%Y %H:%i:%s') as saida
+            FROM 
+                presenca p 
+            INNER JOIN 
+                membro m ON p.membro = m.id    
+            WHERE 
+                m.comite = ?
+            ORDER BY 
+                p.entrada ASC;
+        `;
+        const [result] = await db.query(query, [comite]);
+        return result as Presenca[];
+    }
 }
 
 export default PresencaDAO;
