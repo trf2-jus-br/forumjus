@@ -7,7 +7,9 @@ let IdDoMembroSelecionado = null;
 
 export default function Home() {
     const [membro, setMembros] = useState({});
+    const [presencas, setPresencas] = useState([]);
     const { api, exibirNotificacao } = usarContexto();
+
     function carregarMembros(){
       api.get('/api/membro').then(({data}) => {
         setMembros(data);
@@ -21,9 +23,34 @@ export default function Home() {
           setTimeout(carregarMembros, 4000);
       });
     }
-    useEffect(()=>{carregarMembros();}, []);
+
+    function carregarPresencas() {
+      api.get('/api/presenca').then(({ data }) => {
+          setPresencas(data);
+      }).catch(err => {
+          exibirNotificacao({
+              titulo: "Não foi possível carregar a lista de presença.",
+              texto: retornoAPI(err),
+              tipo: "ERRO"    
+          });
+      });
+  }
+
+    useEffect(()=>{
+      carregarMembros();
+      carregarPresencas();
+
+      //Atualiza a lista de presenças a cada minuto
+      const interval = setInterval(() => {
+        carregarPresencas();
+      }, 60000);
+    
+      return () => clearInterval(interval);
+      
+    }, []);
 
     function cadastrarPresenca(membro_id) {
+      //TODO: tirar o if e else
       if (membro_id) {
         const presenca = {
             membroId: membro_id,
@@ -37,6 +64,7 @@ export default function Home() {
                 texto: "A presença foi cadastrada com sucesso.",
                 tipo: "SUCESSO"    
             });
+            carregarPresencas();
         }).catch(err => {
             exibirNotificacao({
                 titulo: "Não foi possível cadastrar a presença",
@@ -67,6 +95,7 @@ export default function Home() {
               texto: "A presença foi cadastrada com sucesso.",
               tipo: "SUCESSO"    
           });
+          carregarPresencas();
       }).catch(err => {
           exibirNotificacao({
               titulo: "Não foi possível cadastrar a presença",
@@ -92,7 +121,7 @@ export default function Home() {
         <div className="px-4 py-5 my-5 text-center">
           <div className="col-lg-6 mx-auto">
             <h1 className="mb-4 mt-4">Cadastro de Presença</h1>
-            <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <div className="d-grid gap-2 justify-content-sm-center">
               <div>
                   <Autocomplete dataList={membro} 
                   render={m => m.nome} 
@@ -109,7 +138,31 @@ export default function Home() {
                     () => cadastrarSaida(IdDoMembroSelecionado)}>
                       Registrar Saída
                   </button>
-                </div>
+              </div>
+              <hr></hr>
+              <div>
+                <h2>Lista de Presenças</h2>
+                <table className="table table-striped">
+                  <thead>
+                                    <tr>
+                                        <th scope="col">Nome</th>
+                                        <th scope="col">Função</th>
+                                        <th scope="col">Entrada</th>
+                                        <th scope="col">Saída</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {presencas.map((presenca, index) => (
+                                        <tr key={index}>
+                                            <td>{presenca.nome}</td>
+                                            <td>{presenca.funcao}</td>
+                                            <td>{presenca.entrada}</td>
+                                            <td>{presenca.saida}</td>
+                                        </tr>
+                                    ))}
+                    </tbody>
+                </table>
+            </div>
           </div>
         </div>
       </div>
