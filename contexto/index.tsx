@@ -9,7 +9,7 @@ const contexto = React.createContext<Contexto>(null);
 
 // define as página que podem ser acessadas sem login.
 const paginas_publicas = [
-    "/assessoria/login", '/', '/register', '/comissao/login/.*', '/presenca'
+    "/assessoria/login", '/', '/register', '/comissao/login/.*'
 ]
 
 export function ContextoProvider({children}){
