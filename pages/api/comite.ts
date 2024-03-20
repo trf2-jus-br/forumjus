@@ -9,7 +9,7 @@ async function listar({req, res, db, usuario}: API){
 
     const comites = detalhes ? 
         await ComiteDAO.detalhar(db, usuario) : 
-        await ComiteDAO.listar(db);
+        await ComiteDAO.listar(db)
     res.send(comites);
 }
 

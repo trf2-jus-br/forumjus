@@ -1,3 +1,7 @@
+//extensão react-qr-reader não funciona por causa da versão do next.js
+//não é possível atualizar por falta de permissões
+//TODO: Procurar lib de leitura de qrcode compativel com versão antiga do next
+
 import PresencaDAO from "../../../db/presenca";
 import { apiHandler } from "../../../utils/apis";
 

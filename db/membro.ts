@@ -31,18 +31,17 @@ class MembroDAO {
         await db.query("DELETE FROM membro WHERE proponente = ? and comite = ?;", [proponente, comite]);
     }
 
-    static async listar(db: PoolConnection, usuario: Usuario){
-        const SQL_GERAL = 'SELECT * FROM membro;';
+    static async listar(db: PoolConnection, usuario: Usuario, comite: string){
         const SQL_ESPECIFICO = 'SELECT * FROM membro WHERE comite = ?;';
+        const SQL_GERAL = 'SELECT * FROM membro;';
 
-        const {estatistica, administrar_comissoes} = await PermissaoDAO.carregar(db, usuario);
-
-        const sql = estatistica ? SQL_GERAL : SQL_ESPECIFICO;
-        const params = estatistica ? [] : administrar_comissoes;
-
-        const [result] = await db.query(sql, params);
-        
-        return result as Membro[];
+        if (comite != "0" && comite != null) {
+            const [result] = await db.query(SQL_ESPECIFICO, [comite]);
+            return result as Membro[];
+        } else {
+            const [result] = await db.query(SQL_GERAL);
+            return result as Membro[];
+        }
     }
     
     static async listarTodos(db: PoolConnection, usuario: Usuario){

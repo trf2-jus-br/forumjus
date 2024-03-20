@@ -4,25 +4,30 @@ import { usarContexto } from '../contexto';
 import { retornoAPI } from '../utils/api-retorno';
 
 let IdDoMembroSelecionado = null;
+let comiteSelecionado = null;
 
 export default function Home() {
     const [membro, setMembros] = useState({});
+    const [comite, setComites] = useState([]); 
     const [presencas, setPresencas] = useState([]);
     const { api, exibirNotificacao } = usarContexto();
 
-    function carregarMembros(){
-      api.get('/api/membro').then(({data}) => {
-        setMembros(data);
+    function carregarMembros() {
+      let url = '/api/membro';
+      if (comiteSelecionado) {
+          url += `?comissaoId=${comiteSelecionado}`;
+      }
+      
+      api.get(url).then(({data}) => {
+          setMembros(data);
       }).catch(err => {
           exibirNotificacao({
-            titulo: "Não foi possível carregar os dados.",
-            texto: retornoAPI(err),
-            tipo: "ERRO"    
+              titulo: "Não foi possível carregar os dados.",
+              texto: retornoAPI(err),
+              tipo: "ERRO"    
           });
-    
-          setTimeout(carregarMembros, 4000);
       });
-    }
+  }
 
     function carregarPresencas() {
       api.get('/api/presenca').then(({ data }) => {
@@ -36,9 +41,21 @@ export default function Home() {
       });
   }
 
+  function carregarComites() {
+    api.get('/api/comite').then(({ data }) => {
+        setComites(data);
+    }).catch(err => {
+        exibirNotificacao({
+            titulo: "Não foi possível carregar a lista de comissões.",
+            texto: retornoAPI(err),
+            tipo: "ERRO"    
+        });
+    });
+  }
     useEffect(()=>{
-      carregarMembros();
-      carregarPresencas();
+      carregarComites()
+      carregarMembros()
+      carregarPresencas()
 
       //Atualiza a lista de presenças a cada minuto
       const interval = setInterval(() => {
@@ -112,15 +129,34 @@ export default function Home() {
   }
 }
 
+
   function selecionarMembro(id) {
     IdDoMembroSelecionado = id;
+  }
+
+  function selecionarComite(event) {
+    comiteSelecionado = event.target.value
+    carregarMembros()
   }
   
     return <>
       <div className="container content">
         <div className="px-4 py-5 my-5 text-center">
           <div className="col-lg-6 mx-auto">
-            <h1 className="mb-4 mt-4">Cadastro de Presença</h1>
+          <h1 className="mb-4 mt-4">Cadastro de Presença</h1>
+          <hr></hr>
+          <div className="mb-3">
+            <h2 className="mb-4 mt-4">Selecione a comissão</h2>
+            <select id="comissaoSelect" className="form-select" onChange={selecionarComite}>
+                <option value="0">Geral</option>
+                {comite.map((c, index) => (
+                    <option key={index} value={c.committee_id}>{c.committee_name}</option>
+                ))}
+            </select>
+        </div>
+
+            <hr></hr>
+            <h2 className="mb-4 mt-4">Selecione o membro</h2>
             <div className="d-grid gap-2 justify-content-sm-center">
               <div>
                   <Autocomplete dataList={membro} 

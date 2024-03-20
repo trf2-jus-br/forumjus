@@ -6,6 +6,7 @@ import Toast from './toast';
 import { retornoAPI } from '../utils/api-retorno';
 
 const contexto = React.createContext<Contexto>(null);
+//TODO: acertar versão do next
 
 // define as página que podem ser acessadas sem login.
 const paginas_publicas = [
