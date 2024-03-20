@@ -44,6 +44,19 @@ class MembroDAO {
         
         return result as Membro[];
     }
+    
+    static async listarTodos(db: PoolConnection, usuario: Usuario){
+        const SQL_GERAL = 'SELECT * FROM membro;';
+        //const SQL_ESPECIFICO = 'SELECT * FROM membro WHERE comite = ?;';
+        const SQL_ESPECIFICO = 'SELECT * FROM membro ;';
+
+        const {estatistica, administrar_comissoes} = await PermissaoDAO.carregar(db, usuario);
+        const sql = estatistica ? SQL_GERAL : SQL_ESPECIFICO;
+        const params = estatistica ? [] : administrar_comissoes;
+        const [result] = await db.query(sql, params);
+
+        return result as Membro[];
+    }
 }
 
 export default MembroDAO;
