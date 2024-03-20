@@ -15,16 +15,17 @@ async function manipulacao_perigosa_do_banco({req, res, db, usuario} : API){
         case "limparVotacao":
             await db.query("delete from voto where id >= 0;");
             await db.query("delete from votacao where id >= 0;");
+            await db.query("delete from presenca where id >= 0;");
             break;
 
         case "iniciarVotacaoPorComissao":
-            await db.query("UPDATE calendario SET inicio = date_add(utc_timestamp(), interval -3 hour), fim = date_add(now(), interval 1 month) WHERE evento = 'VOTAÇÃO POR COMISSÃO';");
-            await db.query("UPDATE calendario SET fim = date_add(utc_timestamp(), interval -3 hour) WHERE evento = 'VOTAÇÃO GERAL';");
+            await db.query("UPDATE calendario SET inicio = now(), fim = date_add(now(), interval 1 month) WHERE evento = 'VOTAÇÃO POR COMISSÃO';");
+            await db.query("UPDATE calendario SET fim = now() WHERE evento = 'VOTAÇÃO GERAL';");
             break;
 
         case "iniciarVotacaoGeral":
-            await db.query("UPDATE calendario SET inicio = date_add(utc_timestamp(), interval -3 hour), fim = date_add(now(), interval 1 month) WHERE evento = 'VOTAÇÃO GERAL';");
-            await db.query("UPDATE calendario SET fim = date_add(utc_timestamp(), interval -3 hour) WHERE evento = 'VOTAÇÃO POR COMISSÃO';");
+            await db.query("UPDATE calendario SET inicio = now(), fim = date_add(now(), interval 1 month) WHERE evento = 'VOTAÇÃO GERAL';");
+            await db.query("UPDATE calendario SET fim = now() WHERE evento = 'VOTAÇÃO POR COMISSÃO';");
             break;
 
         default:

@@ -128,7 +128,7 @@ function Votacao({telao}: Props){
                         <FontAwesomeIcon fontSize={30} className="m-1" color={'#1390d8'} icon={faStopwatch}/>
                         :
                         <>
-                            {telao && <span style={{fontSize: 18}} className="p-2">{ votos_contrarios + votos_favoraveis } / {votacao.votos.length}</span>}
+                            {telao && <span style={{fontSize: 18}} className="p-2">{ votos_contrarios + votos_favoraveis } / {votacao.quorum}</span>}
                         </>
                     }
                 </div>
@@ -210,6 +210,7 @@ function Votacao({telao}: Props){
             <Grafico 
                 visivel={estadoVotacao === EstadoVotacao.FINALIZADO && telao} 
                 key={votacao.justificativa} 
+                quorum={votacao.quorum}
                 votos_favoraveis={votos_favoraveis} 
                 votos_contrarios={votos_contrarios} 
             />

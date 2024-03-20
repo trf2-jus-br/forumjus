@@ -4,6 +4,8 @@ import CalendarioDAO from "./calendario";
 import { EstadoVotacao } from "../utils/enums";
 
 class VotacaoDAO {
+    // função chamada pelas telas '/votacao' e '/telao'.
+    // traz as  informações do enunciado que está sendo votado.
     static async listar(db: PoolConnection, usuario: Usuario){
         const calendario = await CalendarioDAO.hoje(db);
         const votacao_geral = calendario.find(c => c.evento === "VOTAÇÃO GERAL");
@@ -16,9 +18,10 @@ class VotacaoDAO {
                 statement_text as texto,
                 statement_justification as justificativa,
                 committee_name as comissao,
-                timestampdiff(second, votacao.inicio, now()) as inicio_defesa,
-                votacao.status
-            FROM votacao
+                timestampdiff(second, votacao.alterado, now()) as inicio_defesa,
+                votacao.status,
+                votacao.quorum
+            FROM votacao_detalhada as votacao
                 LEFT JOIN statement on statement_id = votacao.enunciado
                 LEFT JOIN committee on statement.committee_id = committee.committee_id
             WHERE 
@@ -33,8 +36,9 @@ class VotacaoDAO {
                 statement_justification as justificativa,
                 committee_name as comissao,
                 timestampdiff(second, votacao.inicio, now()) as inicio_defesa,
-                votacao.status
-            FROM votacao
+                votacao.status,
+                votacao.quorum
+            FROM votacao_detalhada as votacao
                 LEFT JOIN statement on statement_id = votacao.enunciado
                 LEFT JOIN committee on statement.committee_id = committee.committee_id
             ORDER BY id DESC 
@@ -78,6 +82,7 @@ class VotacaoDAO {
         const [votos] = await db.query(SQL_VOTO, params_votos);
 
         return {
+            quorum: enunciados[0].quorum,
             votacao: enunciados[0].votacao,
             estadoVotacao: enunciados[0].status,
             texto: enunciados[0].texto,
@@ -106,7 +111,7 @@ class VotacaoDAO {
     }
 
     static async alterar(db: PoolConnection, enunciado: number, estadoVotacao: EstadoVotacao){
-        const SQL = `UPDATE votacao SET status = ?, inicio = now() WHERE enunciado = ? ORDER BY id DESC LIMIT 1;`
+        const SQL = `UPDATE votacao SET status = ?, alterado = now() WHERE enunciado = ? ORDER BY id DESC LIMIT 1;`
         await db.query(SQL, [estadoVotacao, enunciado]);  
     }
 

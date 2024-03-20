@@ -3,28 +3,32 @@ import { Chart } from 'react-google-charts';
 
 
 interface Props {
-    votos_favoraveis: number | null;
-    votos_contrarios: number | null;
+    votos_favoraveis: number;
+    votos_contrarios: number;
+    quorum: number;
     key: string | null;
     visivel: boolean;
 }
 
-function Grafico({votos_contrarios, votos_favoraveis,visivel} : Props){
+function Grafico({votos_contrarios, votos_favoraveis, quorum,visivel} : Props){
     const className = visivel ? 'opacity-100' : 'opacity-0';
-    const aprovado = votos_favoraveis && votos_favoraveis / (votos_favoraveis + votos_contrarios) >= 0.75
-    
+    const aprovado = votos_favoraveis / quorum >= 2/3
+    const abstencao = quorum - votos_contrarios - votos_favoraveis;
+
     return <div className={`votacao-grafico ${className}`}>
         <Chart 
             chartType='PieChart' 
             data={[
                 ["", ""],
-                [`${votos_favoraveis} favoráveis`, votos_favoraveis],
-                [`${votos_contrarios} contrários`, votos_contrarios],
+                [`${votos_favoraveis} Favoráveis`, votos_favoraveis],
+                [`${votos_contrarios} Contrários`, votos_contrarios],
+                [`${abstencao} Abstenções`, abstencao],
             ]} 
             options={{
+                title: aprovado? 'Aprovado' : 'Rejeitado',
                 theme: 'maximized',
                 pieStartAngle: 180,
-                colors: ['#070', '#700'],
+                colors: ['#070', '#700', '#888'],
                 legend: {
                     position: 'right',
                     alignment: 'center',

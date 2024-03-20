@@ -155,6 +155,7 @@ interface Proponente {
     votacao : number;
     justificativa : string;
     texto : string;
+    quorum: number;
     comissao : string;
     votos : {
         id: number,
