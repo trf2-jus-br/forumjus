@@ -21,23 +21,19 @@ export default function Home() {
       api.get(url).then(({data}) => {
           setMembros(data);
       }).catch(err => {
-          exibirNotificacao({
-              titulo: "Não foi possível carregar os dados.",
-              texto: retornoAPI(err),
-              tipo: "ERRO"    
-          });
+          console.error(err);
       });
   }
 
     function carregarPresencas() {
-      api.get('/api/presenca').then(({ data }) => {
+      let url = '/api/presenca';
+      if (comiteSelecionado) {
+          url += `?comissaoId=${comiteSelecionado}`;
+      }
+      api.get(url).then(({ data }) => {
           setPresencas(data);
       }).catch(err => {
-          exibirNotificacao({
-              titulo: "Não foi possível carregar a lista de presença.",
-              texto: retornoAPI(err),
-              tipo: "ERRO"    
-          });
+          console.error(err);
       });
   }
 
@@ -132,13 +128,14 @@ export default function Home() {
 
   function selecionarMembro(id) {
     IdDoMembroSelecionado = id;
+    cadastrarPresenca(IdDoMembroSelecionado)
   }
 
   function selecionarComite(event) {
     comiteSelecionado = event.target.value
     carregarMembros()
+    carregarPresencas()
   }
-  
     return <>
       <div className="container content">
         <div className="px-4 py-5 my-5 text-center">
@@ -163,17 +160,8 @@ export default function Home() {
                   render={m => m.nome} 
                   onclick={m => selecionarMembro(m.id)}/>
                   {/* Botão de Presença */}
-                  <button className="btn btn-primary btn-lg px-4" style={{ "color": "white" }} onClick={
-                    () => cadastrarPresenca(IdDoMembroSelecionado)}>
-                      Registrar Entrada
-                  </button>
                   &nbsp;
                   &nbsp;
-                  {/* Botão de Saída */}
-                  <button className="btn btn-primary btn-lg px-4" style={{ "color": "white" }} onClick={
-                    () => cadastrarSaida(IdDoMembroSelecionado)}>
-                      Registrar Saída
-                  </button>
               </div>
               <hr></hr>
               <div>
@@ -183,8 +171,8 @@ export default function Home() {
                                     <tr>
                                         <th scope="col">Nome</th>
                                         <th scope="col">Função</th>
-                                        <th scope="col">Entrada</th>
-                                        <th scope="col">Saída</th>
+                                        <th scope="col">Sair</th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -192,8 +180,13 @@ export default function Home() {
                                         <tr key={index}>
                                             <td>{presenca.nome}</td>
                                             <td>{presenca.funcao}</td>
-                                            <td>{presenca.entrada}</td>
-                                            <td>{presenca.saida}</td>
+                                            <td>
+                                            <button className="btn btn-primary btn-lg px-4" 
+                                            style={{ "color": "white" }} 
+                                            onClick={() => cadastrarSaida(presenca.membro)}>
+                                                Sair
+                                            </button>
+                                            </td>
                                         </tr>
                                     ))}
                     </tbody>

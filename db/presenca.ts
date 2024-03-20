@@ -13,7 +13,8 @@ class PresencaDAO {
         let query = `
             SELECT 
                 m.nome, 
-                m.funcao, 
+                m.funcao,
+                p.membro,
                 DATE_FORMAT(p.entrada, '%d/%m/%Y %H:%i:%s') as entrada,
                 DATE_FORMAT(p.saida, '%d/%m/%Y %H:%i:%s') as saida
             FROM 
