@@ -4,7 +4,7 @@ import { usarContexto } from '../contexto';
 import { retornoAPI } from '../utils/api-retorno';
 
 let IdDoMembroSelecionado = null;
-let comiteSelecionado = null;
+let comiteSelecionado = "0";
 
 export default function Home() {
     const [membro, setMembros] = useState({});

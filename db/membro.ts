@@ -34,7 +34,7 @@ class MembroDAO {
     static async listar(db: PoolConnection, usuario: Usuario, comite: string){
         const SQL_ESPECIFICO = 'SELECT * FROM membro WHERE comite = ?;';
         const SQL_GERAL = 'SELECT * FROM membro;';
-
+        
         if (comite != "0" && comite != null) {
             const [result] = await db.query(SQL_ESPECIFICO, [comite]);
             return result as Membro[];

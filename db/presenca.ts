@@ -20,7 +20,9 @@ class PresencaDAO {
             FROM 
                 presenca p 
             INNER JOIN 
-                membro m ON p.membro = m.id    
+                membro m ON p.membro = m.id
+            WHERE 
+                p.saida IS NULL    
         `;
         const [result] = await db.query(query);
         return result as Presenca[];
@@ -30,8 +32,9 @@ class PresencaDAO {
         let query = `
             SELECT 
                 m.nome, 
-                m.funcao, 
-                m.comite,
+                m.funcao,
+                m.comite, 
+                p.membro,
                 DATE_FORMAT(p.entrada, '%d/%m/%Y %H:%i:%s') as entrada,
                 DATE_FORMAT(p.saida, '%d/%m/%Y %H:%i:%s') as saida
             FROM 
@@ -39,7 +42,7 @@ class PresencaDAO {
             INNER JOIN 
                 membro m ON p.membro = m.id    
             WHERE 
-                m.comite = ?
+                m.comite = ? AND p.saida IS NULL
             ORDER BY 
                 p.entrada ASC;
         `;
