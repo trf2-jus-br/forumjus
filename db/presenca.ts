@@ -49,6 +49,29 @@ class PresencaDAO {
         const [result] = await db.query(query, [comite]);
         return result as Presenca[];
     }
+    
+    static async marcarEntradaComToken(db: PoolConnection, usuario: Usuario, token: string) {
+        try {
+            let queryMembro = 'SELECT id FROM membro WHERE token = ?;';
+            const [membros] = await db.query(queryMembro, [token]);
+            console.log(token)
+            if (membros.length === 0) {
+                throw new Error('Membro não encontrado com o token fornecido.');
+            }
+    
+            const membroId = membros[0].id;
+    
+            let queryPresenca = 'INSERT INTO presenca (membro) VALUES (?);';
+            await db.query(queryPresenca, [membroId]);
+    
+            return { success: true, membroId: membroId };
+        } catch (error) {
+            console.error('Erro ao marcar entrada com token:', error);
+            throw new Error('Erro ao registrar a presença: ' + error.message);
+        }
+    }
+    
+
 }
 
 export default PresencaDAO;

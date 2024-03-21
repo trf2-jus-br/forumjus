@@ -129,17 +129,35 @@ export default function Home() {
 }
 
     function extrairTokenDoResultadoDaLeituraDoQRCode(textoQrCode) {
-        // Pega o conteúdo depois do ultimo caractere '/' que será o token
         const parteFinal = textoQrCode.split('/').pop();
         return parteFinal;
     }
-    // Dentro de Home.js
 
     const handleScanComplete = (data) => {
         const parteFinalDoLink = extrairTokenDoResultadoDaLeituraDoQRCode(data);
         tokenDoQrCodeLido = parteFinalDoLink;
         console.log("Parte final do link:", tokenDoQrCodeLido);
+        registrarPresencaComToken(tokenDoQrCodeLido);
     };
+
+    function registrarPresencaComToken(token) {
+        api.post('/api/qrcode', { token: token })
+            .then(response => {
+                exibirNotificacao({
+                    titulo: "Presença registrada com sucesso",
+                    texto: "A presença do membro foi registrada com sucesso.",
+                    tipo: "SUCESSO"
+                });
+                carregarPresencas();
+            })
+            .catch(err => {
+                exibirNotificacao({
+                    titulo: "Erro ao registrar presença",
+                    texto: retornoAPI(err),
+                    tipo: "ERRO"
+                });
+            });
+    }
 
   function selecionarMembro(id) {
     IdDoMembroSelecionado = id;
