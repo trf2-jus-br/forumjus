@@ -1,9 +1,68 @@
 import createHttpError from "http-errors";
 import PermissaoDAO from "./permissao";
 import CalendarioDAO from "./calendario";
-import { EstadoVotacao } from "../utils/enums";
+import { EstadoVotacao, EstadoJornada } from "../utils/enums";
 
 class VotacaoDAO {
+
+    private static async bemVindo(db: PoolConnection, votacao_geral: boolean, comite: number){
+        const SQL_GERAL = `SELECT COUNT(*) qnt FROM votacao_detalhada WHERE evento = 'VOTAÇÃO GERAL';`
+        const SQL_POR_COMISSAO = `SELECT COUNT(*) qnt FROM votacao_detalhada WHERE evento = 'VOTAÇÃO POR COMISSÃO' AND committee_id = ?;`
+
+        const SQL_BEM_VINDO = votacao_geral ? SQL_GERAL : SQL_POR_COMISSAO;
+        const PARAMS = votacao_geral ? [] : [comite];
+
+        const [resultado] = await db.query(SQL_BEM_VINDO, PARAMS);
+
+        return resultado[0].qnt === 0;
+    }
+    
+    private static async encerrado(db: PoolConnection, votacao_geral: boolean, comite: number){
+        const SQL_GERAL = 
+            `SELECT 
+                COUNT(*) qnt 
+            FROM 
+                votacao_detalhada 
+            WHERE 
+                evento = 'VOTAÇÃO POR COMISSÃO' AND 
+                favor / quorum > 2/3 AND
+                enunciado NOT IN (
+                    SELECT enunciado FROM votacao_detalhada WHERE evento = 'VOTAÇÃO GERAL'
+                );`
+
+        const SQL_POR_COMISSAO = 
+            `SELECT 
+                COUNT(*) qnt 
+            FROM 
+                statement 
+            WHERE 
+                admitido = 1 AND 
+                committee_id = ? AND 
+                statement_id NOT IN (
+                    SELECT enunciado FROM votacao
+                );`
+
+        const SQL_BEM_VINDO = votacao_geral ? SQL_GERAL : SQL_POR_COMISSAO;
+        const PARAMS = votacao_geral ? [] : [comite];
+
+        const [resultado] = await db.query(SQL_BEM_VINDO, PARAMS);
+
+        return resultado[0].qnt === 0;
+    }
+    
+
+    private static async estadoJornada(db: PoolConnection, votacao_geral: boolean, comite: number) : Promise<EstadoJornada>{
+        if(await VotacaoDAO.bemVindo(db, votacao_geral, comite))
+            return EstadoJornada.BEM_VINDO;
+
+        
+        if(await VotacaoDAO.encerrado(db, votacao_geral, comite)){
+            return EstadoJornada.ENCERRAMENTO
+        }
+         
+        return EstadoJornada.VOTACAO;
+    }
+
     // função chamada pelas telas '/votacao' e '/telao'.
     // traz as  informações do enunciado que está sendo votado.
     static async listar(db: PoolConnection, usuario: Usuario){
@@ -81,9 +140,13 @@ class VotacaoDAO {
 
         const [votos] = await db.query(SQL_VOTO, params_votos);
 
+        // Define qual tela deve ser apresentada: Bem-Vindo, Encerramento ou Votação.
+        const estadoJornada = await VotacaoDAO.estadoJornada(db, votacao_geral != null, comissao);
+            
         return {
             quorum: enunciados[0].quorum,
             votacao: enunciados[0].votacao,
+            estadoJornada,
             estadoVotacao: enunciados[0].status,
             texto: enunciados[0].texto,
             justificativa: enunciados[0].justificativa,

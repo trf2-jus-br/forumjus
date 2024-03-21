@@ -4,3 +4,9 @@ export enum EstadoVotacao {
     VOTACAO = 3,
     FINALIZADO = 4
 }
+
+export enum EstadoJornada {
+    BEM_VINDO = 1,
+    VOTACAO = 2,
+    ENCERRAMENTO = 3
+}

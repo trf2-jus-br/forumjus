@@ -1,4 +1,19 @@
 
+.bloco-visivel{
+  transition: all 1s;
+  opacity: 100;
+  height: 100px;
+}
+
+.bloco-oculto{
+  transition: opacity 0.5s, height 1s!important;
+  height: 0px!important;
+  opacity: 0!important;
+}
+
+.resumo-jornada-passo{
+  transition: opacity 2s;
+}
 .votacao-bem-vindo {
   font-size: 30px !important;
 }

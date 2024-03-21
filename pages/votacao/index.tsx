@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Chart } from 'react-google-charts';
 import { Button, Modal, Spinner } from "react-bootstrap";
 import Layout from "../../components/layout";
@@ -13,7 +13,7 @@ import Cabecalho from './cabecalho';
 import Encerramento from './encerramento';
 import Carregamento from './carregamento';
 
-import {EstadoVotacao} from '../../utils/enums';
+import {EstadoJornada, EstadoVotacao} from '../../utils/enums';
 import Grafico from './grafico';
 
 interface Props {
@@ -33,6 +33,8 @@ function Votacao({telao}: Props){
 
     const { api, usuario, exibirNotificacao } = usarContexto();
     
+    const timeoutRef = useRef(null);
+
     function atualizarTemporizador(votacao: Votacao){
         const temporizadorAtualizado = tempoMaximo - votacao.inicio_defesa;
 
@@ -50,6 +52,16 @@ function Votacao({telao}: Props){
             const {data} = await api.get<Votacao>('/api/votacao');
 
             atualizarTemporizador(data);
+
+            if(data.estadoJornada === EstadoJornada.ENCERRAMENTO){
+                if(!timeoutRef.current){
+                    timeoutRef.current = setTimeout(()=> {
+                        window.location.href = '/resumo-jornada';
+                    } , 2000)
+
+                    return setVisibilidade('oculto');
+                }
+            }
 
             if(visibilidade === 'visivel' && votacao.justificativa != data?.justificativa){
                 return setVisibilidade('oculto')
