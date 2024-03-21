@@ -1,16 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Autocomplete from '../components/Autocomplete';
 import { usarContexto } from '../contexto';
 import { retornoAPI } from '../utils/api-retorno';
+import QRCodeReader from '../components/QRCodeReader';
 
 let IdDoMembroSelecionado = null;
 let comiteSelecionado = "0";
+let tokenDoQrCodeLido = null;
 
 export default function Home() {
     const [membro, setMembros] = useState({});
     const [comite, setComites] = useState([]); 
     const [presencas, setPresencas] = useState([]);
     const { api, exibirNotificacao } = usarContexto();
+    const [qrCodeResult, setQrCodeResult] = useState('');
 
     function carregarMembros() {
       let url = '/api/membro';
@@ -125,6 +128,18 @@ export default function Home() {
   }
 }
 
+    function extrairTokenDoResultadoDaLeituraDoQRCode(textoQrCode) {
+        // Pega o conteúdo depois do ultimo caractere '/' que será o token
+        const parteFinal = textoQrCode.split('/').pop();
+        return parteFinal;
+    }
+    // Dentro de Home.js
+
+    const handleScanComplete = (data) => {
+        const parteFinalDoLink = extrairTokenDoResultadoDaLeituraDoQRCode(data);
+        tokenDoQrCodeLido = parteFinalDoLink;
+        console.log("Parte final do link:", tokenDoQrCodeLido);
+    };
 
   function selecionarMembro(id) {
     IdDoMembroSelecionado = id;
@@ -140,6 +155,8 @@ export default function Home() {
       <div className="container content">
         <div className="px-4 py-5 my-5 text-center">
           <div className="col-lg-6 mx-auto">
+          <h2 className="mb-4 mt-4">Leitor de QR Code</h2>
+          <QRCodeReader onScanComplete={handleScanComplete} />
           <h1 className="mb-4 mt-4">Cadastro de Presença</h1>
           <hr></hr>
           <div className="mb-3">
