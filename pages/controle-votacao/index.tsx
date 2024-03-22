@@ -46,7 +46,6 @@ function ControleVotacao(){
             setEnunciados(data);
 
             const ativo = data.find(e => e.votacao_inicio != null && e.votacao_fim == null);
-            console.log(ativo);
             setEnunciadoGerenciado(ativo);
         }catch(err){
              // Avise sobre o erro.
@@ -103,6 +102,11 @@ function ControleVotacao(){
         }
     }
 
+    function cancelarEnunciado(){
+        if(enunciadoGerenciado.votacao_inicio == null)
+            setEnunciadoGerenciado(null);
+    }
+
     function gerenciarEnunciado(enunciado: EnunciadoVotacao){
         setEnunciadoGerenciado(enunciado);
     }    
@@ -139,7 +143,7 @@ function ControleVotacao(){
             />)}
         </div>
 
-        <Modal show={enunciadoGerenciado != null} onHide={()=> null/* Notificar erro! */}>
+        <Modal show={enunciadoGerenciado != null} onHide={cancelarEnunciado}>
             <Modal.Header>Controle da votação <h6>{codigo}</h6></Modal.Header>
             <Modal.Body className="d-flex justify-content-between flex-wrap" style={{gap: 20}}>
                 <span>{enunciadoGerenciado?.statement_text}</span>
