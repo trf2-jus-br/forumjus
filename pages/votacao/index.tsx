@@ -56,10 +56,11 @@ function Votacao({telao}: Props){
             if(data.estadoJornada === EstadoJornada.ENCERRAMENTO){
                 if(!timeoutRef.current){
                     timeoutRef.current = setTimeout(()=> {
+                        setVisibilidade('oculto');
                         window.location.href = '/resumo-jornada';
-                    } , 2000)
-
-                    return setVisibilidade('oculto');
+                    } , 4000);
+                }else{
+                    return;
                 }
             }
 

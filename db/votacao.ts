@@ -27,7 +27,7 @@ class VotacaoDAO {
                 evento = 'VOTAÇÃO POR COMISSÃO' AND 
                 favor / quorum > 2/3 AND
                 enunciado NOT IN (
-                    SELECT enunciado FROM votacao_detalhada WHERE evento = 'VOTAÇÃO GERAL'
+                    SELECT enunciado FROM votacao_detalhada WHERE evento = 'VOTAÇÃO GERAL' AND fim IS NOT NULL
                 );`
 
         const SQL_POR_COMISSAO = 
@@ -39,7 +39,7 @@ class VotacaoDAO {
                 admitido = 1 AND 
                 committee_id = ? AND 
                 statement_id NOT IN (
-                    SELECT enunciado FROM votacao
+                    SELECT enunciado FROM votacao WHERE fim IS NOT NULL
                 );`
 
         const SQL_BEM_VINDO = votacao_geral ? SQL_GERAL : SQL_POR_COMISSAO;
