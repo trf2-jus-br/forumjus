@@ -27,10 +27,10 @@ function gerarCaderno(inscricoes : Inscricao[], comites: Comite[], titulo: strin
             { text: titulo, bold: true, fontSize: 14, alignment: 'center', marginBottom: 35, marginTop: 50},
 
             //@ts-ignore
-            ...inscricoes.map((e, i) => {
+            ...inscricoes.sort((a, b) => b.codigo < a.codigo ? 1 : -1).map((e, i) => {
                 let body = [
                 [ {
-                    text: `${formatarCodigo({committee_id: !preliminar ? "" : e.committee_id, codigo: i + 1})}  ${comite(e.committee_id)}`, 
+                    text: `${formatarCodigo({committee_id: !preliminar ? "" : e.committee_id, codigo: e.codigo})}  ${comite(e.committee_id)}`, 
                     alignment: "center", 
                     fillColor: '#eeeeee',
                     border: [true, true, true, true]
