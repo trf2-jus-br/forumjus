@@ -256,13 +256,13 @@ function Membros(){
                 <QRCodeSVG className="m-5" width={200} height={200} value={url} />
                 <InputGroup size="sm">
                     <Form.Control id="codigo" type="text" value={urlCurta}></Form.Control>
-                    <InputGroup.Text>
-                        <Button variant="link" color="">
-                            <Tooltip mensagem="Copiar link" posicao="top">
+                    <Tooltip mensagem="Copiar link" posicao="top">
+                        <InputGroup.Text>
+                            <Button variant="link" color="" onClick={() => copiar(url)}>
                                 <FontAwesomeIcon onClick={() => copiar(url)} fontSize={20} icon={faCopy}/>
-                            </Tooltip>
-                        </Button>
-                    </InputGroup.Text>
+                            </Button>
+                        </InputGroup.Text>
+                    </Tooltip>
                 </InputGroup>
             </Modal.Body>
             <Modal.Footer>

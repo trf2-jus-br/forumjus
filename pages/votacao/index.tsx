@@ -126,7 +126,6 @@ function Votacao({telao}: Props){
 
     return <Layout fluid cabecalho={<Cabecalho/>}>
         {votacao == null && <Abertura />}
-        {/*estadoVotacao === EstadoVotacao.ENCERRAMENTO && <Encerramento />*/}
         {votacao && (
             <div className={`d-flex flex-column align-items-center w-100 ${visibilidade === 'oculto' ? 'opacity-0' : 'opacity-100'}`} 
             style={{transition: "all 0.5s", flex: 1, overflow: 'hidden'}}
@@ -229,11 +228,11 @@ function Votacao({telao}: Props){
             
             {
                 !telao && (
-                    <div className="d-flex w-100 justify-content-between" style={{marginTop: "auto", position:'sticky', bottom:'1rem'}}>
+                    <div className="d-flex w-100 justify-content-between" style={{position:'fixed', bottom:'0', padding: '1rem'}}>
                         <Button 
                             className={estadoVotacao === EstadoVotacao.VOTACAO ? 'opacity-100' : 'opacity-0'} 
                             variant="danger" 
-                            style={{width: '49.5%'}} 
+                            style={{width: 'calc(50% - 0.5rem)'}} 
                             onClick={()=> votar(false)}
                         >
                             Contra
@@ -241,7 +240,7 @@ function Votacao({telao}: Props){
                         <Button 
                             className={estadoVotacao === EstadoVotacao.VOTACAO ? 'opacity-100' : 'opacity-0'} 
                             variant="success" 
-                            style={{width: '49.5%'}} 
+                            style={{width: 'calc(50% - 0.5rem)'}} 
                             onClick={()=> votar(true)}
                         >
                             A favor

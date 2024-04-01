@@ -40,7 +40,8 @@
   text-align: justify;
   margin: 10px;
   text-indent: 50px;
-  line-height: 1.75
+  line-height: 1.75;
+  padding-bottom: 35px;
 }
 
 .votacao-grafico {
