@@ -2,6 +2,13 @@ import { apiHandler } from "../../../utils/apis";
 
 async function entrada({db, req} : API){
     const { id } = req.body;
+
+    const [resultado] = await db.query('SELECT * FROM presenca WHERE membro = ? AND saida IS NULL;', [id])
+
+    if(resultado.length !== 0){
+        throw "Registre a saída antes de registrar nova entrada."
+    }
+
     await db.query('INSERT INTO presenca(membro) VALUES(?);', [id]);
 }
 
@@ -15,7 +22,19 @@ async function saida({db, req} : API){
     await db.query(SQL, [id])
 }
 
+ async function listaPresentes({db} : API){
+    const SQL = 
+            `SELECT membro.* 
+            FROM membro
+            JOIN presenca ON membro.id = presenca.membro
+            WHERE saida IS NULL;`
+    const [resultado] = await db.query(SQL, []);
+    
+    return resultado;
+ }
+
 export default apiHandler({
     POST: entrada,
-    DELETE: saida
+    DELETE: saida,
+    GET: listaPresentes
 })
