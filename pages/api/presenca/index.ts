@@ -1,7 +1,16 @@
 import { apiHandler } from "../../../utils/apis";
 
 async function entrada({db, req} : API){
-    const { id } = req.body;
+    let { id, token } = req.body;
+
+    if(token){
+        const [membro] = await db.query('SELECT id FROM membro WHERE token = ?;', [token]);
+
+        if(membro.length == 0)
+            throw "Usuário não encontrado";
+
+        id = membro[0].id;
+    }
 
     const [resultado] = await db.query('SELECT * FROM presenca WHERE membro = ? AND saida IS NULL;', [id])
 

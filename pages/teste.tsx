@@ -1,24 +1,38 @@
 import React, { useState } from 'react';
 import { QrReader } from 'react-qr-reader';
+import { usarContexto } from '../contexto';
+
+const qrCodeConstraints : MediaTrackConstraints = { 
+  facingMode: "environment",
+  aspectRatio: 1
+}
 
 const Test = (props) => {
-  const [data, setData] = useState('No result');
+  const { api } = usarContexto();
+
+  async function registarEntrada(qrCode : string){
+    if(!qrCode)
+      return;
+
+    const partes = qrCode.split('/');
+    const token = partes[partes.length - 1];
+
+    try{
+      await api.post('/api/presenca', { token});
+      window.location.href = '/presenca';
+    }catch(err){
+
+    }
+  }
+
 
   return (
     <>
       <QrReader
-        key="environment"
-        constraints={{
-          facingMode: "environment"
-        }}
-        onResult={(result, error) => {
-          if (!!result) {
-            setData(result?.text);
-          }
-        }}
+        constraints={qrCodeConstraints}
+        onResult={(result, error) => registarEntrada(result?.text)}
         style={{ width: '100%' }}
       />
-      <p>{data}</p>
     </>
   );
 };
