@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { QrReader } from 'react-qr-reader';
 import { usarContexto } from '../contexto';
 
@@ -8,9 +8,11 @@ const qrCodeConstraints : MediaTrackConstraints = {
 }
 
 const Test = (props) => {
+  const [qrCode, setQrCode] = useState<string>(null);
+
   const { api } = usarContexto();
 
-  async function registarEntrada(qrCode : string){
+  async function registarEntrada(){
     if(!qrCode)
       return;
 
@@ -22,15 +24,18 @@ const Test = (props) => {
       window.location.href = '/presenca';
     }catch(err){
 
+    } finally {
     }
   }
 
+  useEffect(()=>{
+    registarEntrada();
+  }, [qrCode])
 
-  return (
-    <>
+  return (!qrCode && <>
       <QrReader
         constraints={qrCodeConstraints}
-        onResult={(result, error) => registarEntrada(result?.text)}
+        onResult={(result, error) => setQrCode(result?.text)}
         style={{ width: '100%' }}
       />
     </>
