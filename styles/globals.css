@@ -1,3 +1,16 @@
+.resumo-jornada-enunciados {
+  overflow: hidden;
+  height: 400px;
+}
+
+.resumo-jornada-enunciado:nth-child(odd) > div {
+  background-color: #eee;
+}
+
+
+.font-weight-bold{
+  font-weight: bold;
+}
 
 .bloco-visivel{
   transition: all 1s;
