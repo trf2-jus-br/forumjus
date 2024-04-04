@@ -30,6 +30,7 @@ function Votacao({telao}: Props){
     const [processandoVoto, setProcessandoVoto] = useState(false);
     const [visibilidade, setVisibilidade] = useState<Visibilidade>('oculto');
     const [temporizador, setTempoziador] = useState(null);
+    const [obrigado, setExibirEncerramento] = useState(true);
 
     const { api, usuario, exibirNotificacao } = usarContexto();
     
@@ -56,8 +57,12 @@ function Votacao({telao}: Props){
             if(data.estadoJornada === EstadoJornada.ENCERRAMENTO){
                 if(!timeoutRef.current){
                     timeoutRef.current = setTimeout(()=> {
-                        setVisibilidade('oculto');
-                        window.location.href = '/resumo-jornada';
+                        if(telao){
+                            setVisibilidade('oculto');
+                            window.location.href = '/resumo-jornada';
+                        }else{
+                            setExibirEncerramento(true);
+                        }
                     } , 4000);
                 }else{
                     return;
@@ -124,6 +129,13 @@ function Votacao({telao}: Props){
     const estadoVotacao = votacao?.estadoVotacao;
 
     const classeJustificativa = estadoVotacao === EstadoVotacao.FINALIZADO && telao ? 'opacity-0' : 'opacity-100';
+
+    if(obrigado){
+        return <Layout fluid cabecalho={<Cabecalho/>}>
+            <Encerramento />
+        </Layout>
+    }
+    
 
     return <Layout fluid cabecalho={<Cabecalho/>}>
         {votacao == null && <Abertura />}
