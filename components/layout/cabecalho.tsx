@@ -90,6 +90,7 @@ function Cabecalho({fluid} : Props){
                     
                     {Se("PRESIDENTE", "PRESIDENTA", "RELATOR", "RELATORA") && <Dropdown.Item href="/telao">Telão</Dropdown.Item>}
                     {Se("PRESIDENTE", "PRESIDENTA", "RELATOR", "RELATORA") && <Dropdown.Item href="/controle-votacao">Telão - Controle</Dropdown.Item>}
+                    {Se("PRESIDENTE", "PRESIDENTA", "RELATOR", "RELATORA") && <Dropdown.Item href="/presenca">Presença</Dropdown.Item>}
 
                     {!Se("ASSESSORIA", "PROGRAMADOR") && <Dropdown.Item href="/votacao">Votação</Dropdown.Item>}
 
