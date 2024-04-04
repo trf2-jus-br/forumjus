@@ -30,7 +30,7 @@ function Votacao({telao}: Props){
     const [processandoVoto, setProcessandoVoto] = useState(false);
     const [visibilidade, setVisibilidade] = useState<Visibilidade>('oculto');
     const [temporizador, setTempoziador] = useState(null);
-    const [obrigado, setExibirEncerramento] = useState(true);
+    const [obrigado, setExibirEncerramento] = useState(false);
 
     const { api, usuario, exibirNotificacao } = usarContexto();
     
