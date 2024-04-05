@@ -39,7 +39,7 @@ function ResumoJornada(){
     const esperar = (tempo: number) => new Promise((resolve, reject)=> setTimeout(resolve, tempo));
 
     async function mudarEstagio(){
-        for(let i = 1; i <= 7 + enunciados_.length; i++){
+        for(let i = 1; i <= 7 + 400; i++){
             setEstagio(i);
             await esperar(tempos[i] * 1000 || 3000)
         }
