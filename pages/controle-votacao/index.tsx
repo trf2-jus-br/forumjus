@@ -123,6 +123,13 @@ function ControleVotacao(){
         codigo: enunciadoGerenciado.codigo
     });
 
+    function criterioOrdenacao(A: EnunciadoVotacao, B: EnunciadoVotacao){
+        if(A.committee_id === B.committee_id)
+            return A.codigo > B.codigo ? 1 : -1;
+
+        return A.committee_id > B.committee_id ? 1 : -1;
+    }
+
     return <Layout>
         <div className='d-flex align-items-start justify-content-between'>
             <Breadcrumb>
@@ -136,7 +143,7 @@ function ControleVotacao(){
         </div>
 
         <div className='row'>
-            {enunciados.filter(e => !e.votacao_fim ).map(e => <Enunciado 
+            {enunciados.sort(criterioOrdenacao).filter(e => !e.votacao_fim ).map(e => <Enunciado 
                 key={e.statement_id} 
                 enunciado={e} 
                 filtro={filtro}
