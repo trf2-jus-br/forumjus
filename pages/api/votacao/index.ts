@@ -16,7 +16,7 @@ async function votar({req, usuario, db}: API){
 async function alterarVotacao({req, usuario, db} : API){
     apiPermitidaAo(usuario, "PRESIDENTE", "PRESIDENTA", "RELATOR", "RELATORA");
 
-    const {enunciado, estadoVotacao} = req.body;
+    const {enunciado, estadoVotacao, cronometro} = req.body;
 
     const existe = await VotacaoDAO.existeVotacaoEmAndamento(db, enunciado);
 
@@ -24,7 +24,7 @@ async function alterarVotacao({req, usuario, db} : API){
         await VotacaoDAO.criar(db, usuario, enunciado);
     }
 
-    return await VotacaoDAO.alterar(db, enunciado, estadoVotacao);
+    return await VotacaoDAO.alterar(db, enunciado, estadoVotacao, cronometro);
 }
 
 async function pararVotacao({db, usuario} : API){

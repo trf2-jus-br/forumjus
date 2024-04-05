@@ -22,37 +22,30 @@ interface Props {
 
 type Visibilidade = 'visivel' | 'oculto';
 
-const tempoMaximo = 180;
+function formatarData(tempoEmSegundos: number){
+    if(tempoEmSegundos <= 0)
+        return `0:00`;
+
+    const minutos = Math.floor(tempoEmSegundos / 60);
+    const segundos = tempoEmSegundos - 60 * minutos;
+
+    return `${minutos}:${segundos.toString().padStart(2, '0')}`;
+}
 
 function Votacao({telao}: Props){
     const [votacao, setVotacao] = useState<Votacao>(null);
     const [votoUsuario, setVotoUsuario] = useState(null);
     const [processandoVoto, setProcessandoVoto] = useState(false);
     const [visibilidade, setVisibilidade] = useState<Visibilidade>('oculto');
-    const [temporizador, setTempoziador] = useState(null);
     const [obrigado, setExibirEncerramento] = useState(false);
 
     const { api, usuario, exibirNotificacao } = usarContexto();
     
     const timeoutRef = useRef(null);
 
-    function atualizarTemporizador(votacao: Votacao){
-        const temporizadorAtualizado = tempoMaximo - votacao.inicio_defesa;
-
-        if(votacao.estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA){
-            if(temporizadorAtualizado > 0){
-                setTempoziador(temporizadorAtualizado);
-            }else if(temporizadorAtualizado <= 0 && temporizador > 0) {
-                setTempoziador(0);
-            }
-        }
-    }
-
     async function carregar(){
         try{
             const {data} = await api.get<Votacao>('/api/votacao');
-
-            atualizarTemporizador(data);
 
             if(data.estadoJornada === EstadoJornada.ENCERRAMENTO){
                 if(!timeoutRef.current){
@@ -121,12 +114,13 @@ function Votacao({telao}: Props){
         return () => {
             clearInterval(interval);
         }
-    }, [temporizador, votacao, visibilidade])
+    }, [votacao, visibilidade])
 
     const votos_contrarios = votacao?.votos?.filter(({voto}) => voto === 0)?.length || 0;
     const votos_favoraveis = votacao?.votos?.filter(({voto}) => voto === 1)?.length || 0;
 
     const estadoVotacao = votacao?.estadoVotacao;
+    const barraCronometro = votacao?.inicio_defesa >= 0 && votacao?.cronometro !== 0 ?  votacao.inicio_defesa / votacao.cronometro : 0;
 
     const classeJustificativa = estadoVotacao === EstadoVotacao.FINALIZADO && telao ? 'opacity-0' : 'opacity-100';
 
@@ -148,8 +142,11 @@ function Votacao({telao}: Props){
                 <h5 className={`votacao-comissao col-10 text-center ${visibilidade}`}>{votacao.comissao}</h5>
                 
                 <div className="d-flex align-items-center justify-content-end col-1 tex">
-                    {(estadoVotacao === EstadoVotacao.APRESENTACAO_ENUNCIADO || estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA) ? 
-                        <FontAwesomeIcon fontSize={30} className="m-1" color={'#1390d8'} icon={faStopwatch}/>
+                    {telao && (estadoVotacao === EstadoVotacao.APRESENTACAO_ENUNCIADO || estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA) ? 
+                        <div>
+                            <FontAwesomeIcon fontSize={30} className="m-1" color={'#1390d8'} icon={faStopwatch}/>
+                            <div className='votacao-cronometro'>{formatarData(votacao.inicio_defesa)}</div>
+                        </div>
                         :
                         <>
                             {telao && <span style={{fontSize: 18}} className="p-2">{ votos_contrarios + votos_favoraveis } / {votacao.quorum}</span>}
@@ -185,9 +182,12 @@ function Votacao({telao}: Props){
                         {<hr style={{
                             position: 'absolute',
                             left: 0,
-                            border: 'solid 3px #1390d8', 
+                            border: 'none',
+                            //border: 'solid 3px #1390d8', 
+                            height: 6,
+                            background: '#1390d8',
                             transition: estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA ? "all 1.5s" : '',
-                            width: `${estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA ? 100 * temporizador/tempoMaximo : 100}%`}} 
+                            width: `${estadoVotacao === EstadoVotacao.CRONOMETRO_DEFESA ? 100 * barraCronometro  : 100}%`}} 
                         />}
                     </> 
                 }

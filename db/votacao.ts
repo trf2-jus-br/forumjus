@@ -77,7 +77,8 @@ class VotacaoDAO {
                 statement_text as texto,
                 statement_justification as justificativa,
                 committee_name as comissao,
-                timestampdiff(second, votacao.alterado, now()) as inicio_defesa,
+                votacao.cronometro - timestampdiff(second, votacao.alterado, now()) as inicio_defesa,
+                votacao.cronometro,
                 votacao.status,
                 votacao.quorum
             FROM votacao_detalhada as votacao
@@ -94,7 +95,8 @@ class VotacaoDAO {
                 statement_text as texto,
                 statement_justification as justificativa,
                 committee_name as comissao,
-                timestampdiff(second, votacao.inicio, now()) as inicio_defesa,
+                votacao.cronometro - timestampdiff(second, votacao.alterado, now()) as inicio_defesa,
+                votacao.cronometro,
                 votacao.status,
                 votacao.quorum
             FROM votacao_detalhada as votacao
@@ -146,6 +148,7 @@ class VotacaoDAO {
         return {
             quorum: enunciados[0].quorum,
             votacao: enunciados[0].votacao,
+            cronometro: enunciados[0].cronometro,
             estadoJornada,
             estadoVotacao: enunciados[0].status,
             texto: enunciados[0].texto,
@@ -173,9 +176,9 @@ class VotacaoDAO {
         await db.query(`INSERT INTO voto (votacao, membro, voto) VALUES (?, ?, ?)`, [votacao, usuario.id, favoravel]);
     }
 
-    static async alterar(db: PoolConnection, enunciado: number, estadoVotacao: EstadoVotacao){
-        const SQL = `UPDATE votacao SET status = ?, alterado = now() WHERE enunciado = ? ORDER BY id DESC LIMIT 1;`
-        await db.query(SQL, [estadoVotacao, enunciado]);  
+    static async alterar(db: PoolConnection, enunciado: number, estadoVotacao: EstadoVotacao, cronometro: number | null){
+        const SQL = `UPDATE votacao SET status = ?, alterado = now(), cronometro = ? WHERE enunciado = ? ORDER BY id DESC LIMIT 1;`
+        await db.query(SQL, [estadoVotacao, cronometro, enunciado]);  
     }
 
     static async criar(db: PoolConnection, usuario: Usuario, id_enunciado: number){

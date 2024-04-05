@@ -6,7 +6,7 @@ import Enunciado, { formatarCodigo } from "./enunciado";
 import comPermissao from "../../utils/com-permissao";
 import { retornoAPI } from "../../utils/api-retorno";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faPlay, faStopwatch } from "@fortawesome/free-solid-svg-icons";
 
 import {EstadoVotacao} from '../../utils/enums';
 
@@ -65,11 +65,12 @@ function ControleVotacao(){
         }
     }
 
-    async function alterarEstadoVotacao(estadoVotacao: EstadoVotacao){
+    async function alterarEstadoVotacao(estadoVotacao: EstadoVotacao, cronometro?: number){
         try{
             await api.patch('/api/votacao', {
                 enunciado: enunciadoGerenciado.statement_id, 
-                estadoVotacao
+                estadoVotacao,
+                cronometro
             })
 
             await carregar();
@@ -149,9 +150,26 @@ function ControleVotacao(){
                 <span>{enunciadoGerenciado?.statement_text}</span>
                 <hr className="w-100" />
                 <Button className="w-100" onClick={() => alterarEstadoVotacao(EstadoVotacao.APRESENTACAO_ENUNCIADO)}>1. Apresentar enunciado</Button>
-                <Button className="w-100" onClick={() => alterarEstadoVotacao(EstadoVotacao.CRONOMETRO_DEFESA)}>2. Iniciar cronômetro</Button>
+                
+                <div className="d-flex w-100 justify-content-between" >
+                    <Button style={{width: '31%'}}  onClick={() => alterarEstadoVotacao(EstadoVotacao.CRONOMETRO_DEFESA, 60)}>
+                        <FontAwesomeIcon style={{marginRight: 5}} icon={faStopwatch} />
+                         1:00
+                    </Button>
+
+                    <Button style={{width: '31%'}}   onClick={() => alterarEstadoVotacao(EstadoVotacao.CRONOMETRO_DEFESA, 120)}>
+                        <FontAwesomeIcon style={{marginRight: 5}} icon={faStopwatch} />
+                         2:00
+                    </Button>
+                    <Button  style={{width: '31%'}}  onClick={() => alterarEstadoVotacao(EstadoVotacao.CRONOMETRO_DEFESA, 180)}>
+                        <FontAwesomeIcon style={{marginRight: 5}} icon={faStopwatch} />
+                         3:00
+                    </Button>
+                </div>
+                
                 <Button className="w-100" onClick={() => alterarEstadoVotacao(EstadoVotacao.VOTACAO)}>3. Iniciar votação</Button>
-                <Button className="w-100" onClick={() => pararVotacao()}>4. Parar votação</Button>
+                <Button className="w-100" onClick={() => pararVotacao()}>4. Finalizar votação</Button>
+                <Button className="w-100" variant="danger" onClick={() => confirm("Ao sair desta votação, os votos serão apagados.\nTem certeza?")}>5. Sair da votação</Button>
             </Modal.Body>
             <Modal.Footer></Modal.Footer>
         </Modal>

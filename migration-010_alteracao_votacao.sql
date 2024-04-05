@@ -1,0 +1,1 @@
+ALTER TABLE votacao ADD alterado DATETIME DEFAULT NOW();
