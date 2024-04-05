@@ -136,7 +136,7 @@ function ResumoJornada(){
                                 />{
                                 Math.floor(100 * e.favor / e.quorum)}%
                             </div>
-                            <div><span style={{marginRight: 5, fontSize: 15}}>Q</span>{e.quorum}</div>
+                            <div><span style={{marginRight: 5, fontSize: 15, fontWeight: 700}}>Q</span>{e.quorum}</div>
                         </div>
                     </div>
                     <hr className='p-0 m-0'/>
