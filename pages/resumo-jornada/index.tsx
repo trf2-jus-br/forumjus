@@ -3,7 +3,7 @@ import Layout from '../../components/layout';
 import Cabecalho from '../votacao/cabecalho';
 import Passo from './passo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPerson, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
+import { faPerson, faThumbsDown, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { usarContexto } from '../../contexto';
 
 interface Resumo {
@@ -115,7 +115,7 @@ function ResumoJornada(){
         </div>
         <div className='row mt-1'>
             <Passo id={3} atual={estagio}>
-                <span className='font-weight-bold'>{enunciados.length}</span> proposições aprovadas
+                <span className='font-weight-bold'>{enunciados.filter(e => e.favor / e.quorum >= 2/3).length}</span> proposições aprovadas
             </Passo>
         </div>
         
@@ -127,8 +127,16 @@ function ResumoJornada(){
                     <div className='row d-flex align-items-center' style={{textAlign:'justify', height:'99%'}}>
                         <div className='col-10'>{e.statement_text}</div>
                         <div className='col-2 d-flex justify-content-center' style={{gap: 20}}>
-                            <div><FontAwesomeIcon color='#080' fontSize={15} icon={faThumbsUp} style={{marginRight: 5}}/>{Math.floor(100 * e.favor / e.quorum)}%</div>
-                            <div><FontAwesomeIcon fontSize={18} icon={faPerson}  style={{marginRight: 5}}/>{e.quorum}</div>
+                            <div>
+                                <FontAwesomeIcon 
+                                    color={e.favor / e.quorum >= 2/3 ? '#080' : '#800'} 
+                                    fontSize={15} 
+                                    icon={e.favor / e.quorum >= 2/3  ? faThumbsUp : faThumbsDown} 
+                                    style={{marginRight: 5}}
+                                />{
+                                Math.floor(100 * e.favor / e.quorum)}%
+                            </div>
+                            <div><span style={{marginRight: 5, fontSize: 15}}>Q</span>{e.quorum}</div>
                         </div>
                     </div>
                     <hr className='p-0 m-0'/>
