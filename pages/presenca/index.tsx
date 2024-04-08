@@ -73,11 +73,11 @@ function Presenca() {
 
     return (
         <Layout>
-            {/*<h5 className='col-5'>Presença</h5>
+            <h5 className='col-5'>Presença</h5>
 
             <div className='d-flex row flex-row-reverse' style={{gridGap: '10px 0px'}}>
                 <Autocomplete
-                    fullWidth
+                    size='small'
                     className='col-12 col-lg-3'
                     disablePortal
                     value={!filtro?  null : {...filtro, label: `${ filtro?.committee_id}. ${filtro?.committee_name}`}}
@@ -88,15 +88,15 @@ function Presenca() {
                 />
                 
                 <Autocomplete
-                    fullWidth
-                    className='col-12 col-lg-9'
+                    size='small'
+                    className='col-12 col-lg-9 mb-3'
                     disablePortal
                     id="combo-box-demo"
                     options={listaMembrosFiltrada.map(m => ({...m, key: m.id, label: m.nome.toUpperCase()}))}
                     renderInput={(params) => <TextField {...params} label="Membro" />}
                     onChange={(event, value)=> marcarEntrada(value)}
                 />
-            </div>*/}
+            </div>
 
             <Button href='/teste'>Registrar Presença</Button>
 

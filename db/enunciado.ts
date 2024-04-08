@@ -225,7 +225,8 @@ class EnunciadoDAO {
         // Lista todos os enunciados que foram admitidos em dada comissão;
         const SQL_POR_COMISSAO = 
             `SELECT 
-                statement.*, 
+                statement.*,
+                votacao.id as votacao_id, 
                 votacao.inicio as votacao_inicio, 
                 votacao.fim as votacao_fim
             FROM statement
@@ -237,6 +238,7 @@ class EnunciadoDAO {
         const SQL_GERAL = 
             `SELECT 
                 statement.*, 
+                (select votacao.id from votacao where votacao.enunciado = statement.statement_id LIMIT 1 OFFSET 1) as votacao_id,
                 (select votacao.inicio from votacao where votacao.enunciado = statement.statement_id LIMIT 1 OFFSET 1) as votacao_inicio,
                 (select votacao.fim from votacao where votacao.enunciado = statement.statement_id LIMIT 1 OFFSET 1)  as votacao_fim
             FROM statement

@@ -11,6 +11,7 @@ import { faPlay, faStopwatch } from "@fortawesome/free-solid-svg-icons";
 import {EstadoVotacao} from '../../utils/enums';
 
 type EnunciadoVotacao = Enunciado & {
+    votacao_id : number,
     votacao_inicio: string,
     votacao_fim: string,
 }
@@ -103,6 +104,27 @@ function ControleVotacao(){
         }
     }
 
+    async function cancelarVotacao(){
+        if(!confirm("Ao sair desta votação, os votos serão apagados.\nTem certeza?"))
+            return;
+
+        try{
+            await api.delete(`/api/votacao/cancelar?id=${enunciadoGerenciado.votacao_id}`);
+            await carregar();
+
+            exibirNotificacao({
+                texto: "Votação cancelada com sucesso!",
+            })
+        }catch(err){
+            // Notifica que ocorreu um erro.            
+            exibirNotificacao({
+                titulo: "Não foi possível processar seu pedido.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
+        }
+    }
+
     function cancelarEnunciado(){
         if(enunciadoGerenciado.votacao_inicio == null)
             setEnunciadoGerenciado(null);
@@ -176,7 +198,7 @@ function ControleVotacao(){
                 
                 <Button className="w-100" onClick={() => alterarEstadoVotacao(EstadoVotacao.VOTACAO)}>3. Iniciar votação</Button>
                 <Button className="w-100" onClick={() => pararVotacao()}>4. Finalizar votação</Button>
-                <Button className="w-100" variant="danger" onClick={() => confirm("Ao sair desta votação, os votos serão apagados.\nTem certeza?")}>5. Sair da votação</Button>
+                <Button className="w-100" variant="danger" onClick={cancelarVotacao}>5. Sair da votação</Button>
             </Modal.Body>
             <Modal.Footer></Modal.Footer>
         </Modal>
