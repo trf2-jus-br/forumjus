@@ -1,8 +1,8 @@
 import { apiHandler } from "../../../utils/apis";
 
 async function cancelarVotacao({db, usuario, req} : API){
-    if(usuario.funcao !== "PRESIDENTE" && usuario.funcao !== "PRESIDENTA")
-        throw "Usuário sem premisão"
+    if(usuario.funcao !== "PRESIDENTE" && usuario.funcao !== "PRESIDENTA" && usuario.funcao !== "RELATOR" && usuario.funcao !== "RELATORA")
+        throw "Usuário sem permissão"
 
     const { id } = req.query;
 
