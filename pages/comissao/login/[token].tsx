@@ -31,7 +31,7 @@ function Login(props){
 
         const usuario : Usuario = await resposta.json();
 
-        switch(usuario.funcao){
+        /*switch(usuario.funcao){
             case "ESPECIALISTA":
                 case "JURISTA":
                     window.location.href = '/inscricoes';
@@ -50,7 +50,9 @@ function Login(props){
             
             default:
                 alert(`${usuario.funcao} não deveria logar utilizando token.`);
-        }
+        }*/
+
+        window.location.href = '/votacao';
       }catch(err) {
         alert(err || "Erro ao se comunicar com servidor.");
       }
