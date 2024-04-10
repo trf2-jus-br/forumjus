@@ -33,7 +33,7 @@ function formatarData(tempoEmSegundos: number){
 }
 
 function Votacao({telao}: Props){
-    const [votacao, setVotacao] = useState<Votacao>(null);
+    const [votacao, setVotacao] = useState<Votacao>(undefined);
     const [votoUsuario, setVotoUsuario] = useState(null);
     const [processandoVoto, setProcessandoVoto] = useState(false);
     const [visibilidade, setVisibilidade] = useState<Visibilidade>('oculto');
@@ -73,6 +73,8 @@ function Votacao({telao}: Props){
                 setVotacao(!data ? null : data);
                 const votoUsuario = data.votos.find(({id})=> id === usuario.id);
                 setVotoUsuario(votoUsuario.voto);
+            }else{
+                setVotacao(null);
             }
         }catch(err){
             // avisa sobre o erro.
@@ -132,12 +134,12 @@ function Votacao({telao}: Props){
     
 
     return <Layout fluid cabecalho={<Cabecalho/>}>
-        {votacao == null && <Abertura />}
+        {votacao === null && <Abertura />}
         {votacao && (
             <div className={`d-flex flex-column align-items-center w-100 ${visibilidade === 'oculto' ? 'opacity-0' : 'opacity-100'}`} 
             style={{transition: "all 0.5s", flex: 1, overflow: 'hidden'}}
         >
-            <div className="d-flex justify-content-between w-100 align-items-center" style={{minHeight: 50}}>
+            <div className="d-flex justify-content-between w-100 align-items-center" style={{minHeight: 65}}>
                 <div className='col-1'></div>
                 <h5 className={`votacao-comissao col-10 text-center ${visibilidade}`}>{votacao.comissao}</h5>
                 

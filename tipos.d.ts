@@ -152,6 +152,9 @@ interface Proponente {
  }
 
  interface Votacao {
+    juncao : number,
+    juncao_texto: number,
+    juncao_justificativa: number,
     estadoVotacao: EstadoVotacao;
     estadoJornada: EstadoJornada;
     votacao : number;

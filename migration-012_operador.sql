@@ -4,4 +4,4 @@ CREATE TABLE operador (
     
     primary key(matricula),
     foreign key(comite) references committee(committee_id)
-)
+);

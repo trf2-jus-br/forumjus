@@ -134,11 +134,18 @@ function ControleVotacao(){
         setEnunciadoGerenciado(enunciado);
     }    
 
+    function editar(){
+        window.open(`/enunciado/editar-redacao?id=${enunciadoGerenciado.statement_id}`)
+    }
+    
+    function juntar(){
+        window.open(`/enunciado/juntar?id=${enunciadoGerenciado.statement_id}`)
+    }
+
     useEffect(()=>{
         carregar();
         carregarComissoes();
     }, [])
-
 
     const codigo = !enunciadoGerenciado ? null : formatarCodigo({
         committee_id: enunciadoGerenciado.committee_id, 
@@ -199,6 +206,9 @@ function ControleVotacao(){
                 <Button className="w-100" onClick={() => alterarEstadoVotacao(EstadoVotacao.VOTACAO)}>3. Iniciar votação</Button>
                 <Button className="w-100" onClick={() => pararVotacao()}>4. Finalizar votação</Button>
                 <Button className="w-100" variant="danger" onClick={cancelarVotacao}>5. Sair da votação</Button>
+                <hr className="w-100" />
+                {/*<Button className="w-100" onClick={juntar} variant="warning">Juntar a outro enunciado</Button>*/}
+                <Button className="w-100" onClick={editar} variant="warning">Editar este enunciado</Button>
             </Modal.Body>
             <Modal.Footer></Modal.Footer>
         </Modal>

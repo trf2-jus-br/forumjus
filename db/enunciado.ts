@@ -199,11 +199,6 @@ class EnunciadoDAO {
 
         const enunciado = result[0][0] as Enunciado;
 
-        // Verifica se este enunciado pertence a uma das comissões permitidos para este usuário.
-        if(!permissoes.estatistica && permissoes.administrar_comissoes.indexOf(enunciado.committee_id) === -1)
-            throw "Usuário não tem permissão";
-
-
         return enunciado;
     }
 
