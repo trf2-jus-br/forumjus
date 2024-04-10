@@ -58,14 +58,7 @@ function gerarCaderno(inscricoes : Inscricao[], comites: Comite[], titulo: strin
                     lineHeight: 1.25,
                 } ],
                 [ {text: e.statement_justification.replaceAll('\n\n\n', '\n').replaceAll('\n\n','\n'), marginLeft: 20, marginBottom: 10, preserveLeadingSpaces: true, alignment: "justify", lineHeight: 1.25} ],
-                [ { text: e.attendee_name, alignment: "right", bold:true, marginTop: 1}  ],                
             ]
-
-            if(e.occupation_name !== "Outros")
-                body.push([ { text: e.occupation_name, alignment: "right", marginTop: 1}  ],)
-
-            if(e.attendee_affiliation?.trim()?.length)
-                body.push([ { text: e.attendee_affiliation, alignment: "right", marginTop: 1}  ]);
 
             body.push([ { text: `${moment(e.attendee_timestamp).format("DD/MM/YYYY")}`, alignment: "right", marginTop: 1, fontSize:10} ])
 
