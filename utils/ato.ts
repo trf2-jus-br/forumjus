@@ -182,7 +182,7 @@ export function criarPDF(props: Props){
                         ...enunciados.map( ({committee_id, codigo, statement_text, aprovado, quorum, favor}) =>([
                             {text: formatarCodigo({codigo, committee_id}) , colSpan: 1, alignment: 'center'},
                             {text: statement_text, colSpan: 1},
-                            {text: (aprovado ? 'Aprovado' : 'Rejeitado') + `\n\nQuorum: ${quorum}\nFavorável: ${Math.floor(100 * favor / quorum)}%` , colSpan: 1, alignment: 'center'},
+                            {text: (aprovado ? 'Aprovado' : 'Rejeitado') + `\n\nQuorum: ${quorum}\nFavorável: ${Math.floor(100 * favor / quorum) < 100 ? Math.floor(100 * favor / quorum) : 100}%` , colSpan: 1, alignment: 'center'},
                         ]))
                     ]
                 },
