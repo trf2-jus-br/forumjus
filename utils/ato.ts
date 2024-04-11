@@ -5,11 +5,9 @@ import { formatarCodigo } from "../pages/admissao/enunciado";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-
 interface Props {
-    inscricoes : Inscricao[],
     comites: Comite[],
-    membros: Membro[]
+    ato: Ato
 }
 
 const ESQUERDA = [true, false, false, false];
@@ -17,10 +15,11 @@ const NENHUM = [false, false, true, false];
 
 export function criarPDF(props: Props){
     const { 
-        inscricoes,
         comites,
-        membros
+        ato
     } = props;
+
+    const {membros, enunciados} = ato;
 
     const comite = comites.find(c => c.committee_id === membros[0].comite);
     const presidente = membros.find(m => m.funcao === "PRESIDENTA" || m.funcao === "PRESIDENTE");
@@ -77,11 +76,11 @@ export function criarPDF(props: Props){
                             '',
                             {text: 'Início', colSpan: 2, alignment: 'center', fillColor},
                             '',
-                            {text: '', colSpan: 2},
+                            {text: ato.inicio,colSpan: 2},
                             '',
                             {text: 'Término', colSpan: 2, alignment: 'center', fillColor},
                             '',
-                            {text: '', colSpan: 2},
+                            {text: ato.fim, colSpan: 2},
                             ''
                         ],
                         [
@@ -156,16 +155,16 @@ export function criarPDF(props: Props){
                             '', '',
                             '', '',
                             '', '', 
-                            {text: '(  )',  alignment: 'center'}
+                            {text: p.presente ? '( X )' : '(   )',  alignment: 'center'}
                         ])),
-                        [
+                        /*[
                             {text: 'Quantidade de participantes presentes na abertura dos trabalhos', marginBottom: 10, colSpan: 9, marginTop: 30},
                             '', '',
                             '', '',
                             '', '',
                             '', '', 
                             {text: '',  alignment: 'center'}
-                        ]
+                        ]*/
                     ]
                 }
             },
@@ -174,16 +173,16 @@ export function criarPDF(props: Props){
                 table: {
                     dontBreakRows: true,
                     headerRows: 1,
-                    widths: [60, '*', 60],
+                    widths: [60, '*', 80],
                     body: [
                         [
                             {text:'Proposta aprovadas', colSpan: 3, alignment: 'center', fillColor},
                             '',''
                         ],
-                        ...inscricoes.map( ({committee_id, codigo, statement_text}) =>([
+                        ...enunciados.map( ({committee_id, codigo, statement_text, aprovado, quorum, favor}) =>([
                             {text: formatarCodigo({codigo, committee_id}) , colSpan: 1, alignment: 'center'},
                             {text: statement_text, colSpan: 1},
-                            {text:'SIM  (  )\nNÃO (  )', colSpan: 1, alignment: 'center'},
+                            {text: (aprovado ? 'Aprovado' : 'Rejeitado') + `\n\nQuorum: ${quorum}\nFavorável: ${Math.floor(100 * favor / quorum)}%` , colSpan: 1, alignment: 'center'},
                         ]))
                     ]
                 },

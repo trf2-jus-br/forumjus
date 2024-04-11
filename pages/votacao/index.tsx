@@ -237,6 +237,7 @@ function Votacao({telao}: Props){
                 visivel={estadoVotacao === EstadoVotacao.FINALIZADO && telao} 
                 key={votacao.justificativa} 
                 quorum={votacao.quorum}
+                aprovado={votacao.aprovado}
                 votos_favoraveis={votos_favoraveis} 
                 votos_contrarios={votos_contrarios} 
             />

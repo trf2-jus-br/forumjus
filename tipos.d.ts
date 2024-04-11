@@ -152,6 +152,7 @@ interface Proponente {
  }
 
  interface Votacao {
+    aprovado: 0 | 1,
     juncao : number,
     juncao_texto: number,
     juncao_justificativa: number,
@@ -174,4 +175,17 @@ interface Calendario {
 	evento: "INSCRIÇÕES" | "HOMOLOGAÇÃO" | "VOTAÇÃO POR COMISSÃO" | "VOTAÇÃO GERAL",
     inicio: string,
     fim : string,
+}
+
+interface Ato {
+    inicio: string,
+    fim: string,
+    membros : (Membro & {
+        presente: 0 | 1
+    })[],
+    enunciados: (Enunciado & {
+        aprovado: 0 | 1,
+        quorum: number,
+        favor: number
+    })[]
 }

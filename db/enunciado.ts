@@ -238,7 +238,7 @@ class EnunciadoDAO {
                 (select votacao.fim from votacao where votacao.enunciado = statement.statement_id LIMIT 1 OFFSET 1)  as votacao_fim
             FROM statement
             LEFT JOIN votacao_detalhada as votacao  on votacao.enunciado = statement_id
-            WHERE evento = 'VOTAÇÃO POR COMISSÃO' AND favor / quorum > 2/3;`
+            WHERE evento = 'VOTAÇÃO POR COMISSÃO' AND aprovado;`
 
         const SQL = por_comissao ? SQL_POR_COMISSAO : SQL_GERAL;
         const params = por_comissao ? usuario.permissoes.administrar_comissoes : [];

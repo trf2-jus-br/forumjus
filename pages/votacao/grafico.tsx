@@ -8,12 +8,14 @@ interface Props {
     quorum: number;
     key: string | null;
     visivel: boolean;
+    aprovado: 0 | 1
 }
 
-function Grafico({votos_contrarios, votos_favoraveis, quorum,visivel} : Props){
+function Grafico({votos_contrarios, votos_favoraveis, quorum,visivel, aprovado} : Props){
     const className = visivel ? 'opacity-100' : 'opacity-0';
-    const aprovado = votos_favoraveis / quorum >= 2/3
     const abstencao = quorum - votos_contrarios - votos_favoraveis;
+
+    console.log("aprovado", aprovado)
 
     return <div className={`votacao-grafico ${className}`}>
         <Chart 

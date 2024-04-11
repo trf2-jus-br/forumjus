@@ -13,12 +13,12 @@ async function resumo({db, usuario} : API){
     const comites = await ComiteDAO.detalhar(db);
 
     const SQL_POR_COMISSAO = 
-        `SELECT statement_text, quorum, favor FROM statement 
+        `SELECT statement_text, quorum, favor, aprovado FROM statement 
         JOIN votacao_detalhada ON enunciado = statement_id
         WHERE statement.committee_id = ? AND evento = 'VOTAÇÃO POR COMISSÃO';`
 
     const SQL_GERAL = 
-        `SELECT statement_text, quorum, favor FROM statement 
+        `SELECT statement_text, quorum, favor, aprovado FROM statement 
         JOIN votacao_detalhada ON enunciado = statement_id
         WHERE statement.committee_id = ? AND evento = 'VOTAÇÃO POR COMISSÃO';`
 

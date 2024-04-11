@@ -21,13 +21,17 @@ function AtoOcorrencia(){
     }
 
     async function criarPDF(comite: number){
-        const {data: inscricoes} = await api.get<Inscricao[]>(`/api/caderno?nivel=${ADMITIDOS}&comissao=${comite}`)
-        const { data : membros } = await api.get<Membro[]>('/api/membro');
-        
+        const resultados = await Promise.all([
+            api.get<Inscricao[]>(`/api/caderno?nivel=${ADMITIDOS}&comissao=${comite}`),
+            api.get<Ato>(`/api/ato-ocorrencia?comite=${comite}`)
+        ])
+
+        const inscricoes = resultados[1].data.enunciados;
+        const ato = resultados[1].data;
+
         Ato.criarPDF({
-            membros: membros.filter(m => m.comite === comite),
-            inscricoes,
-            comites
+            comites,
+            ato
         })
     }
 
@@ -68,4 +72,4 @@ function AtoOcorrencia(){
     </Layout>
 }
 
-export default comPermissao(AtoOcorrencia, "ASSESSORIA", "PROGRAMADOR") ;
+export default comPermissao(AtoOcorrencia, "ASSESSORIA", "PROGRAMADOR", "PRESIDENTA", "PRESIDENTE", "RELATOR", "RELATORA") ;

@@ -12,7 +12,8 @@ interface Resumo {
     enunciados: {
         statement_text : string, 
         quorum: number, 
-        favor: number
+        favor: number,
+        aprovado: 0 | 1
     }[]
 }
 
@@ -115,7 +116,7 @@ function ResumoJornada(){
         </div>
         <div className='row mt-1'>
             <Passo id={3} atual={estagio}>
-                <span className='font-weight-bold'>{enunciados.filter(e => e.favor / e.quorum >= 2/3).length}</span> proposições aprovadas
+                <span className='font-weight-bold'>{enunciados.filter(e => e.aprovado).length}</span> proposições aprovadas
             </Passo>
         </div>
         
@@ -129,9 +130,9 @@ function ResumoJornada(){
                         <div className='col-2 d-flex justify-content-center' style={{gap: 20}}>
                             <div>
                                 <FontAwesomeIcon 
-                                    color={e.favor / e.quorum >= 2/3 ? '#080' : '#800'} 
+                                    color={e.aprovado ? '#080' : '#800'} 
                                     fontSize={15} 
-                                    icon={e.favor / e.quorum >= 2/3  ? faThumbsUp : faThumbsDown} 
+                                    icon={e.aprovado  ? faThumbsUp : faThumbsDown} 
                                     style={{marginRight: 5}}
                                 />{
                                 Math.floor(100 * e.favor / e.quorum)}%

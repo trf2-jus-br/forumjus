@@ -25,7 +25,7 @@ class VotacaoDAO {
                 votacao_detalhada 
             WHERE 
                 evento = 'VOTAÇÃO POR COMISSÃO' AND 
-                favor / quorum > 2/3 AND
+                aprovado AND
                 enunciado NOT IN (
                     SELECT enunciado FROM votacao_detalhada WHERE evento = 'VOTAÇÃO GERAL' AND fim IS NOT NULL
                 );`
@@ -73,6 +73,7 @@ class VotacaoDAO {
 
         const SQL_ENUNCIADO_POR_COMISSAO = 
             `SELECT 
+                aprovado,
                 votacao.id as votacao,
                 statement_text as texto,
                 statement_justification as justificativa,
@@ -91,6 +92,7 @@ class VotacaoDAO {
 
         const SQL_ENUNCIADO_GERAL = 
             `SELECT 
+                aprovado,
                 votacao.id as votacao,
                 statement_text as texto,
                 statement_justification as justificativa,
@@ -146,6 +148,7 @@ class VotacaoDAO {
         const estadoJornada = await VotacaoDAO.estadoJornada(db, votacao_geral != null, comissao);
             
         return {
+            aprovado: enunciados[0].aprovado,
             quorum: enunciados[0].quorum,
             votacao: enunciados[0].votacao,
             cronometro: enunciados[0].cronometro,
