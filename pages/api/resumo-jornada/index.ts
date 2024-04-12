@@ -14,12 +14,12 @@ async function resumo({db, usuario} : API){
 
     const SQL_POR_COMISSAO = 
         `SELECT statement_text, quorum, favor, aprovado FROM statement 
-        JOIN votacao_detalhada ON enunciado = statement_id
+        JOIN votacao_detalhada_2 ON enunciado = statement_id
         WHERE statement.committee_id = ? AND evento = 'VOTAÇÃO POR COMISSÃO';`
 
     const SQL_GERAL = 
         `SELECT statement_text, quorum, favor, aprovado FROM statement 
-        JOIN votacao_detalhada ON enunciado = statement_id
+        JOIN votacao_detalhada_2 ON enunciado = statement_id
         WHERE statement.committee_id = ? AND evento = 'VOTAÇÃO POR COMISSÃO';`
 
     const SQL = votacao_geral ? SQL_GERAL : SQL_POR_COMISSAO;

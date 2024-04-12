@@ -7,7 +7,7 @@ async function inicio_fim_trabalhos(db: PoolConnection, comite: number | string)
                     time(min(inicio)) as inicio, 
                     time(min(fim)) as fim 
                 FROM 
-                    votacao_detalhada 
+                    votacao_detalhada_2 
                 WHERE evento = 'VOTAÇÃO GERAL';`
 
 
@@ -15,7 +15,7 @@ async function inicio_fim_trabalhos(db: PoolConnection, comite: number | string)
                                     time(min(inicio)) as inicio, 
                                     time(min(fim)) as fim 
                                 FROM 
-                                    votacao_detalhada 
+                                    votacao_detalhada_2 
                                 WHERE evento = 'VOTAÇÃO POR COMISSÃO' AND committee_id = ?;`
 
 
@@ -32,9 +32,9 @@ async function presentes(db: PoolConnection, comite: number | string){
                                 SELECT 
                                     membro
                                 FROM presenca 
-                                JOIN votacao_detalhada 
+                                JOIN votacao_detalhada_2 
                                 WHERE 
-                                    ( (saida IS NULL OR saida >= votacao_detalhada.inicio) AND (entrada <= votacao_detalhada.fim OR votacao_detalhada.fim IS NULL) ) AND
+                                    ( (saida IS NULL OR saida >= votacao_detalhada_2.inicio) AND (entrada <= votacao_detalhada_2.fim OR votacao_detalhada_2.fim IS NULL) ) AND
                                     evento = 'VOTAÇÃO GERAL'
                             ) as presente
                         FROM membro;`
@@ -45,9 +45,9 @@ async function presentes(db: PoolConnection, comite: number | string){
                                     SELECT 
                                         membro
                                     FROM presenca 
-                                    JOIN votacao_detalhada 
+                                    JOIN votacao_detalhada_2 
                                     WHERE 
-                                        ( (saida IS NULL OR saida >= votacao_detalhada.inicio) AND (entrada <= votacao_detalhada.fim OR votacao_detalhada.fim IS NULL) ) AND
+                                        ( (saida IS NULL OR saida >= votacao_detalhada_2.inicio) AND (entrada <= votacao_detalhada_2.fim OR votacao_detalhada_2.fim IS NULL) ) AND
                                         evento = 'VOTAÇÃO POR COMISSÃO'
                                 ) as presente
                             FROM membro 
@@ -66,7 +66,7 @@ async function enunciados(db: PoolConnection, comite: number | string){
                             aprovado,
                             quorum,
                             favor 
-                        FROM votacao_detalhada
+                        FROM votacao_detalhada_2
                         JOIN 
                             statement ON statement_id = enunciado
                         WHERE 
@@ -77,7 +77,7 @@ async function enunciados(db: PoolConnection, comite: number | string){
                                     aprovado,
                                     quorum,
                                     favor
-                                FROM votacao_detalhada
+                                FROM votacao_detalhada_2
                                 JOIN 
                                     statement ON statement_id = enunciado
                                 WHERE 

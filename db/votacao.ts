@@ -6,8 +6,8 @@ import { EstadoVotacao, EstadoJornada } from "../utils/enums";
 class VotacaoDAO {
 
     private static async bemVindo(db: PoolConnection, votacao_geral: boolean, comite: number){
-        const SQL_GERAL = `SELECT COUNT(*) qnt FROM votacao_detalhada WHERE evento = 'VOTAÇÃO GERAL';`
-        const SQL_POR_COMISSAO = `SELECT COUNT(*) qnt FROM votacao_detalhada WHERE evento = 'VOTAÇÃO POR COMISSÃO' AND committee_id = ?;`
+        const SQL_GERAL = `SELECT COUNT(*) qnt FROM votacao_detalhada_2 WHERE evento = 'VOTAÇÃO GERAL';`
+        const SQL_POR_COMISSAO = `SELECT COUNT(*) qnt FROM votacao_detalhada_2 WHERE evento = 'VOTAÇÃO POR COMISSÃO' AND committee_id = ?;`
 
         const SQL_BEM_VINDO = votacao_geral ? SQL_GERAL : SQL_POR_COMISSAO;
         const PARAMS = votacao_geral ? [] : [comite];
@@ -22,12 +22,12 @@ class VotacaoDAO {
             `SELECT 
                 COUNT(*) qnt 
             FROM 
-                votacao_detalhada 
+                votacao_detalhada_2 
             WHERE 
                 evento = 'VOTAÇÃO POR COMISSÃO' AND 
                 aprovado AND
                 enunciado NOT IN (
-                    SELECT enunciado FROM votacao_detalhada WHERE evento = 'VOTAÇÃO GERAL' AND fim IS NOT NULL
+                    SELECT enunciado FROM votacao_detalhada_2 WHERE evento = 'VOTAÇÃO GERAL' AND fim IS NOT NULL
                 );`
 
         const SQL_POR_COMISSAO = 
@@ -82,7 +82,7 @@ class VotacaoDAO {
                 votacao.cronometro,
                 votacao.status,
                 votacao.quorum
-            FROM votacao_detalhada as votacao
+            FROM votacao_detalhada_2 as votacao
                 LEFT JOIN statement on statement_id = votacao.enunciado
                 LEFT JOIN committee on statement.committee_id = committee.committee_id
             WHERE 
@@ -101,7 +101,7 @@ class VotacaoDAO {
                 votacao.cronometro,
                 votacao.status,
                 votacao.quorum
-            FROM votacao_detalhada as votacao
+            FROM votacao_detalhada_2 as votacao
                 LEFT JOIN statement on statement_id = votacao.enunciado
                 LEFT JOIN committee on statement.committee_id = committee.committee_id
             WHERE evento = 'VOTAÇÃO GERAL'

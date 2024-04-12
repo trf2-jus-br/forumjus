@@ -65,7 +65,7 @@ class CadernoDAO {
             FROM statement
             INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
             INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
-            INNER JOIN votacao_detalhada ON votacao_detalhada.enunciado = statement_id
+            INNER JOIN votacao_detalhada_2 ON votacao_detalhada_2.enunciado = statement_id
             WHERE evento = 'VOTACAO GERAL' AND aprovado;`
 
         const SQL_ESPECIFICO = 
@@ -79,7 +79,7 @@ class CadernoDAO {
             FROM statement
             INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
             INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
-            INNER JOIN votacao_detalhada ON votacao_detalhada.enunciado = statement_id
+            INNER JOIN votacao_detalhada_2 ON votacao_detalhada_2.enunciado = statement_id
             WHERE evento = 'VOTACAO POR COMISSAO' AND aprovado AND statement.committee_id = ?;`
 
         const SQL = comissao ? SQL_ESPECIFICO : SQL_GERAL;
