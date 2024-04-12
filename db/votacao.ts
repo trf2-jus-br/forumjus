@@ -104,6 +104,7 @@ class VotacaoDAO {
             FROM votacao_detalhada as votacao
                 LEFT JOIN statement on statement_id = votacao.enunciado
                 LEFT JOIN committee on statement.committee_id = committee.committee_id
+            WHERE evento = 'VOTAÇÃO GERAL'
             ORDER BY id DESC 
             LIMIT 1;`;
         
@@ -255,7 +256,10 @@ class VotacaoDAO {
             throw "Aguarde até a data da votação.";
 
         // Determina o SQL que deve ser executado.
-        const SQL_GERAL = `UPDATE votacao SET fim = now(), status = ${EstadoVotacao.FINALIZADO};`
+        const SQL_GERAL = `UPDATE votacao 
+                            JOIN ( SELECT MAX(id) as max_id FROM votacao limit 1) as T
+                            SET fim = now(), status = ${EstadoVotacao.FINALIZADO}
+                            WHERE T.max_id = votacao.id;`
 
         const SQL_POR_COMISSAO = 
             `UPDATE votacao
