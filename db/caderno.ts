@@ -65,26 +65,11 @@ class CadernoDAO {
             FROM statement
             INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
             INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
-            INNER JOIN (
-                SELECT 
-                    votacao.id, 
-                    votacao.enunciado,
-                    sum(voto.voto) AS favor,
-                    sum(1 - voto.voto) AS contra
-                FROM voto
-                INNER JOIN votacao ON votacao.id = voto.votacao
-                GROUP BY votacao.id, votacao.enunciado
-                HAVING favor > contra        
-            ) as resultado_votacao 
-                ON statement_id = resultado_votacao.enunciado
-            INNER JOIN committee 
-                ON committee.committee_id = statement.committee_id
-            GROUP BY statement_id
-            HAVING count(resultado_votacao.id) >= ?
-            ORDER BY codigo asc;`
+            INNER JOIN votacao_detalhada ON votacao_detalhada.enunciado = statement_id
+            WHERE evento = 'VOTACAO GERAL' AND aprovado;`
 
         const SQL_ESPECIFICO = 
-            `SELECT
+            `SELECT 
                 statement.*,
                 attendee.attendee_name,
                 attendee.attendee_chosen_name,
@@ -94,25 +79,11 @@ class CadernoDAO {
             FROM statement
             INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
             INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
-            INNER JOIN (
-                SELECT 
-                    votacao.id, 
-                    votacao.enunciado,
-                    sum(voto.voto) AS favor,
-                    sum(1 - voto.voto) AS contra
-                FROM voto
-                INNER JOIN votacao ON votacao.id = voto.votacao
-                GROUP BY votacao.id, votacao.enunciado
-                HAVING favor > contra        
-            ) as resultado_votacao
-            ON statement_id = resultado_votacao.enunciado
-            WHERE committee_id = ?
-            GROUP BY statement_id
-            HAVING count(resultado_votacao.id) >= ?
-            ORDER BY codigo asc;
-        `
+            INNER JOIN votacao_detalhada ON votacao_detalhada.enunciado = statement_id
+            WHERE evento = 'VOTACAO POR COMISSAO' AND aprovado AND statement.committee_id = ?;`
+
         const SQL = comissao ? SQL_ESPECIFICO : SQL_GERAL;
-        const params = comissao ? [comissao, nivel] : [nivel];
+        const params = comissao ? [comissao] : [];
 
         const [resultado] = await db.query(SQL, params);
 
