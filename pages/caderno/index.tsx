@@ -59,7 +59,7 @@ function Caderno (props){
 
     async function abrirAprovadosVotacaoGeral(comissao: number){
         try{
-            const inscricoes = await carregarInscricoes(CADERNO.SEGUNDA_VOTACAO);
+            const inscricoes = await carregarInscricoes(CADERNO.SEGUNDA_VOTACAO, comissao);
            
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
@@ -120,14 +120,14 @@ function Caderno (props){
             </Breadcrumb>
         </div>
         
-        <div className='d-flex justify-content-center' >
+        {/*<div className='d-flex justify-content-center' >
             <Tooltip mensagem='aprovados na votação geral'>
                 <Button onClick={abrirAprovadosVotacaoGeral}>
                     <FontAwesomeIcon icon={faFileCircleCheck} />
                     <span style={{marginLeft: 10}}>Caderno da Jornada</span>
                 </Button>
             </Tooltip>
-        </div>
+        </div>*/}
 
         <Table hover={true}>
             <thead>
@@ -160,10 +160,19 @@ function Caderno (props){
 
                         <Tooltip mensagem='Aprovados na comissão' posicao='bottom'>
                             <FontAwesomeIcon 
-                                style={{cursor: 'pointer'}} 
+                                style={{cursor: 'pointer',  marginRight: 10}} 
                                 color='#060' 
                                 icon={faFileCircleCheck} 
                                 onClick={() => abrirAprovadosComissao(c.committee_id)}
+                            />
+                        </Tooltip>
+
+                        <Tooltip mensagem='Aprovados na plenária' posicao='bottom'>
+                            <FontAwesomeIcon 
+                                style={{cursor: 'pointer'}} 
+                                color='#990' 
+                                icon={faFileCircleCheck} 
+                                onClick={() => abrirAprovadosVotacaoGeral(c.committee_id)}
                             />
                         </Tooltip>
                     </td>

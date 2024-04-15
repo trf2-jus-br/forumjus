@@ -19,18 +19,18 @@ function gerarCaderno(inscricoes : Inscricao[], comites: Comite[], titulo: strin
         }),
         content: [
             {
-                image: `caderno_${inscricoes[0].committee_id}`,
+                image: `caderno_${preliminar? '' : 'plenaria_'}${inscricoes[0].committee_id}`,
                 width: 595,
                 margin: -30
             },
-            {text: 'I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região', bold: true, fontSize: 14, alignment: 'center', marginBottom: 0},
+            {text: !preliminar ?  '' : 'I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região', bold: true, fontSize: 14, alignment: 'center', marginBottom: 0},
             { text: titulo, bold: true, fontSize: 14, alignment: 'center', marginBottom: 35, marginTop: 50},
 
             //@ts-ignore
             ...inscricoes.sort((a, b) => b.codigo < a.codigo ? 1 : -1).map((e, i) => {
                 let body = [
                 [ {
-                    text: `${formatarCodigo({committee_id: !preliminar ? "" : e.committee_id, codigo: e.codigo})}  ${comite(e.committee_id)}`, 
+                    text: `${!preliminar ? (i+1).toString().padStart(2,"0") : formatarCodigo({committee_id: e.committee_id, codigo: e.codigo})}  ${comite(e.committee_id)}`, 
                     alignment: "center", 
                     fillColor: '#eeeeee',
                     border: [true, true, true, true]
@@ -87,6 +87,14 @@ function gerarCaderno(inscricoes : Inscricao[], comites: Comite[], titulo: strin
             caderno_5 : { url: `${window.location.origin}/5.png`},
             caderno_6 : { url: `${window.location.origin}/6.png`},
             caderno_7 : { url: `${window.location.origin}/7.png`},
+
+            caderno_plenaria_1 : { url: `${window.location.origin}/plenaria/1.png`},
+            caderno_plenaria_2 : { url: `${window.location.origin}/plenaria/2.png`},
+            caderno_plenaria_3 : { url: `${window.location.origin}/plenaria/3.png`},
+            caderno_plenaria_4 : { url: `${window.location.origin}/plenaria/4.png`},
+            caderno_plenaria_5 : { url: `${window.location.origin}/plenaria/5.png`},
+            caderno_plenaria_6 : { url: `${window.location.origin}/plenaria/6.png`},
+            caderno_plenaria_7 : { url: `${window.location.origin}/plenaria/7.png`},
         }
     })
 
