@@ -6,7 +6,7 @@ import moment from "moment";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 
-function gerarCaderno(inscricoes : Inscricao[], comites: Comite[], titulo: string, preliminar: boolean){
+function gerarCaderno(inscricoes : Inscricao[], comites: Comite[], titulo: string, preliminar: boolean, ocultarJustificativa: boolean){
     function comite(id : number){
         return comites.find(c => c.committee_id === id).committee_name;
     }
@@ -50,15 +50,19 @@ function gerarCaderno(inscricoes : Inscricao[], comites: Comite[], titulo: strin
                     lineHeight: 1.25,
                     bold: true
                 } ],
-                [  {
+            ]
+
+            if(!ocultarJustificativa){
+                body.push([  {
                     text: "Justificativa",
                     fontSize: 11,
                     marginTop: 10, 
                     preserveLeadingSpaces: true, 
                     lineHeight: 1.25,
-                } ],
-                [ {text: e.statement_justification.replaceAll('\n\n\n', '\n').replaceAll('\n\n','\n'), marginLeft: 20, marginBottom: 10, preserveLeadingSpaces: true, alignment: "justify", lineHeight: 1.25} ],
-            ]
+                } ])
+
+                body.push([ {text: e.statement_justification.replaceAll('\n\n\n', '\n').replaceAll('\n\n','\n'), marginLeft: 20, marginBottom: 10, preserveLeadingSpaces: true, alignment: "justify", lineHeight: 1.25} ],)
+            }
 
             body.push([ { text: `${moment(e.attendee_timestamp).format("DD/MM/YYYY")}`, alignment: "right", marginTop: 1, fontSize:10} ])
 

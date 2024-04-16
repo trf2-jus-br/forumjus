@@ -1,5 +1,12 @@
 import createHttpError from "http-errors";
 
+enum CADERNO{
+    TODOS = -1,
+    ADMITIDO = 0,
+    PRIMEIRA_VOTACAO = 1,
+    SEGUNDA_VOTACAO = 2,
+}
+
 class CadernoDAO {
     static async cadernoTodasInscricoes(db: PoolConnection, usuario: Usuario, comissao : number){
         if(usuario.funcao === "MEMBRO")
@@ -66,7 +73,8 @@ class CadernoDAO {
             INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
             INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
             INNER JOIN votacao_detalhada_2 ON votacao_detalhada_2.enunciado = statement_id
-            WHERE evento = 'VOTACAO GERAL' AND aprovado;`
+            WHERE evento = 'VOTACAO GERAL' AND aprovado ${ comissao ? ' AND statement.committee_id = ?' : '' }
+            ORDER BY statement.committee_id ASC, statement.codigo;`
 
         const SQL_ESPECIFICO = 
             `SELECT 
@@ -82,7 +90,8 @@ class CadernoDAO {
             INNER JOIN votacao_detalhada_2 ON votacao_detalhada_2.enunciado = statement_id
             WHERE evento = 'VOTACAO POR COMISSAO' AND aprovado AND statement.committee_id = ?;`
 
-        const SQL = comissao ? SQL_ESPECIFICO : SQL_GERAL;
+        const SQL = nivel == CADERNO.PRIMEIRA_VOTACAO ? SQL_ESPECIFICO : SQL_GERAL;
+
         const params = comissao ? [comissao] : [];
 
         const [resultado] = await db.query(SQL, params);

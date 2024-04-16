@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Layout from '../../components/layout';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faFile, faFileCircleCheck } from '@fortawesome/free-solid-svg-icons'
-import { Breadcrumb, Button, Table } from 'react-bootstrap';
+import { Breadcrumb, Button, Form, Table } from 'react-bootstrap';
 import { usarContexto } from '../../contexto';
 import Tooltip from '../../components/tooltip';
 import gerarCaderno from './caderno-preliminar';
@@ -18,6 +18,7 @@ enum CADERNO{
 
 function Caderno (props){
     const [comites, setComites] = useState<Comite[]>([]);
+    const [ocultarJustificativas, setOcultarJustificativas] = useState<boolean>(false);
 
     const { api, exibirNotificacao } = usarContexto();
 
@@ -64,7 +65,7 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
-            gerarCaderno(inscricoes, comites, 'Caderno da Jornada', false)
+            gerarCaderno(inscricoes, comites, 'Caderno da Jornada', false, ocultarJustificativas)
         }catch(err){
             console.log(err);
             // A função carregarInscricoes já notifica o usuário.
@@ -79,7 +80,7 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
-            gerarCaderno(inscricoes, comites, 'Caderno de Propostas da Jornada', true)
+            gerarCaderno(inscricoes, comites, 'Caderno de Propostas da Jornada', true, ocultarJustificativas)
         }catch(err){
             console.log(err);
             // A função carregarInscricoes já notifica o usuário.
@@ -93,7 +94,7 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
-            gerarCaderno(inscricoes, comites, 'Caderno Preliminar', true)
+            gerarCaderno(inscricoes, comites, 'Caderno Preliminar', true, ocultarJustificativas)
         }catch(err){
             // A função carregarInscricoes já notifica o usuário.
         }
@@ -106,7 +107,7 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
 
-            gerarCaderno(inscricoes, comites, 'Caderno da Jornada', true)
+            gerarCaderno(inscricoes, comites, 'Caderno da Jornada', true, ocultarJustificativas)
         }catch(err){
             // A função carregarInscricoes já notifica o usuário.
         }
@@ -120,20 +121,26 @@ function Caderno (props){
             </Breadcrumb>
         </div>
         
-        {/*<div className='d-flex justify-content-center' >
+        <div className='d-flex justify-content-center' >
             <Tooltip mensagem='aprovados na votação geral'>
                 <Button onClick={abrirAprovadosVotacaoGeral}>
                     <FontAwesomeIcon icon={faFileCircleCheck} />
                     <span style={{marginLeft: 10}}>Caderno da Jornada</span>
                 </Button>
             </Tooltip>
-        </div>*/}
+        </div>
 
         <Table hover={true}>
             <thead>
                 <tr>
                     <th>Comissão</th>
-                    <th></th>
+                    <th>
+            <label className='d-flex flex-row justify-content-center'>
+                <Form.Check style={{paddingRight: 10}}>
+                    <Form.Check.Input type="checkbox" checked={ocultarJustificativas} onChange={(v) => setOcultarJustificativas(v.target.checked)}/>
+                </Form.Check>
+                Ocultar justificativas
+            </label></th>
                 </tr>
             </thead>
             <tbody>
