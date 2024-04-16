@@ -27,7 +27,15 @@ function gerarCaderno(inscricoes : Inscricao[], comites: Comite[], titulo: strin
             { text: titulo, bold: true, fontSize: 14, alignment: 'center', marginBottom: 35, marginTop: 50},
 
             //@ts-ignore
-            ...inscricoes.sort((a, b) => b.codigo < a.codigo ? 1 : -1).map((e, i) => {
+            ...inscricoes.sort((a, b) => {
+                if(b.committee_id  < a.committee_id)
+                    return 1;
+
+                if(b.committee_id  > a.committee_id)
+                    return -1;
+
+                return b.codigo < a.codigo ? 1 : -1
+            }).map((e, i) => {
                 let body = [
                 [ {
                     text: `${!preliminar ? (i+1).toString().padStart(2,"0") : formatarCodigo({committee_id: e.committee_id, codigo: e.codigo})}  ${comite(e.committee_id)}`, 
