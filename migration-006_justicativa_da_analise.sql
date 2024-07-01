@@ -1,1 +1,0 @@
-ALTER TABLE statement ADD justificativa_analise VARCHAR(512) DEFAULT NULL;

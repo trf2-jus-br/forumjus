@@ -1,1 +1,0 @@
-ALTER TABLE votacao ADD cronometro INT;
