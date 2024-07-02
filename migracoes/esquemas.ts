@@ -17,9 +17,8 @@ export function verificaEsquemaSeguro(esquema : string){
 }
 
 export async function carregarEsquema(req: NextApiRequest) : Promise<string> {
-    throw JSON.stringify(req.headers, null, 3);
-
-    const host = req.headers['host'];
+    const host : string = req.headers['x-forwarded-host'] as string || req.headers['host'];
+    
     const jornadas = await carregarJornadas();
 
     // relaciona a origem da requisição com o esquema do banco.
