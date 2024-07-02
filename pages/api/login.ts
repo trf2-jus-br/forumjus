@@ -123,9 +123,11 @@ async function logar({req, res, db} : API){
     const FORUM_token = await jwt.buildJwt(usuario);
 
     // Salvamos no cookie um JWT que será utilizado exclusivamente para validar o login.
+    const secure = process.env.HOMOLOGACAO ? '' : 'Secure;'
+
     res.setHeader("Set-Cookie", [
-        `forum_token=${FORUM_token}; Secure; HttpOnly; Path=/api`,
-        `forum_usuario=${JSON.stringify(usuario)}; Secure; Path=/`
+        `forum_token=${FORUM_token};${secure} HttpOnly; Path=/api`,
+        `forum_usuario=${JSON.stringify(usuario)};${secure} Path=/`
     ])
 
     delete usuario.matricula;

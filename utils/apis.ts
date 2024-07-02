@@ -5,6 +5,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { PoolConnection } from 'mysql2/promise';
 import jwt from './jwt';
 import LogDAO from "../db/log";
+import { carregarEsquema, verificaEsquemaSeguro } from "../migracoes/esquemas";
 
 type Method =
   |'GET'
@@ -48,9 +49,17 @@ export function apiHandler(handler: ApiMethodHandlers) {
         let usuario : Usuario = null; 
         
         try {
+            const esquema = await carregarEsquema(req); 
+            
             // abre uma conexão e inicia uma transação.
             db = await pool.getConnection();
             db.beginTransaction();
+
+            // Verifica se o banco está comprometido.
+            verificaEsquemaSeguro(esquema);
+            
+            // configura a conexão para extrair dados do esquema correto;
+            await db.query(`use ${esquema};`)
 
             // Visando analisar a estabilidade do sistema, lanço exceções intencionamente.
             if(process.env.HOMOLOGACAO === "true" && process.env.TEORIA_DO_CAOS === "true"){
@@ -92,6 +101,8 @@ export function apiHandler(handler: ApiMethodHandlers) {
             // em caso de erro, desfaz as alterações propostas pela api no banco de dados.
             await db?.rollback();
 
+            console.log(err);
+
             // tento registrar o problema ocorrido
             try{
                 await  db.beginTransaction();
@@ -131,6 +142,7 @@ export function apiNegadaAo(usuario?: Usuario, ...funcoes_permitidas: FuncaoMemb
         throw createHttpError(`${usuario.funcao} não tem permissão para acessar a api.`);
     }
 }
+
 async function carregarUsuario(req: NextApiRequest) : Promise<Usuario | null>{
     try {
         return await jwt.parseJwt( req.cookies['forum_token'] ) as any;
