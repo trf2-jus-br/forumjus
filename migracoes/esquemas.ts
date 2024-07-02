@@ -17,6 +17,8 @@ export function verificaEsquemaSeguro(esquema : string){
 }
 
 export async function carregarEsquema(req: NextApiRequest) : Promise<string> {
+    throw JSON.stringify(req.headers, null, 3);
+
     const host = req.headers['host'];
     const jornadas = await carregarJornadas();
 
