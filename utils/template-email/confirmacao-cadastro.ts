@@ -1,4 +1,4 @@
-function enunciados(data, forum: Forum, ocupacoes: Ocupacao[], comites: Comite[]) {
+function enunciados(data, ambiente: Ambiente, ocupacoes: Ocupacao[], comites: Comite[]) {
     return data.statement.reduce((acc, s, i) => {
         return acc + 
         `<div style="margin-top: 25px;">
@@ -12,10 +12,10 @@ function enunciados(data, forum: Forum, ocupacoes: Ocupacao[], comites: Comite[]
     }, "");
 }
 
-const EmailConfirmacaoCadastro = (data, forum: Forum, ocupacoes: Ocupacao[], comites: Comite[]) => `
+const EmailConfirmacaoCadastro = (data, ambiente: Ambiente, ocupacoes: Ocupacao[], comites: Comite[]) => `
 <html>
     <head>
-        <title>I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região</title>
+        <title>${ambiente.NOME}</title>
     </head>
     <body>
         <div style="max-width:601px; margin: 0 auto">
@@ -45,10 +45,10 @@ const EmailConfirmacaoCadastro = (data, forum: Forum, ocupacoes: Ocupacao[], com
                 </ul>
             </div>
 
-            ${enunciados(data, forum, ocupacoes, comites)}
+            ${enunciados(data, ambiente, ocupacoes, comites)}
 
             <div style="margin-top: 25px;">Atenciosamente,</div>
-            <div style="margin-top: 25px;">Equipe ${forum.forum_name}.</div>
+            <div style="margin-top: 25px;">Equipe ${ambiente.NOME}.</div>
         </div>
     </body>
 </html>

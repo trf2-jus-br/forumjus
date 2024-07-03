@@ -13,7 +13,7 @@ type Props = React.PropsWithChildren & {
 }
 
 function Cabecalho({fluid} : Props){
-    const {usuario, forum} = usarContexto();
+    const {usuario, ambiente} = usarContexto();
     const [exibirMenu, setExibirMenu] = useState(false);
     const {api, exibirNotificacao} = usarContexto();
 
@@ -47,7 +47,7 @@ function Cabecalho({fluid} : Props){
                 <div className="navbar-brand w-100 d-flex align-items-center justify-content-between" style={{whiteSpace: 'normal'}}>
                     <div className='col-12'>
                         <span className="text-success font-weight-bold" style={{ fontSize: "150%" }}><FontAwesomeIcon icon={faBuildingColumns} /></span>&nbsp;&nbsp;
-                        <strong>{forum?.forum_name}</strong>
+                        <strong>{ambiente?.NOME}</strong>
                     </div>
                     {usuario &&
                         <div className='col d-flex align-items-center justify-content-end' style={{fontSize: 14, textAlign: 'right'}}>
@@ -74,7 +74,6 @@ function Cabecalho({fluid} : Props){
                             </Dropdown.Item>
                             <Dropdown.Item href="/admin/comite" style={{color: '#a00'}}>Comissões</Dropdown.Item>
                             <Dropdown.Item href="/admin/enunciado"  style={{color: '#a00'}}>Enunciados</Dropdown.Item>
-                            <Dropdown.Item href="/admin/forum"  style={{color: '#a00'}}>Fóruns</Dropdown.Item>
                             <Dropdown.Item href="/admin/participante"  style={{color: '#a00'}}>Participantes</Dropdown.Item>
                             <Dropdown.Item href="/admin/ocupacao"  style={{color: '#a00'}}>Ocupações</Dropdown.Item>
                         </Dropdown.Header>

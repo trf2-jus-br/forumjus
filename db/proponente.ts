@@ -138,7 +138,7 @@ class ProponenteDAO{
 
         for(let i = 0; i < listagem.length; i++){
             if(emails_bloqueados.indexOf(listagem[i].email.trim()) === -1){
-                await mailer.notificarProponente(listagem[i].email, listagem[i].enunciados, listagem[i].enunciados_reprovados, `${listagem[i].nome}<br/>${listagem[i].email}`);
+                await mailer.notificarProponente(db.ambiente, listagem[i].email, listagem[i].enunciados, listagem[i].enunciados_reprovados, `${listagem[i].nome}<br/>${listagem[i].email}`);
             }
         }
     }

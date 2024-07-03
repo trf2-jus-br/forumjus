@@ -6,6 +6,7 @@ import ProponenteDAO from './proponente';
 import createHttpError from 'http-errors';
 import CalendarioDAO from './calendario';
 
+// Campo perdeu o significado e deveria ser removido do banco.
 const forumId = 1;
 
 /*

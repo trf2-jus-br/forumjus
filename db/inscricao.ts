@@ -1,4 +1,3 @@
-import createHttpError from "http-errors";
 import PermissaoDAO from "./permissao";
 
 /*

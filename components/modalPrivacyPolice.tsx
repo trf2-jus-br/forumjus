@@ -1,8 +1,11 @@
 import { Modal } from "react-bootstrap"
 import React, { useImperativeHandle, useState } from "react"
+import { usarContexto } from "../contexto"
 
 function PrivacyPolicy(props, ref){
     const [show, setShow] = useState(false)
+
+    const { ambiente } = usarContexto();
 
     useImperativeHandle(ref, ()=>({
         show : () => setShow(true)
@@ -19,7 +22,7 @@ function PrivacyPolicy(props, ref){
             
             <h6>Fórumjus</h6>
             <p style={{marginLeft:20}}>
-                Sistema desenvolvido para receber inscrições de propostas de enunciados para a I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região.
+                Sistema desenvolvido para receber inscrições de propostas de enunciados para a {ambiente.NOME}.
             </p>
             <h6>Dados pessoais</h6>
             <p style={{marginLeft:20}}>
@@ -32,7 +35,7 @@ function PrivacyPolicy(props, ref){
                 </ul>
             </p>
             <h6>Termo de uso</h6>
-            <p style={{marginLeft:20}}>Eu autorizo o armazenamento e o processamento dos dados pessoais informados acima, de acordo com as exigências da Lei nº. 13.709/18 - Lei Geral de Proteção de Dados Pessoais, para as finalidades da I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região</p>
+            <p style={{marginLeft:20}}>Eu autorizo o armazenamento e o processamento dos dados pessoais informados acima, de acordo com as exigências da Lei nº. 13.709/18 - Lei Geral de Proteção de Dados Pessoais, para as finalidades da {ambiente.NOME}</p>
         </Modal.Body>
     </Modal>
 }

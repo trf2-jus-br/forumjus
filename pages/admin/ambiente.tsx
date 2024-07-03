@@ -8,12 +8,13 @@ interface Props {
 
 function Comissao (props: Props){
     return <CRUD 
-        nome='Fóruns' 
+        nome='Ambiente' 
         colunas={[
-            {nome: "ID", banco: "forum_id", largura: 1, exibir: true},
-            {nome: "nome", banco: "forum_name", largura: 8, exibir: true},
+            {nome: "ID", banco: "id", largura: 1, exibir: true},
+            {nome: "Nome", banco: "nome", largura: 8, exibir: true},
+            {nome: "Valor", banco: "valor", largura: 8, exibir: true},
         ]}
-        api="/api/crud?tabela=forum&nome_id=forum_id"
+        api="/api/crud?tabela=configuracao&nome_id=id"
     />
 }
 

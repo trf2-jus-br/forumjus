@@ -8,7 +8,8 @@
       "next_start": "next start -p 8081",
       "migration:create": "npx typeorm migration:create ./migracoes/migration/migration",
       "migrate": "ts-node migracoes/index.ts",
-      "migrate-env": "ts-node migracoes/index.ts --env-file=./.env"
+      "migrate-env": "ts-node migracoes/index.ts --env-file=./.env",
+      "migration:revert" : "npm run migrate-env -- --revert"
    },
    "dependencies": {
       "@emotion/react": "^11.11.4",

@@ -3,10 +3,10 @@ interface Enunciado {
     statement_text: string,
 }
 
-const EmailNotificarDivergencia = (enunciados : Enunciado[], nome: string) => `
+const EmailNotificarDivergencia = (ambiente:Ambiente, enunciados : Enunciado[], nome: string) => `
 <html>
     <head>
-        <title>I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região</title>
+        <title>${ambiente.NOME}</title>
     </head>
     <body>
         <div style="max-width:601px; margin: 0 auto">
@@ -109,7 +109,7 @@ const EmailNotificarDivergencia = (enunciados : Enunciado[], nome: string) => `
             <p style="text-indent: 30px; font-weight: bold;">Solicitamos que responda este e-mail indicando o recebimento do mesmo e a qual Comissão Temática deseja integrar impreterivelmente até o dia 04/03/2024.</p>
 
             <div style="margin-top: 25px;">Atenciosamente,</div>
-            <div style="margin-top: 25px; margin-bottom: 25px;">Equipe I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região.</div>
+            <div style="margin-top: 25px; margin-bottom: 25px;">Equipe ${ambiente.NOME}.</div>
         </div>
     </body>
 </html>

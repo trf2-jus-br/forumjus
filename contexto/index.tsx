@@ -15,7 +15,7 @@ const paginas_publicas = [
 
 export function ContextoProvider({children}){
     const [usuario, setUsuario] = useState<Usuario>(null);
-    const [forum, setForum] = useState<Forum>(null);
+    const [ambiente, setAmbiente] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const mensagemRef = useRef(null);
     const toastRef = useRef(null);
@@ -48,10 +48,10 @@ export function ContextoProvider({children}){
         (modal === true ? mensagemRef : toastRef).current.exibir(msg)
     }
 
-    async function carregarForum(){
+    async function carregarAmbiente(){
         try{
-            const { data } = await api.get<Forum>('/api/forum');
-            setForum(data);
+            const { data } = await api.get<Ambiente>('/api/ambiente');
+            setAmbiente(data);
             setCarregando(false)
         }catch(err){
             // Notifica o usuário que ocorreu um erro.
@@ -62,7 +62,7 @@ export function ContextoProvider({children}){
             })
 
             // Tenta recarregar a tela
-            setTimeout(carregarForum, 1000);
+            setTimeout(carregarAmbiente, 1000);
         }
     }
 
@@ -84,12 +84,12 @@ export function ContextoProvider({children}){
     }
 
     useEffect(()=>{
-        carregarForum();
+        carregarAmbiente();
         carregar();
     }, [])
 
 
-    return <contexto.Provider value={{usuario, forum, exibirNotificacao, api}}>
+    return <contexto.Provider value={{usuario, ambiente, exibirNotificacao, api}}>
         {carregando ? <></> : children}
         <ModalError ref={mensagemRef} title="Atenção" />
         <Toast ref={toastRef} />

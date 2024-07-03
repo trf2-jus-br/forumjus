@@ -36,6 +36,7 @@ export class Migration1719849228884 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+        //await queryRunner.query(`DROP VIEW votacao_detalhada;`)
     }
 
 }

@@ -20,7 +20,7 @@ function Caderno (props){
     const [comites, setComites] = useState<Comite[]>([]);
     const [ocultarJustificativas, setOcultarJustificativas] = useState<boolean>(false);
 
-    const { api, exibirNotificacao } = usarContexto();
+    const { api, exibirNotificacao, ambiente } = usarContexto();
 
     async function carregarComissoes(){
         api.get<Comite[]>("/api/comite")
@@ -65,7 +65,7 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
-            gerarCaderno(inscricoes, comites, 'Caderno da Jornada', false, ocultarJustificativas)
+            gerarCaderno(ambiente,inscricoes, comites, 'Caderno da Jornada', false, ocultarJustificativas)
         }catch(err){
             console.log(err);
             // A função carregarInscricoes já notifica o usuário.
@@ -80,7 +80,7 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
-            gerarCaderno(inscricoes, comites, 'Caderno de Propostas da Jornada', true, ocultarJustificativas)
+            gerarCaderno(ambiente,inscricoes, comites, 'Caderno de Propostas da Jornada', true, ocultarJustificativas)
         }catch(err){
             console.log(err);
             // A função carregarInscricoes já notifica o usuário.
@@ -94,7 +94,7 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
-            gerarCaderno(inscricoes, comites, 'Caderno Preliminar', true, ocultarJustificativas)
+            gerarCaderno(ambiente,inscricoes, comites, 'Caderno Preliminar', true, ocultarJustificativas)
         }catch(err){
             // A função carregarInscricoes já notifica o usuário.
         }
@@ -107,7 +107,7 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
 
-            gerarCaderno(inscricoes, comites, 'Caderno da Jornada', true, ocultarJustificativas)
+            gerarCaderno(ambiente,inscricoes, comites, 'Caderno da Jornada', true, ocultarJustificativas)
         }catch(err){
             // A função carregarInscricoes já notifica o usuário.
         }

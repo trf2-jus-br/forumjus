@@ -20,6 +20,9 @@ async function carregarMigracoes(){
 }
 
 async function inicializar(){
+    // define se deve executar ou reverte as migrações.
+    const reverter = process.argv.indexOf('--revert') !== -1;
+
     const jornadas = await carregarJornadas();
     
     const dataSouceOption: MysqlConnectionOptions = {
@@ -35,14 +38,23 @@ async function inicializar(){
     };
 
     for(let i = 0; i < jornadas.length; i++){
-        console.log(`Migrando '${jornadas[i].nome}'...`)
-        
-        const dt = new DataSource({ ...dataSouceOption, database: jornadas[i].esquema})
-        await dt.initialize();
-        await dt.runMigrations();
+        try{
+            const dt = new DataSource({ ...dataSouceOption, database: jornadas[i].esquema})
+            await dt.initialize();
+    
+            if(reverter){
+                console.log(`Revertendo '${jornadas[i].nome}'...`)
+                await dt.undoLastMigration();
+            }else{
+                console.log(`Migrando '${jornadas[i].nome}'...`)
+                await dt.runMigrations();
+            }
+        }catch(err){
+            // Migra o que for possível, notifica notifica os erros.
+            console.log(err);
+        }
     }
 
-    console.log('\nMigrações finalizadas.\n')
     process.exit()
 }
 

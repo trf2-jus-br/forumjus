@@ -1,27 +1,17 @@
 import React, { useRef } from 'react';
 import ModalRegimento from '../components/modalRegimento';
-import {carregarEsquema} from '../migracoes/esquemas'
+import { usarContexto } from '../contexto';
 
-export async function getServerSideProps(context) {
-  const esquema = await carregarEsquema(context.req);
-
-  if(esquema.match('[^a-zA-Z0-9]'))
-    throw `Esquema não permitido ${host}`;
-
-  return { props: {
-    esquema
-  }};
-}
-
-export default function Home(props) {
+export default function Home() {
+  const { ambiente } = usarContexto();
 
   const regimentoRef = useRef();
   return <>
     <div className="container content">
       <div className="px-4 py-5 my-5 text-center">
         <div className="col-lg-6 mx-auto">
-        <img className='w-100' title={props.esquema} src="/saia.png" />
-          <p className="lead mb-4 mt-4">Sistema desenvolvido para receber inscrição de proposta(s) de enunciado(s) para a I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região.</p>
+        <img className='w-100' src={ambiente.BANNER} />
+          <p className="lead mb-4 mt-4">Sistema desenvolvido para receber inscrição de proposta(s) de enunciado(s) para a {ambiente.NOME}</p>
 
           <p className="lead mb-4 mt-4">Para mais informações, visite o <a href="https://www10.trf2.jus.br/institucional/forum-de-direitos-humanos-e-fundamentais/" target='_blank' rel="noopener">Portal do Fórum de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região</a> e leia o <a href="#regimento" onClick={()=> regimentoRef.current.show()}>Regimento da Jornada</a>.</p>
           <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">

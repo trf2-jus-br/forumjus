@@ -6,7 +6,7 @@ import moment from "moment";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 
-function gerarCaderno(inscricoes : Inscricao[], comites: Comite[], titulo: string, preliminar: boolean, ocultarJustificativa: boolean){
+function gerarCaderno(ambiente: Ambiente, inscricoes : Inscricao[], comites: Comite[], titulo: string, preliminar: boolean, ocultarJustificativa: boolean){
     function comite(id : number){
         return comites.find(c => c.committee_id === id).committee_name;
     }
@@ -23,7 +23,7 @@ function gerarCaderno(inscricoes : Inscricao[], comites: Comite[], titulo: strin
                 width: 595,
                 margin: -30
             },
-            {text: !preliminar ?  '' : 'I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região', bold: true, fontSize: 14, alignment: 'center', marginBottom: 0},
+            {text: !preliminar ?  '' : ambiente.NOME, bold: true, fontSize: 14, alignment: 'center', marginBottom: 0},
             { text: titulo, bold: true, fontSize: 14, alignment: 'center', marginBottom: 35, marginTop: 50},
 
             //@ts-ignore

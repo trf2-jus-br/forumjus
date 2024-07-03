@@ -170,7 +170,7 @@ Enunciado ${i}
     },
 
 
-    async notificarProponente(email: string, enunciados: any[], enunciados_reprovados: any[], nome: string){
+    async notificarProponente(ambiente: Ambiente, email: string, enunciados: any[], enunciados_reprovados: any[], nome: string){
         try{
             const admitido = enunciados.length !== 0 && enunciados.every(e => e.committee_id === enunciados[0].committee_id); 
             const rejeitado = enunciados.length === 0; 
@@ -197,8 +197,8 @@ Enunciado ${i}
                 from: this.from,
                 to: email.trim(),
                 cc: process.env.SMTP_BCC === 'false' ? undefined : 'forumdhf@trf2.jus.br',
-                subject: `I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região`,
-                html: admitido ? EmailNotificarAdmissao(enunciados, nome) : rejeitado ? EmailNotificarRejeicao(enunciados_reprovados, nome) : EmailNotificarDivergencia(enunciados, nome),
+                subject: `${ambiente.NOME}`,
+                html: admitido ? EmailNotificarAdmissao(ambiente, enunciados, nome) : rejeitado ? EmailNotificarRejeicao(ambiente, enunciados_reprovados, nome) : EmailNotificarDivergencia(ambiente, enunciados, nome),
                 attachments: anexos
             });
         }catch(err){
@@ -206,15 +206,15 @@ Enunciado ${i}
         }
     },
 
-    async enviarConfirmacaoCadastros(email, data, forum: Forum, ocupacoes: Ocupacao[], comites: Comite[]) {
+    async enviarConfirmacaoCadastros(email, data, ambiente: Ambiente, ocupacoes: Ocupacao[], comites: Comite[]) {
         const content = await fs.readFile("./utils/template-email/saia.png")
         
         this.send({
             from: this.from,
             to: email.trim(),
             cc: process.env.SMTP_BCC === 'false' ? undefined : 'forumdhf@trf2.jus.br',
-            subject: `I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região`,
-            html: EmailConfirmacaoCadastro(data, forum, ocupacoes, comites),
+            subject: `${ambiente.NOME}`,
+            html: EmailConfirmacaoCadastro(data, ambiente, ocupacoes, comites),
             attachments: [{
                 filename: 'image.png',
                 content: content.toString("base64"),

@@ -18,6 +18,7 @@ export class Migration1719849193675 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+        //await queryRunner.query(`DROP TABLE juncao;`)
     }
 
 }

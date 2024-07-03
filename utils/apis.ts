@@ -2,10 +2,10 @@ import createHttpError from "http-errors";
 import pool from './mysql';
 
 import type { NextApiRequest, NextApiResponse } from "next";
-import { PoolConnection } from 'mysql2/promise';
 import jwt from './jwt';
 import LogDAO from "../db/log";
 import { carregarEsquema, verificaEsquemaSeguro } from "../migracoes/esquemas";
+import { AmbienteDAO } from "../db/ambiente";
 
 type Method =
   |'GET'
@@ -55,11 +55,14 @@ export function apiHandler(handler: ApiMethodHandlers) {
             db = await pool.getConnection();
             db.beginTransaction();
 
-            // Verifica se o banco está comprometido.
+            // Evita SQL INJECTION
             verificaEsquemaSeguro(esquema);
             
             // configura a conexão para extrair dados do esquema correto;
             await db.query(`use ${esquema};`)
+
+            // carrega o ambiente adequado.
+            db.ambiente = await AmbienteDAO.listar(db, esquema);
 
             // Visando analisar a estabilidade do sistema, lanço exceções intencionamente.
             if(process.env.HOMOLOGACAO === "true" && process.env.TEORIA_DO_CAOS === "true"){

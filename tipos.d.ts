@@ -2,13 +2,19 @@ type EstadoVotacao = import('./utils/enums').EstadoVotacao;
 type EstadoJornada = import('./utils/enums').EstadoJornada;
 
 type AxiosInstance = import('axios').AxiosInstance;
-type PoolConnection = import('mysql2/promise').PoolConnection;
+type PoolConnection = import('mysql2/promise').PoolConnection & { ambiente?: Ambiente };
 
 interface API {
     req: import('next').NextApiRequest;
     res: import('next').NextApiResponse;
     db: PoolConnection;
     usuario?: Usuario;
+}
+
+interface Ambiente {
+    NOME: string,
+    BANNER: string,
+    JWT_SALT: string,
 }
 
 interface UsuarioSiga {
@@ -64,11 +70,6 @@ interface Usuario {
     }
 }
 
-interface Forum {
-    forum_id : number,
-    forum_name: string;
-}
-
 interface Mensagem {
     texto: string;
     titulo?: string;
@@ -77,7 +78,7 @@ interface Mensagem {
 }
 
 interface Contexto {
-    forum: Forum,
+    ambiente: Ambiente,
     usuario: Usuario,
     exibirNotificacao: (msg: Mensagem, modal?: boolean) => void;
     api: AxiosInstance;

@@ -13,7 +13,7 @@ const ADMITIDOS = 0;
 function AtoOcorrencia(){
     const [comites, setComites] = useState<Comite[]>();
     
-    const {api} = usarContexto();
+    const {api, ambiente} = usarContexto();
 
     async function carregar(){
         const { data : comites } = await api.get<Comite[]>('/api/comite');
@@ -31,7 +31,8 @@ function AtoOcorrencia(){
 
         Ato.criarPDF({
             comites,
-            ato
+            ato,
+            ambiente
         })
     }
 

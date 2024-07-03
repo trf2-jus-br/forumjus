@@ -7,7 +7,8 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 interface Props {
     comites: Comite[],
-    ato: Ato
+    ato: Ato,
+    ambiente: Ambiente
 }
 
 const ESQUERDA = [true, false, false, false];
@@ -16,7 +17,8 @@ const NENHUM = [false, false, true, false];
 export function criarPDF(props: Props){
     const { 
         comites,
-        ato
+        ato,
+        ambiente
     } = props;
 
     const {membros, enunciados} = ato;
@@ -189,7 +191,7 @@ export function criarPDF(props: Props){
             },
         ],
         images: {
-            saia : { url: `${window.location.origin}/saia.png`},
+            saia : { url: `${window.location.origin}${ambiente.BANNER}`},
         },
     });
 

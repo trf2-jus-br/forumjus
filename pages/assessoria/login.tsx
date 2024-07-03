@@ -7,7 +7,7 @@ function Login(props){
     const [senha, setSenha] = useState("");
     const [matricula, setMatricula] = useState("");
     
-    const { api, exibirNotificacao } = usarContexto();
+    const { api, exibirNotificacao, ambiente } = usarContexto();
 
     async function logar(event: FormEvent){
         event.preventDefault();
@@ -56,7 +56,7 @@ function Login(props){
         <div className="container content">
           <div className="px-4 py-5 my-5 text-center">
             <div className="col-lg-6 mx-auto">
-                <img className='w-100' src="/saia.png" />
+                <img className='w-100' src={ambiente.BANNER} />
 
                 <form onSubmit={(event) => logar(event)}>
                     <Form.Control placeholder='Matricula SIGA' className='mt-5 w-100 text-center' type='input' value={matricula} onChange={e => setMatricula(e.target.value)}></Form.Control>
