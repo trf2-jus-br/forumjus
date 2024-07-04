@@ -52,7 +52,8 @@ export const handler = async function ({req, res, db} : API) {
     // Validate captcha
     const r = await Fetcher.fetcher(options.url)
     if (!r.success) 
-        throw createHttpError.BadRequest(`Captcha inválido`);
+        console.log(`Captcha inválido - DESABILITADO TEMPORARIAMENTE`)
+        //throw createHttpError.BadRequest(`Captcha inválido`);
 
     // Validate registration data
     const data : RequisicaoCadastro = req.body.values
