@@ -32,17 +32,20 @@ export async function carregarEsquema(req: NextApiRequest) : Promise<string> {
 export async function carregarJornadas() : Promise<Jornada[]>{
     return [
         { 
-            nome: 'Jornada 3', 
+            nome: 'Jornada 3 - FOJURJ', 
             esquema: 'trfForumJus3',
             enderecos: [
-                'jornada3:8081', 'jornada3-hmg.trf2.jus.br'
+                'jornada3:8081', 'jornada3-hmg.trf2.jus.br', 'jornadafojurj.trf2.jus.br'
             ]
         },
         { 
-            nome: 'Jornada 2', 
+            nome: 'Jornada 2 - FDHF', 
             esquema: 'trfForumJus2',
             enderecos: [
-                'jornada2:8081', 'localhost:8081', 'jornada2-hmg.trf2.jus.br'
+                'jornada2:8081', 'jornada2-hmg.trf2.jus.br',
+                
+                // A jornada atual é a 2ª Jornada.
+                'localhost:8081', 'jornada-hmg.trf2.jus.br', 'jornada.trf2.jus.br'
             ]
         },
     ]
