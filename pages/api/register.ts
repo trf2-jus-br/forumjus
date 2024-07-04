@@ -7,6 +7,8 @@ import ProponenteDAO from "../../db/proponente"
 import EnunciadoDAO from "../../db/enunciado"
 import OcupacaoDAO from "../../db/ocupacao"
 import ComiteDAO from "../../db/comite"
+import CalendarioDAO from "../../db/calendario"
+import moment from "moment"
 
 interface RequisicaoCadastro {
     privacyPolice: true,
@@ -31,6 +33,14 @@ interface RequisicaoCadastro {
  }
 
 export const handler = async function ({req, res, db} : API) {
+    const inscricoes = (await CalendarioDAO.listar(db)).find(c => c.evento === "INSCRIÇÕES");
+
+    const aguardando = moment(inscricoes.inicio) > moment();
+    const encerrada = moment(inscricoes.fim) < moment();
+
+    if(aguardando || encerrada)
+        throw createHttpError.BadRequest(`Inscrição negada! Verifique o cronograma.`);
+
     // Validar o Captcha
     const response_key = req.body.recaptchaToken;
     const secret_key = process.env.RECAPTCHA_SECRET_KEY;

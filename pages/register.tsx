@@ -10,6 +10,7 @@ import PrivacyPolicy from '../components/modalPrivacyPolice';
 import Regimento from '../components/modalRegimento';
 import { usarContexto } from '../contexto';
 import { retornoAPI } from '../utils/api-retorno';
+import moment from 'moment';
 
 const recaptchaRef = React.createRef();
 
@@ -17,6 +18,7 @@ export default function Create() {
   const [attendeeEmail, setAttendeeEmail] = useState(undefined)
   const [created, setCreated] = useState(false)
   const [editingCommittee, setEdittingCommittee] = useState(null)
+  const [calendario, setCalendario] = useState<Calendario[]>(null);
 
   /* Hashtable dos Comites e Ocupações, utilizando os id's como indexadores.*/
   const [committee, setCommittee] = useState({});
@@ -83,10 +85,19 @@ export default function Create() {
     });
   }
 
+  async function carregarCalendario(){
+    try{
+      const {data} = await api.get<Calendario[]>("/api/calendario");
+      setCalendario(data);
+    }catch(err){
+      alert(err)
+    }
+  }
   
   useEffect(()=>{
-    carregarOcupacoes();
-    carregarComissoes();
+      carregarCalendario();
+      carregarOcupacoes();
+      carregarComissoes();
   }, []);
 
 
@@ -121,13 +132,14 @@ export default function Create() {
 
   const handleSubmit = async (values, actions) => {
     try {
-      const recaptchaToken = await recaptchaRef.current.executeAsync();
+      const recaptchaToken = null;//await recaptchaRef.current.executeAsync();
 
       actions.setSubmitting(false)
       await api.post(`/api/register`, { recaptchaToken, values })
       setAttendeeEmail(values.attendeeEmail)
       setCreated(true)
     } catch (e) {
+      console.log(e)
         //não executa nenhuma ação, apenas notifica o usuário do erro.
         exibirNotificacao({
           titulo: "Atenção",
@@ -162,12 +174,20 @@ export default function Create() {
     </div>
   }
 
-  /*
-  return <Layout>
-    <h1 className='mb-4'>Formulário de inscrição de proposta(s) de enunciado(s)</h1>
-    <p className='alert alert-warning'>As inscrições já foram encerradas!</p>
-  </Layout>
-  */
+  const inscricoes = calendario?.find(c => c.evento === "INSCRIÇÕES");
+
+  const aguardando = moment(inscricoes?.inicio) > moment();
+  const encerrada = moment(inscricoes?.fim) < moment();
+
+  console.log(moment(inscricoes?.fim), aguardando, encerrada)
+
+  if(!inscricoes || aguardando || encerrada)
+    return <Layout>
+      <h1 className='mb-4'>Formulário de inscrição de proposta(s) de enunciado(s)</h1>
+
+      {encerrada && <p className='alert alert-warning'>As inscrições já foram encerradas!</p>}
+      {aguardando && <p className='alert alert-warning'>As inscrições ainda não foram abertas!</p>}
+    </Layout>
 
   return (
     <Layout>
