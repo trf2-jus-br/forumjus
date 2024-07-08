@@ -1,4 +1,5 @@
 require('dotenv').config({})
+const nodemailer = require('nodemailer');
 
 import * as fs  from 'fs/promises';
 
@@ -17,6 +18,39 @@ async function carregarMigracoes(){
     })
 
     return classes;
+}
+
+async function notificarErro(err : Error){
+    console.log(err);
+
+    const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        secureConnection: false, // TLS requires secureConnection to be false
+        secure: false,
+        ignoreTLS: true,
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
+
+    return new Promise((resolve, reject) => {
+        const config = {
+            from: 'walace.pereira@trf2.jus.br',
+            to: 'walace.pereira@trf2.jus.br',
+            subject: `Migração ForumJus`,
+            text: err.stack
+        }
+    
+        transporter.sendMail(config, (err, info) => {
+            if (err) {
+                console.log("erro ao enviar email", err)
+                reject(err);
+            } else {
+                resolve(null);
+            }
+        })
+    });
 }
 
 async function inicializar(){
@@ -53,7 +87,7 @@ async function inicializar(){
             }
         }catch(err){
             // Migra o que for possível, notifica notifica os erros.
-            console.log(err);
+           await notificarErro(err);
         }
     }
 
