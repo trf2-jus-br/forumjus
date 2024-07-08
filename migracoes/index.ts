@@ -83,7 +83,7 @@ async function inicializar(){
                 console.log(`Migrando '${jornadas[i].nome}'...`)
 
                 // A migração será temporariamente fake para que a tabela 'Migrations' seja criada no esquema preexistente.
-                await dt.runMigrations({fake: true});
+                await dt.runMigrations({fake: false});
             }
         }catch(err){
             // Migra o que for possível, notifica notifica os erros.
