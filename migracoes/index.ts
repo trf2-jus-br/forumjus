@@ -41,13 +41,15 @@ async function inicializar(){
         try{
             const dt = new DataSource({ ...dataSouceOption, database: jornadas[i].esquema})
             await dt.initialize();
-    
+                
             if(reverter){
                 console.log(`Revertendo '${jornadas[i].nome}'...`)
                 await dt.undoLastMigration();
             }else{
                 console.log(`Migrando '${jornadas[i].nome}'...`)
-                await dt.runMigrations();
+
+                // A migração será temporariamente fake para que a tabela 'Migrations' seja criada no esquema preexistente.
+                await dt.runMigrations({fake: true});
             }
         }catch(err){
             // Migra o que for possível, notifica notifica os erros.

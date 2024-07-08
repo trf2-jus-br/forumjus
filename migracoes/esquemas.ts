@@ -1,11 +1,17 @@
 import type { NextApiRequest } from 'next';
-import pool from '../utils/mysql';
-import type { PoolConnection, RowDataPacket } from 'mysql2/promise.js';
+import type { QueryRunner } from 'typeorm';
+
+type Esquema = "trfForumJus3" | "trfForumJus2" | "trfForumJus";
 
 interface Jornada {
     nome: string;
     enderecos: string[];
-    esquema: string;
+    esquema: Esquema;
+}
+
+export async function esquemaAtual(queryRunner: QueryRunner) : Promise<Esquema>{
+    const r = await queryRunner.query(`SELECT database() as db;`);
+    return r[0].db;
 }
 
 export function verificaEsquemaSeguro(esquema : string){
@@ -46,6 +52,14 @@ export async function carregarJornadas() : Promise<Jornada[]>{
                 
                 // A jornada atual é a 2ª Jornada.
                 'localhost:8081', 'jornada-hmg.trf2.jus.br', 'jornada.trf2.jus.br'
+            ]
+        },
+        { 
+            nome: 'I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região', 
+            esquema: 'trfForumJus',
+            enderecos: [
+                'jornada1:8081', 'jornada1-hmg.trf2.jus.br',
+                'jornada1.trf2.jus.br'
             ]
         },
     ]
