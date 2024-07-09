@@ -15,6 +15,14 @@ interface Ambiente {
     NOME: string,
     BANNER: string,
     JWT_SALT: string,
+    PORTAL: string;
+    PORTAL_LINK: string;
+    REGULAMENTO: string;
+    EMAIL_ORGANIZACAO: string;
+    CAPAS_PREFIXO: string;
+    LOCAL_EVENTO: string;
+    NOME_REDUZIDO: string;
+    REGULAMENTO_PORTARIA: string;
 }
 
 interface UsuarioSiga {
