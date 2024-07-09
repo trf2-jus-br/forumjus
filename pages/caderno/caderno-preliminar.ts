@@ -92,21 +92,21 @@ function gerarCaderno(ambiente: Ambiente, inscricoes : Inscricao[], comites: Com
             })
         ],
         images: {
-            caderno_1 : { url: `${window.location.origin}/1.png`},
-            caderno_2 : { url: `${window.location.origin}/2.png`},
-            caderno_3 : { url: `${window.location.origin}/3.png`},
-            caderno_4 : { url: `${window.location.origin}/4.png`},
-            caderno_5 : { url: `${window.location.origin}/5.png`},
-            caderno_6 : { url: `${window.location.origin}/6.png`},
-            caderno_7 : { url: `${window.location.origin}/7.png`},
+            caderno_1 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/1.png`},
+            caderno_2 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/2.png`},
+            caderno_3 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/3.png`},
+            caderno_4 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/4.png`},
+            caderno_5 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/5.png`},
+            caderno_6 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/6.png`},
+            caderno_7 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/7.png`},
 
-            caderno_plenaria_1 : { url: `${window.location.origin}/plenaria/1.png`},
-            caderno_plenaria_2 : { url: `${window.location.origin}/plenaria/2.png`},
-            caderno_plenaria_3 : { url: `${window.location.origin}/plenaria/3.png`},
-            caderno_plenaria_4 : { url: `${window.location.origin}/plenaria/4.png`},
-            caderno_plenaria_5 : { url: `${window.location.origin}/plenaria/5.png`},
-            caderno_plenaria_6 : { url: `${window.location.origin}/plenaria/6.png`},
-            caderno_plenaria_7 : { url: `${window.location.origin}/plenaria/7.png`},
+            caderno_plenaria_1 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/plenaria/1.png`},
+            caderno_plenaria_2 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/plenaria/2.png`},
+            caderno_plenaria_3 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/plenaria/3.png`},
+            caderno_plenaria_4 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/plenaria/4.png`},
+            caderno_plenaria_5 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/plenaria/5.png`},
+            caderno_plenaria_6 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/plenaria/6.png`},
+            caderno_plenaria_7 : { url: `${window.location.origin}/${ambiente.CAPAS_PREFIXO}/plenaria/7.png`},
         }
     })
 

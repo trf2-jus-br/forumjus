@@ -120,56 +120,6 @@ Atenciosamente,
 Equipe ${forumName}.`
     },
 
-    sendRegistered(email, forumConstants, data) {
-        let text = `Prezado(a),
-
-Confirmamos o recebimento da(s) sua(s) proposta(s) de enunciado(s). Essa(s) será(ão) analisada(s) pelo(a) Relator(a) da Comissão Temática pertinente.
-
-Caso sua proposta seja admitida, sua inscrição na Jornada será automaticamente deferida, assim como sua participação na Comissão Temática objeto daquela.
-
-Na hipótese de mais de uma proposta de enunciado de sua autoria ter sido admitida, mas essas pertencerem a Comissões Temáticas diferentes, caberá a Vossa Senhoria optar por apenas uma Comissão, conforme estabelecido no regulamento da Jornada.
-
-Nesse último caso, a organização da Jornada entrará em contato, para que Vossa Senhoria faça a opção pela Comissão na qual deseja se inscrever.
-
-No caso da sua proposta de enunciado não ser admitida, sua inscrição será automaticamente indeferida.
-
-O deferimento ou indeferimento da(s) proposta(s) de enunciado(s) será comunicado através do e-mail cadastrado.
-
-Em caso de dúvida, entre em contato através do e-mail forumdhf@trf2.jus.br.
-
-Dados recebidos:
-- Nome Completo: ${data.attendeeName}
-- Nome Social: ${data.attendeeChosenName ? data.attendeeChosenName : ''}
-- E-Mail: ${data.attendeeEmail}
-- Telefone: ${data.attendeePhone}
-- CPF: ${data.attendeeDocument}
-- Profissão: ${forumConstants.occupation[data.attendeeOccupationId].name}
-- Vinculado a qual Órgão: ${data.attendeeAffiliation}
-- Pessoa com Deficiência: ${data.attendeeDisabilityYN === true || data.attendeeDisabilityYN === 'true' ? 'Sim' : 'Não'}${data.attendeeDisabilityYN === true || data.attendeeDisabilityYN === 'true' ? '\n- Descrever a Necessidade de Atendimento Especial: ' + data.attendeeDisability : ''}`
-
-        let i = 0
-        data.statement.forEach(s => {
-            i++
-            text += `
-
-Enunciado ${i}
-- Comissão: ${forumConstants.committee[s.committeeId].name}
-- Enunciado: "${s.text}"
-- Justificativa: "${s.justification}"`
-        })
-
-        text += this.forumFooter(forumConstants.forumName)
-
-        this.send({
-            from: this.from,
-            to: email.trim(),
-            bcc: 'forumdhf@trf2.jus.br',
-            subject: `${forumConstants.forumName}`,
-            text: text
-        })
-    },
-
-
     async notificarProponente(ambiente: Ambiente, email: string, enunciados: any[], enunciados_reprovados: any[], nome: string){
         try{
             const admitido = enunciados.length !== 0 && enunciados.every(e => e.committee_id === enunciados[0].committee_id); 
@@ -196,7 +146,7 @@ Enunciado ${i}
             this.send({
                 from: this.from,
                 to: email.trim(),
-                cc: process.env.SMTP_BCC === 'false' ? undefined : 'forumdhf@trf2.jus.br',
+                cc: process.env.SMTP_BCC === 'false' ? undefined : ambiente.EMAIL_ORGANIZACAO,
                 subject: `${ambiente.NOME}`,
                 html: admitido ? EmailNotificarAdmissao(ambiente, enunciados, nome) : rejeitado ? EmailNotificarRejeicao(ambiente, enunciados_reprovados, nome) : EmailNotificarDivergencia(ambiente, enunciados, nome),
                 attachments: anexos
@@ -212,7 +162,7 @@ Enunciado ${i}
         this.send({
             from: this.from,
             to: email.trim(),
-            cc: process.env.SMTP_BCC === 'false' ? undefined : 'forumdhf@trf2.jus.br',
+            cc: process.env.SMTP_BCC === 'false' ? undefined : ambiente.EMAIL_ORGANIZACAO,
             subject: `${ambiente.NOME}`,
             html: EmailConfirmacaoCadastro(data, ambiente, ocupacoes, comites),
             attachments: [{

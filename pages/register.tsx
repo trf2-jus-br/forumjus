@@ -29,7 +29,7 @@ export default function Create() {
   const privacyPolicyRef = useRef()
   const regimentoRef = useRef();
 
-  const {api, exibirNotificacao} = usarContexto();
+  const {api, exibirNotificacao, ambiente} = usarContexto();
 
 
   function carregarOcupacoes(){
@@ -197,7 +197,7 @@ export default function Create() {
         ? <p className='alert alert-success'>Sua(s) proposta(s) de enunciado(s) foi/foram recebida(s) com sucesso. Consulte o email "{attendeeEmail}" para ver a confirmação.</p>
         : <>
           <p>
-            Solicite sua inscrição e sugira um, dois ou três enunciados para serem debatidos. Para mais informações, visite o <a href="https://www10.trf2.jus.br/institucional/forum-de-direitos-humanos-e-fundamentais/" target='_blank' rel="noopener">Portal do Fórum de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região</a> e leia o <a href="#regimento" onClick={()=> regimentoRef.current.show()}>Regimento da Jornada</a>.
+            Solicite sua inscrição e sugira um, dois ou três enunciados para serem debatidos. Para mais informações, visite o <a href={ambiente.PORTAL_LINK} target='_blank' rel="noopener">{ambiente.PORTAL}</a> e leia o <a href="#regimento" onClick={()=> regimentoRef.current.show()}>Regimento da Jornada</a>.
           </p>
 
           <Formik

@@ -38,7 +38,7 @@ function Inscricoes (props){
     const [filtro, setFiltro] = useState<null | -1 | number>(null);
     const [tabela, setTabela] = useState(false);
 
-    const { api, usuario, exibirNotificacao } = usarContexto();
+    const { api, usuario, exibirNotificacao, ambiente } = usarContexto();
 
 
     async function carregarComissoes(){
@@ -99,7 +99,7 @@ function Inscricoes (props){
     }
 
     async function quantidadeEnunciados(){
-        RelatorioQuantidadeEnunciados(comites);
+        RelatorioQuantidadeEnunciados(comites, ambiente);
     }
     
     const inscricoes_filtradas = inscricoes?.filter(k => filtro === -1 || k.committee_id === filtro);

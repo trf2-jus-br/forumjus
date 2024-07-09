@@ -13,6 +13,8 @@ interface API {
 
 interface Ambiente {
     NOME: string,
+    NOME_REDUZIDO: string;
+    NOME_ARTIGO: "a" | "o";
     BANNER: string,
     JWT_SALT: string,
     PORTAL: string;
@@ -21,7 +23,6 @@ interface Ambiente {
     EMAIL_ORGANIZACAO: string;
     CAPAS_PREFIXO: string;
     LOCAL_EVENTO: string;
-    NOME_REDUZIDO: string;
     REGULAMENTO_PORTARIA: string;
 }
 

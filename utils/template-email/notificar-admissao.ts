@@ -102,8 +102,8 @@ const EmailNotificarAdmissao = (ambiente: Ambiente, enunciados : Enunciado[], no
                 </tbody>
             </table>
 
-            <p style="text-indent: 30px;">Enviamos anexo o Regulamento da Jornada, aprovado pela Portaria nº TRF2-PTP-2023/00348, que, nos Capítulos V e VI, esclarece os procedimentos para discussão e votação das proposições de enunciados nas Comissões Temáticas e na Sessão Plenária.</p>
-            <p style="text-indent: 30px;">Em caso de dúvida, entre em contato através do e-mail <a href="mailto:forumdhf@trf2.jus.br">forumdhf@trf2.jus.br.</a> ou do telefone (21) 2282-8374.</p>
+            <p style="text-indent: 30px;">Enviamos anexo o Regulamento da Jornada, aprovado pela Portaria nº ${ambiente.REGULAMENTO_PORTARIA}, que, nos Capítulos V e VI, esclarece os procedimentos para discussão e votação das proposições de enunciados nas Comissões Temáticas e na Sessão Plenária.</p>
+            <p style="text-indent: 30px;">Em caso de dúvida, entre em contato através do e-mail <a href="mailto:${ambiente.EMAIL_ORGANIZACAO}">${ambiente.EMAIL_ORGANIZACAO}</a> ou do telefone (21) 2282-8374.</p>
 
             <p style="text-indent: 30px; font-weight: bold;">Solicitamos que responda este e-mail indicando o recebimento do mesmo.</p>
 

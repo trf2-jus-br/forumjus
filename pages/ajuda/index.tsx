@@ -1,6 +1,9 @@
 import Layout from "../../components/layout";
+import { usarContexto } from "../../contexto";
 
 function Ajuda(){
+    const { ambiente } = usarContexto();
+
     return <Layout>
         Calendário
         <p>A jornada é composta por 4 fases. As funcionalidades disponíveis, dependem do usuário que está logado.</p>
@@ -12,7 +15,7 @@ function Ajuda(){
             <div>09/10 16:01</div>
             
             <p>Qualquer pessoa pode enviar propostas de enunciados, através do link <a href="/register">registrar</a>.</p>
-            <p>Ao finalizar o cadastro a pessoa receberá um email de confirmação, com cópia para forumdhf@trf2.jus.br</p>
+            <p>Ao finalizar o cadastro a pessoa receberá um email de confirmação, com cópia para {ambiente.EMAIL_ORGANIZACAO}</p>
         </div>
         
         <hr/>

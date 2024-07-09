@@ -6,7 +6,7 @@ type Ambientes = {[esquema: string] : Ambiente & {
 
 export class AmbienteDAO {
     // Tempo de validade da informaçao armazenada, em milisegundos.
-    private static readonly limite = 30 * 1000;
+    private static readonly limite = 15 * 1000;
     private static ambientesArmazenados : Ambientes = {};
 
 

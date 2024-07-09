@@ -13,7 +13,7 @@ export default function Home() {
         <img className='w-100' src={ambiente.BANNER} />
           <p className="lead mb-4 mt-4">Sistema desenvolvido para receber inscrição de proposta(s) de enunciado(s) para a {ambiente.NOME}</p>
 
-          <p className="lead mb-4 mt-4">Para mais informações, visite o <a href="https://www10.trf2.jus.br/institucional/forum-de-direitos-humanos-e-fundamentais/" target='_blank' rel="noopener">Portal do Fórum de Direitos Humanos e Fundamentais da Justiça Federal da 2ª Região</a> e leia o <a href="#regimento" onClick={()=> regimentoRef.current.show()}>Regimento da Jornada</a>.</p>
+          <p className="lead mb-4 mt-4">Para mais informações, visite o <a href={ambiente.PORTAL_LINK} target='_blank' rel="noopener">{ambiente.PORTAL}</a> e leia o <a href="#regimento" onClick={()=> regimentoRef.current.show()}>Regimento da Jornada</a>.</p>
           <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
             <a className="btn btn-primary btn-lg px-4" href="register" style={{ "color": "white" }}>Inscrição</a>
           </div>

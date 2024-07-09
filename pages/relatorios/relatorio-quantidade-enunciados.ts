@@ -3,15 +3,14 @@ import pdfFonts from 'pdfmake/build/vfs_fonts';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
-function RelatorioQuantidadeEnunciados(comites: DetalheComite[]){
+function RelatorioQuantidadeEnunciados(comites: DetalheComite[], ambiente: Ambiente){
     const numeros = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X' ]
 
     try{
-        console.log("RelatorioQuantidadeEnunciados")
         const pdf = pdfMake.createPdf({
             content: [
                 {
-                    text: "QUANTIDADE DE PROPOSTAS DE ENUNCIADOS DA I JORNADA DE DIREITOS HUMANOS E FUNDAMENTAIS DA JUSTIÇA FEDERAL DA SEGUNDA REGIÃO",
+                    text: `QUANTIDADE DE PROPOSTAS DE ENUNCIADOS D${ambiente.NOME_ARTIGO} ${ambiente.NOME.toUpperCase()}`,
                     style: 'cabecalho'
                 },
                 {

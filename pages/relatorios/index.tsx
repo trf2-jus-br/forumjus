@@ -8,11 +8,11 @@ import { usarContexto } from '../../contexto';
 import RelatorioQuantidadeEnunciados from './relatorio-quantidade-enunciados';
 
 function Relatorios(){
-    const {api} = usarContexto();
+    const {api, ambiente} = usarContexto();
 
     async function quantidadeEnunciados(){
         const {data} = await api.get<DetalheComite[]>("/api/comite?detalhes=true")
-        RelatorioQuantidadeEnunciados(data);
+        RelatorioQuantidadeEnunciados(data, ambiente);
     }
 
     const relatorios = [
