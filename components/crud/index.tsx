@@ -7,7 +7,7 @@ import { Button, Dropdown, DropdownButton, Form, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Formik } from 'formik';
-import { usarContexto, usuario } from '../../contexto';
+import { usarContexto } from '../../contexto';
 
 
 function CRUD<R> (props : CRUD.Props<R>){

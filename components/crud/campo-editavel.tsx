@@ -4,6 +4,7 @@ import type {CRUD} from './crud'
 import { Button, Form, InputGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBan, faCheck } from '@fortawesome/free-solid-svg-icons';
+import Arquivo from './arquivo';
 
 interface Props<R> {
     coluna: CRUD.Coluna<R>,
@@ -22,13 +23,20 @@ function CampoEditavel<R> (props: Props<R>){
     const [valor, setValor] = useState(linha[coluna.banco]);
 
     function confirmar(){
+        const formData = new FormData();
+
+        if(valor && valor instanceof File){
+            formData.append("valor", valor, valor.name);
+        }else{
+            formData.append("valor", valor);
+        }
+
+        formData.append("linha", JSON.stringify(linha));
+        formData.append("coluna", JSON.stringify(coluna.banco));
+        
         fetch(api, { 
             method: "PATCH",
-            body: JSON.stringify({
-                linha,
-                coluna: coluna.banco,
-                valor,
-            })
+            body: formData,
         }).then(response => {
             if( !response.ok)
                 throw response.statusText
@@ -44,12 +52,25 @@ function CampoEditavel<R> (props: Props<R>){
         setValor(valorInicial);
     }
 
+    function definirComponente(tipo: CRUD.Tipo){
+        switch(tipo){
+            case 'Arquivo':
+                return Arquivo;
+            
+            default:
+                return ({valor, setValor}) => <Form.Control className='text-center' size='sm' value={valor} onChange={e => setValor(e.target.value)} />
+        }
+    }
+
     const editando = valor !== valorInicial;
+
+    const Componente = definirComponente(coluna.tipo);
 
     return (
         <td id={coluna.banco}>
             <InputGroup>
-                <Form.Control className='text-center' size='sm' value={valor} onChange={e => setValor(e.target.value)} />
+                <Componente valor={valor} setValor={setValor} />
+
                 {editando && <>
                     <Button size='sm' variant="outline-success"  onClick={() => confirmar()}>
                         <FontAwesomeIcon className='d-inline' title='Confirmar' icon={faCheck} />

@@ -9,7 +9,7 @@
       "migration:create": "npx typeorm migration:create ./migracoes/migration/migration",
       "migrate": "ts-node migracoes/index.ts",
       "migrate-env": "ts-node migracoes/index.ts --env-file=./.env",
-      "migration:revert" : "npm run migrate-env -- --revert"
+      "migration:revert": "npm run migrate-env -- --revert"
    },
    "dependencies": {
       "@emotion/react": "^11.11.4",
@@ -26,6 +26,7 @@
       "axios": "^1.5.1",
       "bootstrap": "^5.2.3",
       "cookie": "^0.5.0",
+      "formidable": "^3.5.1",
       "formik": "^2.4.3",
       "html-pdf-node": "^1.0.8",
       "http-errors": "^2.0.0",
@@ -54,6 +55,7 @@
    "devDependencies": {
       "@faker-js/faker": "^8.3.1",
       "@types/archiver": "^6.0.1",
+      "@types/formidable": "^3.4.5",
       "@types/jsonwebtoken": "^9.0.3",
       "@types/moment": "^2.13.0",
       "@types/node": "^16.11.10",

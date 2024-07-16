@@ -1,8 +1,7 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import { apiHandler } from "../../utils/apis";
-import mysql from "../../utils/mysql";
 import PermissaoDAO from "../../db/permissao";
 import CRUD from "../../db/crud";
+import { ArquivoDAO } from "../../db/arquivo";
 
 async function validarPermissao(db: PoolConnection, usuario: Usuario){
     const permissoes = await PermissaoDAO.carregar(db, usuario);
@@ -24,9 +23,14 @@ async function listar({req, res, db, usuario}: API){
 async function editar({req, res, db, usuario}: API){
     await validarPermissao(db, usuario);
 
-    const {linha, coluna, valor} = JSON.parse(req.body) as any; 
+    const [campos, arquivo] = await ArquivoDAO.processar(db, req);
+
+    const linha = JSON.parse(campos.linha[0]);
+    const coluna = JSON.parse(campos.coluna[0]);
+    const valor =  arquivo || JSON.parse(campos.valor[0]);
+
     const {tabela, nome_id} = req.query as any;
-    
+
     await CRUD.atualizarBanco(
         db,
         tabela,
@@ -72,6 +76,12 @@ async function criar({req, res, db, usuario}: API){
 
     res.status(200).send(null);
 }
+
+export const config = {
+    api: {
+      bodyParser: false, // Defaults to true. Setting this to false disables body parsing and allows you to consume the request body as stream or raw-body.
+    },
+};
 
 export default apiHandler({
     "GET" : listar,

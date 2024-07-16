@@ -11,6 +11,12 @@ interface API {
     usuario?: Usuario;
 }
 
+interface Arquivo {
+    id : string;
+    tipo : string;
+    caminho : string;
+}
+
 interface Ambiente {
     NOME: string,
     NOME_REDUZIDO: string;
