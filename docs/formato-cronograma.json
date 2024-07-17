@@ -1,0 +1,16 @@
+{
+    "10 de abril de 2024, quarta-feira" :[
+        ["14h", "Credenciamento"],
+        ["15h", "Abertura"],
+        ["15h30min", "Conferência de Abertura"],
+        ["17h", "Encerramento das atividades do dia"]
+    ],
+    "11 de abril de 2024, quinta-feira" :[
+        ["14h", "Abertura dos trabalhos nas Comissões"],
+        ["19h", "Encerramento das atividades do dia"]
+    ],
+    "12 de abril de 2024, sexta-feira" :[
+        ["9h", "Reunião Plenária"],
+        ["13h", "Encerramento da Jornada"]
+    ]
+}

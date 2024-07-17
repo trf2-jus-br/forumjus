@@ -70,7 +70,7 @@ export const handler = async function ({req, res, db} : API) {
     const ocupacoes = await OcupacaoDAO.listar(db);
     const comites = await ComiteDAO.listar(db);
 
-    mailer.enviarConfirmacaoCadastros(data.attendeeEmail, data, db.ambiente, ocupacoes, comites)
+    mailer.enviarConfirmacaoCadastros(data.attendeeEmail, data, db, ocupacoes, comites)
 
     res.send({ response: "Successful" });
 }

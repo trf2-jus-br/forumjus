@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 
 import type {CRUD} from './crud'
 import { Button, Form, InputGroup } from 'react-bootstrap';
@@ -6,17 +6,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBan, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Arquivo from './arquivo';
 
-interface Props<R> {
-    coluna: CRUD.Coluna<R>,
+interface Props {
+    coluna: CRUD.Coluna,
     linha: any,
     api: string,
+    tipo: CRUD.Tipo
 }
 
-function CampoEditavel<R> (props: Props<R>){
+function CampoEditavel (props: Props){
     const {
         coluna,
         linha,
         api,
+        tipo
     } = props;
 
     const [valorInicial, setValorInicial] = useState(linha[coluna.banco]);
@@ -28,7 +30,7 @@ function CampoEditavel<R> (props: Props<R>){
         if(valor && valor instanceof File){
             formData.append("valor", valor, valor.name);
         }else{
-            formData.append("valor", valor);
+            formData.append("valor", JSON.stringify(valor));
         }
 
         formData.append("linha", JSON.stringify(linha));
@@ -52,11 +54,14 @@ function CampoEditavel<R> (props: Props<R>){
         setValor(valorInicial);
     }
 
-    function definirComponente(tipo: CRUD.Tipo){
+    function definirComponente(){
         switch(tipo){
             case 'Arquivo':
                 return Arquivo;
             
+            case "TextArea":
+                return ({valor, setValor}) => <Form.Control as="textarea" rows={10} size='sm' value={valor} onChange={e => setValor(e.target.value)} />
+
             default:
                 return ({valor, setValor}) => <Form.Control className='text-center' size='sm' value={valor} onChange={e => setValor(e.target.value)} />
         }
@@ -64,7 +69,7 @@ function CampoEditavel<R> (props: Props<R>){
 
     const editando = valor !== valorInicial;
 
-    const Componente = definirComponente(coluna.tipo);
+    const Componente = useMemo(definirComponente, [tipo]);
 
     return (
         <td id={coluna.banco}>

@@ -23,7 +23,7 @@ const EmailNotificarRejeicao = (ambiente:Ambiente, enunciados : Enunciado[], nom
             <img width="100%" src="cid:imagem" />
             <div style="margin-top: 10px">Prezado (a),</div><br/>
                 
-            <div style="text-indent: 30px;">Agradecemos o envio da(s) proposta(s) de enunciado(s) destinadas à discussão na <span style="font-weight: bold;">I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da Segunda Região</span>.</div>
+            <div style="text-indent: 30px;">Agradecemos o envio da(s) proposta(s) de enunciado(s) destinadas à discussão na <span style="font-weight: bold;">${ambiente.NOME}</span>.</div>
             <div style="text-indent: 30px;">Informamos que sua(s) proposta(s) de enunciado(s) não foi(ram) admitida(s) pela(s) Comissão(ões) Temática(s) escolhida(s) e, portanto, não foi possível sua inscrição no evento.</div>
 
             <p style="text-indent: 30px; font-weight: bold;">Solicitamos que responda este e-mail indicando o recebimento do mesmo.</p>

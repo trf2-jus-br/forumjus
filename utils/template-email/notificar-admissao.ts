@@ -3,6 +3,30 @@ interface Enunciado {
     statement_text: string,
 }
 
+export function cronograma(ambiente: Ambiente) {
+    const dados = JSON.parse(ambiente.CRONOGRAMA_JSON);
+    
+    const linha = (acao : string[]) => `<tr>
+        <td style="border: solid 1px black; padding: 3px; width: 25%;">${acao[0]}</td>
+        <td style="border: solid 1px black; padding: 3px;">${acao[1]}</td>
+    </tr>`
+
+    const tabelas = Object.keys(dados).map(evento => (
+        `<table style="border: solid 1px black; width: 90%; border-collapse: collapse; margin: 20px auto;">
+            <thead>
+                <tr>
+                    <th colspan="2">${evento}</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${ dados[evento].map(acao => linha(acao)).join('\n') }
+            </tbody>
+        </table>`
+    ))
+
+    return  tabelas.join('\n')
+}
+
 const EmailNotificarAdmissao = (ambiente: Ambiente, enunciados : Enunciado[], nome: string) => `
 <html>
     <head>
@@ -24,7 +48,7 @@ const EmailNotificarAdmissao = (ambiente: Ambiente, enunciados : Enunciado[], no
 
             <p>Prezado(a),</p>
                 
-            <p style="text-indent: 30px;">Bem-vindo(a) ao evento <span style="font-weight: bold;">I Jornada de Direitos Humanos e Fundamentais da Justiça Federal da Segunda Região</span>.</p>
+            <p style="text-indent: 30px;">Bem-vindo(a) ao evento <span style="font-weight: bold;">${ambiente.NOME}</span>.</p>
             <p style="text-indent: 30px;">Informamos que somente sua(s) proposta(s) de enunciado, abaixo transcrita(s), foi(ram) admitida(s). Deste modo, sua inscrição foi efetivada junto à Comissão Temática <span style="font-weight: bold;">${enunciados[0].committee_name}</span>.</p>
 
             ${enunciados.map(e => (
@@ -33,77 +57,12 @@ const EmailNotificarAdmissao = (ambiente: Ambiente, enunciados : Enunciado[], no
                 </p>`
             )).join('\n')}
             
-            <p style="text-indent: 30px;">Estamos muito felizes em contar com sua participação nesta I Jornada, que certamente produzirá excelentes frutos, tendo em vista os relevantes temas a serem debatidos por profissionais qualificados.</p>
-            <p style="text-indent: 30px;">O evento acontecerá no auditório do Tribunal Regional da 2ª Região, localizado à Rua Acre, 80, 3º andar, Centro, Rio de Janeiro.</p>
+            <p style="text-indent: 30px;">Estamos muito felizes em contar com sua participação nesta ${ambiente.NOME_REDUZIDO}, que certamente produzirá excelentes frutos, tendo em vista os relevantes temas a serem debatidos por profissionais qualificados.</p>
+            <p style="text-indent: 30px;">O evento acontecerá ${ambiente.LOCAL_EVENTO}</p>
             <p>Segue abaixo o cronograma:</p>
-            
-            <!-- 1º dia -->
-            <table style="border: solid 1px black; width: 90%; border-collapse: collapse; margin: 20px auto;">
-                <thead>
-                    <tr>
-                        <th colspan="2">10 de abril de 2024, quarta-feira</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="border: solid 1px black; padding: 3px; width: 25%;">14h</td>
-                        <td style="border: solid 1px black; padding: 3px;">Credenciamento</td>
-                    </tr>
-                    <tr>
-                        <td style="border: solid 1px black; padding: 3px; width: 25%;">15h</td>
-                        <td style="border: solid 1px black; padding: 3px;">Abertura</td>
-                    </tr>
-                    <tr>
-                        <td style="border: solid 1px black; padding: 3px; width: 25%;">15h30min</td>
-                        <td style="border: solid 1px black; padding: 3px;">Conferência de Abertura</td>
-                    </tr>
-                    <tr>
-                        <td style="border: solid 1px black; padding: 3px; width: 25%;">17h</td>
-                        <td style="border: solid 1px black; padding: 3px;">Encerramento das atividades do dia</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- 2º dia -->
-            <table style="border: solid 1px black; width: 90%; border-collapse: collapse; margin: 20px auto;">
-                <thead>
-                    <tr>
-                        <th colspan="2">11 de abril de 2024, quinta-feira</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="border: solid 1px black; padding: 3px; width: 25%;">14h</td>
-                        <td style="border: solid 1px black; padding: 3px;">Abertura dos trabalhos nas Comissões</td>
-                    </tr>
-                    <tr>
-                        <td style="border: solid 1px black; padding: 3px; width: 25%;">19h</td>
-                        <td style="border: solid 1px black; padding: 3px;">Encerramento das atividades do dia</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <!-- 3º dia -->
-            <table style="border: solid 1px black; width: 90%; border-collapse: collapse; margin: 20px auto;">
-                <thead>
-                    <tr>
-                        <th colspan="2">12 de abril de 2024, sexta-feira</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="border: solid 1px black; padding: 3px; width: 25%;">9h</td>
-                        <td style="border: solid 1px black; padding: 3px;">Reunião Plenária</td>
-                    </tr>
-                    <tr>
-                        <td style="border: solid 1px black; padding: 3px; width: 25%;">13h</td>
-                        <td style="border: solid 1px black; padding: 3px;">Encerramento da Jornada</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <p style="text-indent: 30px;">Enviamos anexo o Regulamento da Jornada, aprovado pela Portaria nº ${ambiente.REGULAMENTO_PORTARIA}, que, nos Capítulos V e VI, esclarece os procedimentos para discussão e votação das proposições de enunciados nas Comissões Temáticas e na Sessão Plenária.</p>
-            <p style="text-indent: 30px;">Em caso de dúvida, entre em contato através do e-mail <a href="mailto:${ambiente.EMAIL_ORGANIZACAO}">${ambiente.EMAIL_ORGANIZACAO}</a> ou do telefone (21) 2282-8374.</p>
+            ${ cronograma(ambiente)}
+            <p style="text-indent: 30px;">Enviamos anexo o Regulamento da Jornada, aprovado pela Portaria nº ${ambiente.REGULAMENTO_PORTARIA}, que, nos ${ambiente.REGULAMENTO_CAPITULOS_DESTACADOS}, esclarece os procedimentos para discussão e votação das proposições de enunciados nas Comissões Temáticas e na Sessão Plenária.</p>
+            <p style="text-indent: 30px;">Em caso de dúvida, entre em contato através do e-mail <a href="mailto:${ambiente.EMAIL_ORGANIZACAO}">${ambiente.EMAIL_ORGANIZACAO}</a> ou do telefone ${ambiente.TELEFONE_ORGANIZACAO}.</p>
 
             <p style="text-indent: 30px; font-weight: bold;">Solicitamos que responda este e-mail indicando o recebimento do mesmo.</p>
 

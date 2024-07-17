@@ -25,11 +25,15 @@ interface Ambiente {
     JWT_SALT: string,
     PORTAL: string;
     PORTAL_LINK: string;
-    REGULAMENTO: string;
     EMAIL_ORGANIZACAO: string;
+    TELEFONE_ORGANIZACAO: string;
     CAPAS_PREFIXO: string;
     LOCAL_EVENTO: string;
+    REGULAMENTO: string;
     REGULAMENTO_PORTARIA: string;
+    REGULAMENTO_CAPITULOS_DESTACADOS: string;
+    DATA_LIMITE_ESCOLHA_COMISSAO: string;
+    CRONOGRAMA_JSON : string;
 }
 
 interface UsuarioSiga {

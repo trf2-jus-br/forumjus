@@ -10,11 +10,12 @@ import { Formik } from 'formik';
 import { usarContexto } from '../../contexto';
 
 
-function CRUD<R> (props : CRUD.Props<R>){
+function CRUD (props : CRUD.Props){
     const {
         nome,
         colunas,
         api,
+        linhas
     } = props;
 
     const [dados, setDados] = useState([]);
@@ -111,7 +112,10 @@ function CRUD<R> (props : CRUD.Props<R>){
                 </thead>
                 <tbody>
                     {dados.map( (linha, indice_linha) => <tr className='align-middle' key={indice_linha + Math.random()}>
-                            { colunas.filter((e, indice) => colunasVisiveis[indice]).map( coluna => <CampoEditavel key={`${coluna.nome}`} api={api} coluna={coluna} linha={linha} />) }
+                            { colunas.filter((e, indice) => colunasVisiveis[indice]).map( coluna => {
+                                const linha_especial = linhas?.find(l => l.identificador_valor == linha[l.identificador_nome] && l.coluna === coluna.banco);
+                                return <CampoEditavel key={`${coluna.nome}`} api={api} coluna={coluna} linha={linha} tipo={linha_especial?.tipo || coluna.tipo} />
+                            }) }
                             <td>
                                 <Button size='sm' variant="outline-danger"  onClick={() => excluir(linha)}>
                                     <FontAwesomeIcon className='d-inline' title='Excluir' icon={faTrash} />

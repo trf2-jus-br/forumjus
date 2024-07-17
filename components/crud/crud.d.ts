@@ -1,8 +1,9 @@
 
 export namespace CRUD {
-    type Tipo = "Texto" |  "Data" | "Arquivo";
+    type Tipo = "Texto" | "TextArea" |  "Data" | "Arquivo";
 
-    interface Coluna<R> {
+    // Configurações visuais das colunas do banco.
+    interface Coluna {
         nome: string;
         banco: string;
         largura: number;
@@ -10,9 +11,18 @@ export namespace CRUD {
         tipo?: Tipo;
     }
 
-    interface Props<R> {
+    // Permite configurar linhas específicas.
+    interface Linha {
+        identificador_nome: string;             // "ID"
+        identificador_valor: keyof Ambiente;    // 8
+        coluna: string;                         // "data_nascimento"
+        tipo: Tipo;                             // "Data"
+    }
+
+    interface Props {
         nome: string;
-        colunas: Coluna<R>[],
+        colunas: Coluna[],
+        linhas?: Linha[],
         api: string,
     }
 }

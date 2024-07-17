@@ -56,6 +56,7 @@ async function notificarErro(err : Error){
 async function inicializar(){
     // define se deve executar ou reverte as migrações.
     const reverter = process.argv.indexOf('--revert') !== -1;
+    const fake = process.argv.indexOf('--fake') !== -1;
 
     const jornadas = await carregarJornadas();
     
@@ -81,9 +82,7 @@ async function inicializar(){
                 await dt.undoLastMigration();
             }else{
                 console.log(`Migrando '${jornadas[i].nome}'...`)
-
-                // A migração será temporariamente fake para que a tabela 'Migrations' seja criada no esquema preexistente.
-                await dt.runMigrations({fake: false});
+                await dt.runMigrations({fake});
             }
         }catch(err){
             // Migra o que for possível, notifica notifica os erros.

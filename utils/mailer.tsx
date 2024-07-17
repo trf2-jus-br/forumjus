@@ -5,6 +5,7 @@ import EmailConfirmacaoCadastro from './template-email/confirmacao-cadastro'
 import EmailNotificarAdmissao from "./template-email/notificar-admissao";
 import EmailNotificarRejeicao from "./template-email/notificar-rejeicao";
 import EmailNotificarDivergencia from './template-email/notificar-divergencia';
+import { ArquivoDAO } from '../db/arquivo';
 
 const options = {
     host: process.env.SMTP_HOST,
@@ -120,14 +121,21 @@ Atenciosamente,
 Equipe ${forumName}.`
     },
 
-    async notificarProponente(ambiente: Ambiente, email: string, enunciados: any[], enunciados_reprovados: any[], nome: string){
+    async notificarProponente(db: PoolConnection, email: string, enunciados: any[], enunciados_reprovados: any[], nome: string){
         try{
+            const {ambiente} = db;
+            
             const admitido = enunciados.length !== 0 && enunciados.every(e => e.committee_id === enunciados[0].committee_id); 
             const rejeitado = enunciados.length === 0; 
 
             
-            const bufferSaia = await fs.readFile("./utils/template-email/saia.png")
-            const bufferRegulamento = await fs.readFile("./utils/template-email/TRF2PTP202300348C.pdf")
+            const bufferSaia = await fs.readFile( 
+                (await ArquivoDAO.listar(db,ambiente.BANNER)).caminho
+            )
+
+            const bufferRegulamento = await fs.readFile(
+                (await ArquivoDAO.listar(db, ambiente.REGULAMENTO)).caminho    
+            )
 
             let anexos = [{
                 filename: 'image.png',
@@ -138,7 +146,7 @@ Equipe ${forumName}.`
 
             if(admitido){
                 anexos.push({
-                    filename: 'TRF2PTP202300348C.pdf',
+                    filename: 'regulamento.pdf',
                     content: bufferRegulamento
                 });
             }
@@ -156,8 +164,12 @@ Equipe ${forumName}.`
         }
     },
 
-    async enviarConfirmacaoCadastros(email, data, ambiente: Ambiente, ocupacoes: Ocupacao[], comites: Comite[]) {
-        const content = await fs.readFile("./utils/template-email/saia.png")
+    async enviarConfirmacaoCadastros(email, data, db: PoolConnection, ocupacoes: Ocupacao[], comites: Comite[]) {
+        const { ambiente } = db;
+        
+        const content = await fs.readFile(
+            (await ArquivoDAO.listar(db, ambiente.BANNER)).caminho
+        );
         
         this.send({
             from: this.from,

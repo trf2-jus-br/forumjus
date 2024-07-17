@@ -12,13 +12,9 @@ async function download({res, req, db} : API){
     res.writeHead(200, {
         'Content-Type': arquivo.tipo,
         'content-length': stat.size,
-        'Cache-Control': 'private,max-age=3600',
+        'Cache-Control': 'public,max-age=360000',
     })
-
-    await new Promise((resolve, reject) => {
-        setTimeout(resolve, 3000)
-    })
-
+ 
     const stream = fs.createReadStream(arquivo.caminho);
 
     stream.pipe(res);

@@ -47,7 +47,10 @@ async function editar({req, res, db, usuario}: API){
 async function deletar({req, res, db, usuario}: API){
     await validarPermissao(db, usuario);
 
-    const {linha} = JSON.parse(req.body) as any; 
+    // devido a possibilidade de manipulação de arquivos. 'body-parser' foi desabilitado.
+    const [campos] = await ArquivoDAO.processar(db, req);
+
+    const linha = JSON.parse(campos.linha[0]) as any; 
     const {tabela, nome_id} = req.query as any;
 
     await CRUD.deletarLinha(
@@ -64,7 +67,10 @@ async function deletar({req, res, db, usuario}: API){
 async function criar({req, res, db, usuario}: API){
     await validarPermissao(db, usuario);
 
-    const linha = JSON.parse(req.body) as any; 
+    // devido a possibilidade de manipulação de arquivos. 'body-parser' foi desabilitado.
+    const [campos] = await ArquivoDAO.processar(db, req);
+
+    const linha = JSON.parse(campos.linha[0]) as any; 
     const {tabela, nome_id} = req.query as any;
 
     await CRUD.criarLinha(
