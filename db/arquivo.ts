@@ -3,6 +3,7 @@ import formidable, { IncomingForm } from "formidable";
 import fs, { constants } from "fs/promises";
 import { NextApiRequest } from "next";
 import path from "path";
+import os from 'os';
 
 export class ArquivoDAO {
     static readonly URL_BASE = '/api/uploads/';
@@ -10,14 +11,14 @@ export class ArquivoDAO {
     // processa requisições 'multipart/form-data' e caso exista salva o arquivo.
     static async processar(db: PoolConnection, req: NextApiRequest, nomeArquivo?: string) : Promise<[formidable.Fields<string>, string]>{
         const uuid = randomUUID().toString();
-        const uploadDir = path.join('/dados/jornada'/*, uuid*/);
+        const homedir = os.userInfo().homedir; // '/dados/jornada'
+        const uploadDir = path.join(homedir, uuid);
 
-        /*
         try{
             await fs.access(uploadDir, constants.F_OK);
         }catch(err){
             await fs.mkdir(uploadDir, {recursive: true})
-        }*/
+        }
 
         const form = new IncomingForm({multiples: false, uploadDir, filename: (name, ext, part, form) => part.originalFilename});
 
