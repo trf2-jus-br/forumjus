@@ -11,7 +11,8 @@ export class ArquivoDAO {
     // processa requisições 'multipart/form-data' e caso exista salva o arquivo.
     static async processar(db: PoolConnection, req: NextApiRequest, nomeArquivo?: string) : Promise<[formidable.Fields<string>, string]>{
         const uuid = randomUUID().toString();
-        const homedir = os.userInfo().homedir; // '/dados/jornada'
+        const dev = process.env.NODE_ENV === "development";
+        const homedir =  dev ? os.tmpdir() : '/dados/jornada';
         const uploadDir = path.join(homedir, uuid);
 
         try{
