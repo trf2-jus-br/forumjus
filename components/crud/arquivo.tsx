@@ -14,7 +14,7 @@ function Arquivo({valor, setValor} : Props){
 
     if(typeof valor === "string")
         return <div className='w-100 d-flex justify-content-between'>
-            <a href={valor} target='_blank'>{valor}</a>
+            <a href={`/api/uploads/${valor}`} target='_blank'>{valor}</a>
             <Button size='sm' variant="outline-primary"  onClick={() => setValor(null)} >
                 <FontAwesomeIcon className='d-inline' title='Alterar arquivo' icon={faEdit} />
             </Button>      

@@ -191,7 +191,7 @@ export function criarPDF(props: Props){
             },
         ],
         images: {
-            saia : { url: `${window.location.origin}${ambiente.BANNER}`},
+            saia : { url: `${window.location.origin}/api/uploads/${ambiente.BANNER}`},
         },
     });
 

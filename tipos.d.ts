@@ -107,9 +107,11 @@ interface Comite {
     committee_id: number,
     forum_id: number,
     committee_name: string,
-    committee_chair_name: string,
-    committee_chair_document: string,
     committee_description: string,
+    capa_proposta_recebida: string;
+    capa_proposta_admitida: string;
+    capa_proposta_comissao: string;
+    capa_proposta_plenaria: string;
 }
 
 type DetalheComite = Comite & {

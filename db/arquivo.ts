@@ -6,8 +6,6 @@ import path from "path";
 import os from 'os';
 
 export class ArquivoDAO {
-    static readonly URL_BASE = '/api/uploads/';
-
     // processa requisições 'multipart/form-data' e caso exista salva o arquivo.
     static async processar(db: PoolConnection, req: NextApiRequest, nomeArquivo?: string) : Promise<[formidable.Fields<string>, string]>{
         const uuid = randomUUID().toString();
@@ -34,12 +32,12 @@ export class ArquivoDAO {
 
         await db.query('INSERT INTO arquivo (id, caminho, tipo ) VALUES ( ?, ?, ?);', [uuid, arquivo.filepath, arquivo.mimetype])
 
-        return [campos, `${ArquivoDAO.URL_BASE}${uuid}`];
+        return [campos, uuid];
     }
 
 
     static async listar(db: PoolConnection, id: string) : Promise<Arquivo>{
-        const [resultados] = await db.query('SELECT id, caminho, tipo FROM arquivo WHERE id = ?;', [id.replace(this.URL_BASE, "")]);
+        const [resultados] = await db.query('SELECT id, caminho, tipo FROM arquivo WHERE id = ?;', [id]);
 
         return resultados[0] as Arquivo;
     }

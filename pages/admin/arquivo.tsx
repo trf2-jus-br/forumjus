@@ -6,17 +6,17 @@ interface Props {
 
 }
 
-function Comissao (props: Props){
+function Arquivo (props: Props){
     return <CRUD 
         nome='Arquivo' 
         colunas={[
             {nome: "ID", banco: "id", largura: 1, exibir: true},
             {nome: "Mime Type", banco: "tipo", largura: 4, exibir: true},
-            {nome: "Caminho", banco: "caminho", largura: 8, exibir: true, tipo: "Arquivo"},
+            {nome: "Caminho", banco: "caminho", largura: 8, exibir: true},
         ]}
         api="/api/crud?tabela=arquivo&nome_id=id"
     />
 }
 
 
-export default comPermissao(Comissao, "PROGRAMADOR");
+export default comPermissao(Arquivo, "PROGRAMADOR");

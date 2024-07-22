@@ -65,8 +65,6 @@ export default function Create() {
         acc[curr.committee_id] = {
             name: curr.committee_name,
             description: curr.committee_description,
-            chairName: curr.committee_chair_name,
-            chairDocument: curr.committee_chair_document
         }
         return acc;
       },{})

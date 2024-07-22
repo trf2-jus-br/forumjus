@@ -17,7 +17,7 @@ function Regimento(props, ref){
             <Modal.Title>Política de Privacidade</Modal.Title>
         </Modal.Header>
         <Modal.Body style={{height: "calc(100vh - 135px)"}} >
-            <iframe src={ambiente.REGULAMENTO} width='100%' style={{height: 'calc(100% - 20px)'}} ></iframe>
+            <iframe src={`/api/uploads/${ambiente.REGULAMENTO}`} width='100%' style={{height: 'calc(100% - 20px)'}} ></iframe>
         </Modal.Body>
     </Modal>
 }
