@@ -66,17 +66,9 @@ function Cabecalho({fluid} : Props){
                     </div>
                     <Dropdown.Divider />
                     {Se("PROGRAMADOR") && <>
-                        <Dropdown.Header>
-                            <h6 style={{color: '#a00'}}>admin</h6>
-                        
-                            <Dropdown.Item href="/admin/db" style={{color: '#a00'}}>
-                                <FontAwesomeIcon style={{marginRight: 10}} icon={faSkull} />DB<FontAwesomeIcon style={{marginLeft: 10}} icon={faSkull} />
-                            </Dropdown.Item>
-                            <Dropdown.Item href="/admin/comite" style={{color: '#a00'}}>Comissões</Dropdown.Item>
-                            <Dropdown.Item href="/admin/enunciado"  style={{color: '#a00'}}>Enunciados</Dropdown.Item>
-                            <Dropdown.Item href="/admin/participante"  style={{color: '#a00'}}>Participantes</Dropdown.Item>
-                            <Dropdown.Item href="/admin/ocupacao"  style={{color: '#a00'}}>Ocupações</Dropdown.Item>
-                        </Dropdown.Header>
+                        <Dropdown.Item href="/admin" style={{color: '#a00', fontWeight: 'bold'}}>
+                            Administração
+                        </Dropdown.Item>
                         <Dropdown.Divider />
                     </>}
                     
