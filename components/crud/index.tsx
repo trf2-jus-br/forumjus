@@ -54,10 +54,13 @@ function CRUD (props : CRUD.Props){
     }
 
     function excluir(linha){
+        const formData = new FormData();
+        formData.append('linha', JSON.stringify(linha));
+
         if(window.confirm(`O item será deletado. Essa ação não pode ser desfeita.`)){
             fetch(api, {
                 method: "DELETE",
-                body: JSON.stringify({linha})
+                body: formData
             })
             .then(response =>{
                 if(!response.ok)
@@ -70,9 +73,21 @@ function CRUD (props : CRUD.Props){
     }
 
     function criar(valores){
+        const formData = new FormData();
+
+        Object.keys(valores).forEach(k => {
+            const valor = valores[k]
+
+            if(valor && valor instanceof File){
+                formData.append(k, valor, valor.name);
+            }else{
+                formData.append(k, JSON.stringify(valor));
+            }
+        })
+
         fetch(api, {
             method: 'POST',
-            body: JSON.stringify(valores)
+            body: formData
         })
         .then( res => {
             if(!res.ok)

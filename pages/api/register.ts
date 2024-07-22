@@ -62,8 +62,22 @@ export const handler = async function ({req, res, db} : API) {
     if (!valid) 
         throw createHttpError.BadRequest(`Dados inválidos`); 
 
+    // Verfica se o usuário já existe
+    const proponente = await ProponenteDAO.listarPorCPF_Email(db, data.attendeeDocument, data.attendeeEmail);
+
+    if(proponente){
+        const enunciados = await EnunciadoDAO.listarPorProponente(db, proponente.attendee_id);
+
+        if(enunciados.length + data.statement.length > 3){
+            //limite de 3 propostas.
+            const numeroExtenso = (numero: number) => numero == 1 ? 'uma proposta' : `${numero == 2 ? 'duas' : 'três'} propostas`;
+
+            throw `Solicitação não foi atendida, pois ultrapassaria o limite de propostas. Há ${numeroExtenso(enunciados.length)} registradas e solicitou a inclusão de mais ${numeroExtenso(data.statement.length)}.`;
+        }
+    }
+
     // Salva no banco de dados as informações do proponente e cada enunciado.
-    const attendeeId = await ProponenteDAO.criar(db, data);
+    const attendeeId = proponente?.attendee_id ?? await ProponenteDAO.criar(db, data);
     data.statement.forEach(async (statement) => await EnunciadoDAO.criar(db, statement, attendeeId))
 
     // Send email

@@ -60,8 +60,6 @@ async function deletar({req, res, db, usuario}: API){
         linha[nome_id],
         usuario
     )
-
-    res.status(200).send(null);
 }
 
 async function criar({req, res, db, usuario}: API){
@@ -70,7 +68,12 @@ async function criar({req, res, db, usuario}: API){
     // devido a possibilidade de manipulação de arquivos. 'body-parser' foi desabilitado.
     const [campos] = await ArquivoDAO.processar(db, req);
 
-    const linha = JSON.parse(campos.linha[0]) as any; 
+    const linha = {};
+
+    Object.keys(campos).forEach(chave => {
+        linha[chave] = JSON.parse(campos[chave][0]);
+    })
+
     const {tabela, nome_id} = req.query as any;
 
     await CRUD.criarLinha(
@@ -79,8 +82,6 @@ async function criar({req, res, db, usuario}: API){
         linha,
         usuario
     )
-
-    res.status(200).send(null);
 }
 
 export const config = {

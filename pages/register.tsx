@@ -261,7 +261,7 @@ export default function Create() {
                       <Form.Control.Feedback type="invalid">{errors.attendeePhone}</Form.Control.Feedback>
                     </Form.Group>
                   </div>
-                  <div className="col col-12 col-lg-3 d-none">
+                  <div className="col col-12 col-lg-3">
                     <Form.Group className="mb-3" controlId="attendeeDocument">
                       <Form.Label>CPF</Form.Label>
                       <Form.Control type="text" value={values.attendeeDocument} onChange={(evt) => { evt.target.value = handleChangeAttendeeDocument(evt.target.value); handleChange(evt) }} isValid={touched.attendeeDocument && !errors.attendeeDocument} isInvalid={touched.attendeeDocument && errors.attendeeDocument} />

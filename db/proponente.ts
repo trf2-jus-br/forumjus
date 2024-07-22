@@ -31,11 +31,9 @@ interface RequisicaoCadastro {
 class ProponenteDAO{
     static async criar(db: PoolConnection, data: RequisicaoCadastro){
         // Verifica se o usuário já existe no banco de dados.
-        const resultEmail = await db.query('SELECT * FROM attendee WHERE attendee_email = ?;', [data.attendeeEmail])
-        
-        // Notifica o usuário se o e-mail já existe.
-        if (resultEmail[0].length) 
-            throw createHttpError.BadRequest(`E-mail ${data.attendeeEmail} já consta na base de inscritos`); 
+        if (await this.listarPorCPF_Email(db, data.attendeeDocument, data.attendeeEmail)){
+            throw createHttpError.BadRequest(`'CPF' ou 'Email' já constam na base de inscritos`); 
+        } 
     
         // Antes de inserir no banco, garante que se nenhum 'Nome Social' for informado será gravado NULL.
         if (data.attendeeChosenName) {
@@ -70,6 +68,11 @@ class ProponenteDAO{
 
     static async listarPorId(db: PoolConnection, id: number){
         const [proponentes] = await db.query('SELECT * FROM attendee where attendee_id = ?;', [id]);
+        return proponentes[0] as Proponente;
+    }
+
+    static async listarPorCPF_Email(db: PoolConnection, cpf: string, email: string){
+        const [proponentes] = await db.query('SELECT * FROM attendee where attendee_document = ? OR attendee_email = ?;', [cpf, email]);
         return proponentes[0] as Proponente;
     }
 

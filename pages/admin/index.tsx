@@ -10,7 +10,8 @@ function Admin(){
         '/participante',
         '/ocupacao',
         '/ambiente',
-        '/arquivo'
+        '/arquivo',
+        '/calendario'
     ].sort(
         (a, b) => a > b ? 1 : -1
     );

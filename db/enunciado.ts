@@ -203,6 +203,12 @@ class EnunciadoDAO {
         return enunciado;
     }
 
+
+    static async listarPorProponente(db: PoolConnection, proponente: number){
+        const [enunciados] = await db.query( `SELECT * FROM statement WHERE attendee_id = ?;`, [proponente]);
+        return enunciados as Enunciado[];
+    }
+
     static async listarPorVotacao(db: PoolConnection, usuario: Usuario){
         // Busca no banco a data e hora das votações.
         const calendario = await CalendarioDAO.hoje(db);
