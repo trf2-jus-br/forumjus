@@ -112,6 +112,7 @@ interface Comite {
     capa_proposta_admitida: string;
     capa_proposta_comissao: string;
     capa_proposta_plenaria: string;
+    sala: string;
 }
 
 type DetalheComite = Comite & {

@@ -54,7 +54,7 @@ export function criarPDF(props: Props){
                         [
                             {text: 'RIO DE JANEIRO', colSpan: 5, alignment: 'center', fillColor}, 
                             '','','','', 
-                            {text: '3º ANDAR', colSpan: 5, alignment: 'center', fillColor}, 
+                            {text: comite.sala, colSpan: 5, alignment: 'center', fillColor}, 
                             '','','','', 
                         ],
                         [
