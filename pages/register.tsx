@@ -133,9 +133,12 @@ export default function Create() {
       const recaptchaToken = null;//await recaptchaRef.current.executeAsync();
 
       actions.setSubmitting(false)
-      await api.post(`/api/register`, { recaptchaToken, values })
+      const {data} = await api.post(`/api/register`, { recaptchaToken, values })
       setAttendeeEmail(values.attendeeEmail)
       setCreated(true)
+
+      if(data)
+        exibirNotificacao({ titulo: "Atenção", texto: data}, true);
     } catch (e) {
       console.log(e)
         //não executa nenhuma ação, apenas notifica o usuário do erro.

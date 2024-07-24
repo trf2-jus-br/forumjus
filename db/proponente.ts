@@ -21,11 +21,14 @@ interface RequisicaoCadastro {
  interface Proponente {
     attendee_id: number,
     nome : string,
-    email : string,
+    email : string, // ??? - correto é 'attendee_email'
+    attendee_email?: string;
     admitido : 0 | 1,
     committee_name : string
     committee_id: number,
     statement_text: string
+    attendee_timestamp?: string;
+    attendee_document?: string;
 }
 
 class ProponenteDAO{
