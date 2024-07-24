@@ -78,7 +78,7 @@ export function apiHandler(handler: ApiMethodHandlers) {
             }
 
             // valida o JWT e carrega o usuário presente nele.
-            usuario = await carregarUsuario(req);
+            usuario = await carregarUsuario(req, db.ambiente);
 
             //define a função que deve ser executada.
             const methodHandler = handler[req.method as Method];
@@ -146,9 +146,9 @@ export function apiNegadaAo(usuario?: Usuario, ...funcoes_permitidas: FuncaoMemb
     }
 }
 
-async function carregarUsuario(req: NextApiRequest) : Promise<Usuario | null>{
+async function carregarUsuario(req: NextApiRequest, ambiente: Ambiente) : Promise<Usuario | null>{
     try {
-        return await jwt.parseJwt( req.cookies['forum_token'] ) as any;
+        return await jwt.parseJwt( req.cookies['forum_token'], ambiente) as any;
     } catch(err) {
         return null;
     }

@@ -120,7 +120,7 @@ async function logar({req, res, db} : API){
 
     // Não enviamos a token do SIGA pro usuário, pois não conseguiríamos validar se o usuário alterou ela.
     // Por essa razão criamos outro JWT utilizando.
-    const FORUM_token = await jwt.buildJwt(usuario);
+    const FORUM_token = await jwt.buildJwt(usuario, db.ambiente);
 
     // Salvamos no cookie um JWT que será utilizado exclusivamente para validar o login.
     const secure = process.env.HOMOLOGACAO ? '' : 'Secure;'
