@@ -1,12 +1,15 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 // @ts-ignore
 import { useRouter } from 'next/router'
+import { usarContexto } from '../../../contexto';
+import moment from 'moment';
 
 function Login(props){
     const router = useRouter()
+    const {api} = usarContexto();
 
     useEffect(()=>{
         const {token} = router.query;
@@ -16,46 +19,60 @@ function Login(props){
         }
     }, [router.query]);
 
-    async function logar(token?: string){
-        try{
-        const resposta = await fetch(`/api/login?cracha=${token != null}`, {
-            method: 'POST',
-            headers: {
-                Authorization: token
-            }
-        })
 
-        if(!resposta.ok){
-            throw undefined;
-        }
+    async function emVotacao(){
+        const {data : calendario} = await api.get<Calendario[]>("/api/calendario");
+        
+        const votacaoGeral = calendario.find(c => c.evento === "VOTAÇÃO GERAL")
+        const votacaoPorComissao = calendario.find(c => c.evento === "VOTAÇÃO POR COMISSÃO")
 
-        const usuario : Usuario = await resposta.json();
+        const agora = moment();
+        
+        const votandoGeral = moment(votacaoGeral.inicio) < agora && agora < moment(votacaoGeral.fim);
+        const votandoComissao = moment(votacaoPorComissao.inicio) < agora && agora < moment(votacaoPorComissao.fim);
 
-        /*switch(usuario.funcao){
+        return votandoGeral || votandoComissao;
+    }
+
+    function definirRotaInicial(usuario){
+        switch(usuario.funcao){
             case "ESPECIALISTA":
                 case "JURISTA":
-                    window.location.href = '/inscricoes';
-                    break;
+                    return '/inscricoes';
             
             case "PRESIDENTE":
                 case "PRESIDENTA":
                     case "RELATOR":
                         case "RELATORA":
-                            window.location.href = '/admissao';
-                            break;
+                            return '/admissao';
                             
             case "MEMBRO":
-                window.location.href = '/votacao';
-                break;
+                return '/votacao';
             
             default:
-                alert(`${usuario.funcao} não deveria logar utilizando token.`);
-        }*/
+                throw `${usuario.funcao} não deveria logar utilizando token.`;
+        }
+    }
 
-        window.location.href = '/votacao';
-      }catch(err) {
-        alert(err || "Erro ao se comunicar com servidor.");
-      }
+    async function logar(token?: string){
+        try{
+            const resposta = await fetch(`/api/login?cracha=${token != null}`, {
+                method: 'POST',
+                headers: {
+                    Authorization: token
+                }
+            })
+
+            if(!resposta.ok){
+                throw undefined;
+            }
+
+            const usuario : Usuario = await resposta.json();
+
+            window.location.href = await emVotacao() ? '/votacao' : definirRotaInicial(usuario);
+        }catch(err) {
+            alert(err || "Erro ao se comunicar com servidor.");
+        }
     }
 
     return <></>
