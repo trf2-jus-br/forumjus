@@ -19,7 +19,7 @@ function Admin(){
     return <Layout>
         <div style={e.container}>
             {propriedades.map(p => (
-                <a href={`/admin${p}`} style={e.card}>
+                <a key={p} href={`/admin${p}`} style={e.card}>
                     <Card>
                         <Card.Body>{p}</Card.Body>
                     </Card>

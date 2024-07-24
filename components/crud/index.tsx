@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { CRUD } from './crud';
 import Layout from '../layout';
 import CampoEditavel from './campo-editavel';
-import { Button, Dropdown, DropdownButton, Form, Modal } from 'react-bootstrap';
+import { Breadcrumb, Button, Dropdown, DropdownButton, Form, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Formik } from 'formik';
@@ -107,8 +107,14 @@ function CRUD (props : CRUD.Props){
         <Layout>
             <div className="d-flex justify-content-between">
                 <div className='d-flex align-items-center'>
-                    <h3>{nome}</h3>
-                    <Button style={{marginLeft: 10}} size='sm' title='Adicionar' onClick={()=> setCriando(true)}>+</Button>
+                    <Breadcrumb>
+                        <Breadcrumb.Item href='/admin'>Administração</Breadcrumb.Item>
+                        <Breadcrumb.Item active>
+                            {nome}
+                            <Button style={{marginLeft: 10}} size='sm' title='Adicionar' onClick={()=> setCriando(true)}>+</Button>
+                        </Breadcrumb.Item>
+                    </Breadcrumb>
+                    
                 </div>
                 <DropdownButton size='sm' autoClose="outside" title="Colunas">
                     {colunas.map( (coluna, indice) => (
