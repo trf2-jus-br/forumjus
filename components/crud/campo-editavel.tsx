@@ -5,6 +5,7 @@ import { Button, Form, InputGroup } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBan, faCheck } from '@fortawesome/free-solid-svg-icons';
 import Arquivo from './arquivo';
+import Data from './data';
 
 interface Props {
     coluna: CRUD.Coluna,
@@ -61,6 +62,10 @@ function CampoEditavel (props: Props){
             
             case "TextArea":
                 return ({valor, setValor}) => <Form.Control as="textarea" rows={10} size='sm' value={valor} onChange={e => setValor(e.target.value)} />
+
+            case "Data":
+                return Data;
+    
 
             default:
                 return ({valor, setValor}) => <Form.Control className='text-center' size='sm' value={valor} onChange={e => setValor(e.target.value)} />
