@@ -13,8 +13,8 @@ export class Migration1720458243364 implements MigrationInterface {
             return;
 
         // define quais migrações presisam ser executados pelo esquema 'trfForumJus'
-        await queryRunner.query(`DELETE FROM trfForumJus.migrations WHERE name = 'Migration1719847056546';`);
-        await queryRunner.query(`DELETE FROM trfForumJus.migrations WHERE name = 'Migration1719944093178';`);
+        //await queryRunner.query(`DELETE FROM trfForumJus.migrations WHERE name = 'Migration1719847056546';`);
+        //await queryRunner.query(`DELETE FROM trfForumJus.migrations WHERE name = 'Migration1719944093178';`);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
