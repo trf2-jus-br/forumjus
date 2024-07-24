@@ -43,14 +43,25 @@ export default {
             const admitido = enunciados.length !== 0 && enunciados.every(e => e.committee_id === enunciados[0].committee_id); 
             const rejeitado = enunciados.length === 0; 
 
-            
-            const bufferSaia = await fs.readFile( 
-                (await ArquivoDAO.listar(db,ambiente.BANNER)).caminho
-            )
+            let bufferSaia, bufferRegulamento;
 
-            const bufferRegulamento = await fs.readFile(
-                (await ArquivoDAO.listar(db, ambiente.REGULAMENTO)).caminho    
-            )
+            try{
+                bufferSaia = await fs.readFile( 
+                    (await ArquivoDAO.listar(db,ambiente.BANNER)).caminho
+                )
+            }catch(err){
+                throw "Não foi possível carregar o 'Banner'."
+            }
+            
+
+            try{
+                bufferRegulamento = await fs.readFile(
+                    (await ArquivoDAO.listar(db, ambiente.REGULAMENTO)).caminho    
+                )
+            }catch(err){
+                throw "Não foi possível carregar o 'Banner'."
+            }
+
 
             let anexos = [{
                 filename: 'image.png',
@@ -59,7 +70,7 @@ export default {
                 encoding: 'base64'
             }];
 
-            if(admitido){
+            if(!rejeitado){
                 anexos.push({
                     filename: 'regulamento.pdf',
                     content: bufferRegulamento
