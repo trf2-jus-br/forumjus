@@ -140,7 +140,7 @@ interface Ocupacao {
     occupation_name: string,
  }
 
- type FuncaoMembro = "PRESIDENTE" | "PRESIDENTA" | "RELATOR" | "RELATORA" | "MEMBRO" | "JURISTA" | "ESPECIALISTA" | "ASSESSORIA" | "PROGRAMADOR";
+ type FuncaoMembro = "COORDENADOR GERAL" | "COORDENAÇÃO CIENTÍFICA" | "COORDENAÇÃO EXECUTIVA" | "PRESIDENTE" | "PRESIDENTA" | "RELATOR" | "RELATORA" | "MEMBRO" | "JURISTA" | "ESPECIALISTA" | "ASSESSORIA" | "PROGRAMADOR";
 
  interface Membro {
     id: number,

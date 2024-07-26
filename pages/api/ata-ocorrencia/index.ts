@@ -1,4 +1,3 @@
-import CalendarioDAO from "../../../db/calendario";
 import { apiHandler, apiPermitidaAo } from "../../../utils/apis";
 
 
@@ -51,7 +50,7 @@ async function presentes(db: PoolConnection, comite: number | string){
                                         evento = 'VOTAÇÃO POR COMISSÃO'
                                 ) as presente
                             FROM membro 
-                            WHERE comite = ?;`
+                            WHERE comite = ? OR comite IS NULL;`
 
     const SQL = comite == null ? SQL_GERAL : SQL_POR_COMISSAO;
     const PARAMS = comite == null ? [] : [comite];

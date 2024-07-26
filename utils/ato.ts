@@ -25,6 +25,9 @@ export function criarPDF(props: Props){
 
     const comite = comites.find(c => c.committee_id === membros[0].comite);
     const presidente = membros.find(m => m.funcao === "PRESIDENTA" || m.funcao === "PRESIDENTE");
+    const coordenacao_cientifica = membros.filter(m => m.funcao === "COORDENAÇÃO CIENTÍFICA");
+    const coordenacao_executiva = membros.filter(m => m.funcao === "COORDENAÇÃO EXECUTIVA");
+    const coordenador_geral = membros.find(m => m.funcao === "COORDENADOR GERAL");
     const relator = membros.find(m => m.funcao === "RELATOR" || m.funcao === "RELATORA");
     const especialista = membros.filter(m => m.funcao === "ESPECIALISTA");
     const jurista = membros.filter(m => m.funcao === "JURISTA");
@@ -56,7 +59,18 @@ export function criarPDF(props: Props){
                             '','','','', 
                             {text: comite.sala, colSpan: 5, alignment: 'center', fillColor}, 
                             '','','','', 
+                        ], [
+                            {text: 'Coordenador Geral', colSpan: 2, border: ESQUERDA}, '',
+                            {text: coordenador_geral.nome, colSpan: 8, border: NENHUM}, '', '', '', '', '', '', '',
                         ],
+                        [
+                            {text: 'Coordenação Científica', colSpan: 2, border: ESQUERDA}, '',
+                            {text: coordenacao_cientifica.map(e => e.nome).join('\n'), colSpan: 8, border: NENHUM}, '', '', '', '', '', '', '',
+                        ],
+                        [
+                            {text: 'Coordenação Executiva', colSpan: 2, border: ESQUERDA}, '',
+                            {text: coordenacao_executiva.map(e => e.nome).join('\n'), colSpan: 8, border: NENHUM}, '', '', '', '', '', '', '',
+                        ], 
                         [
                             {text: presidente.funcao === "PRESIDENTA" ? 'Presidenta' : 'Presidente', colSpan: 2, border: ESQUERDA}, '',
                             {text: presidente.nome, colSpan: 8, border: NENHUM}, '', '', '', '', '', '', '',
@@ -86,7 +100,7 @@ export function criarPDF(props: Props){
                             ''
                         ],
                         [
-                            {text: 'Eventuais Ocorrências:', colSpan: 10, marginBottom: 280},
+                            {text: 'Eventuais Ocorrências:', colSpan: 10, marginBottom: 680},
                             '', '', '',
                             '', '', '',
                             '', '', '',

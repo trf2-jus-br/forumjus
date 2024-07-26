@@ -13,7 +13,7 @@ const ADMITIDOS = 0;
 function AtoOcorrencia(){
     const [comites, setComites] = useState<Comite[]>();
     
-    const {api, ambiente} = usarContexto();
+    const {api, ambiente, exibirNotificacao} = usarContexto();
 
     async function carregar(){
         const { data : comites } = await api.get<Comite[]>('/api/comite');
@@ -21,19 +21,24 @@ function AtoOcorrencia(){
     }
 
     async function criarPDF(comite: number){
-        const resultados = await Promise.all([
-            api.get<Inscricao[]>(`/api/caderno?nivel=${ADMITIDOS}&comissao=${comite}`),
-            api.get<Ato>(`/api/ato-ocorrencia?comite=${comite}`)
-        ])
+        try{
+            const resultados = await Promise.all([
+                api.get<Inscricao[]>(`/api/caderno?nivel=${ADMITIDOS}&comissao=${comite}`),
+                api.get<Ato>(`/api/ata-ocorrencia?comite=${comite}`)
+            ])
 
-        const inscricoes = resultados[1].data.enunciados;
-        const ato = resultados[1].data;
+            const inscricoes = resultados[1].data.enunciados;
+            const ato = resultados[1].data;
 
-        Ato.criarPDF({
-            comites,
-            ato,
-            ambiente
-        })
+            Ato.criarPDF({
+                comites,
+                ato,
+                ambiente
+            })
+
+        }catch(err){
+            exibirNotificacao({texto: err, tipo: "ERRO", titulo: "Erro" })       
+        }
     }
 
     useEffect(()=>{
