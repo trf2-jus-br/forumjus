@@ -93,8 +93,7 @@ export const handler = async function ({req, res, db} : API) {
 
     // No caso de usuário pré-existente, verifica se há divergência nos dados.
     if(proponente){
-        return `Dados dos Proponentes são imutáveis. 
-        Caso deseje altera-los entre em contato: ${db.ambiente.EMAIL_ORGANIZACAO} ou ${db.ambiente.TELEFONE_ORGANIZACAO}.`;
+        return `Dados dos Proponentes são imutáveis. Caso deseje alterar seus dados entre em contato com: ${db.ambiente.EMAIL_ORGANIZACAO} ou ${db.ambiente.TELEFONE_ORGANIZACAO}.`;
     }
 }
 
