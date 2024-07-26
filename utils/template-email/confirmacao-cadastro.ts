@@ -24,7 +24,7 @@ const EmailConfirmacaoCadastro = (data, ambiente: Ambiente, ocupacoes: Ocupacao[
             <div style="margin-top: 10px">
                 <div>Prezado (a),</div><br/>
                     
-                <div style="text-indent: 30px;">Confirmamos o recebimento da(s) sua(s) proposta(s) de enunciado(s). Essa(s) será (ão) analisada(s) pelo (a) Relator (a) da Comissão Temática pertinente.</div>
+                <div style="text-indent: 30px;">Confirmamos o recebimento da(s) sua(s) proposta(s) de enunciado(s).</div>
                 <div style="text-indent: 30px;">Caso sua proposta seja selecionada, sua inscrição na Jornada será automaticamente aceita, assim como sua participação na Comissão Temática objeto daquela.</div>
                 <div style="text-indent: 30px;">Na hipótese de mais de uma proposta de enunciado de sua autoria ter sido admitida, mas essas pertencerem a Comissões Temáticas diferentes, caberá a Vossa Senhoria optar por apenas uma Comissão, conforme estabelecido no regulamento da Jornada.</div>
                 <div style="text-indent: 30px;">Nesse último caso, a organização da Jornada entrará em contato, para que Vossa Senhoria faça a opção pela Comissão na qual deseja se inscrever.</div>
