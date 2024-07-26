@@ -60,32 +60,32 @@ export function criarPDF(props: Props){
                             {text: comite.sala, colSpan: 5, alignment: 'center', fillColor}, 
                             '','','','', 
                         ], [
-                            {text: 'Coordenador Geral', colSpan: 2, border: ESQUERDA}, '',
-                            {text: coordenador_geral.nome, colSpan: 8, border: NENHUM}, '', '', '', '', '', '', '',
+                            {text: 'Coordenador Geral', colSpan: 3, border: ESQUERDA}, '', '',
+                            {text: coordenador_geral.nome, colSpan: 7, border: NENHUM},  '', '', '', '', '', '',
                         ],
                         [
-                            {text: 'Coordenação Científica', colSpan: 2, border: ESQUERDA}, '',
-                            {text: coordenacao_cientifica.map(e => e.nome).join('\n'), colSpan: 8, border: NENHUM}, '', '', '', '', '', '', '',
+                            {text: 'Coordenação Científica', colSpan: 3, border: ESQUERDA}, '', '',
+                            {text: coordenacao_cientifica.map(e => e.nome).join('\n'), colSpan: 7, border: NENHUM}, '', '', '', '', '', '',
                         ],
                         [
-                            {text: 'Coordenação Executiva', colSpan: 2, border: ESQUERDA}, '',
-                            {text: coordenacao_executiva.map(e => e.nome).join('\n'), colSpan: 8, border: NENHUM}, '', '', '', '', '', '', '',
+                            {text: 'Coordenação Executiva', colSpan: 3, border: ESQUERDA}, '', '',
+                            {text: coordenacao_executiva.map(e => e.nome).join('\n'), colSpan: 7, border: NENHUM}, '', '', '', '', '', '',
                         ], 
                         [
-                            {text: presidente.funcao === "PRESIDENTA" ? 'Presidenta' : 'Presidente', colSpan: 2, border: ESQUERDA}, '',
-                            {text: presidente.nome, colSpan: 8, border: NENHUM}, '', '', '', '', '', '', '',
+                            {text: presidente.funcao === "PRESIDENTA" ? 'Presidenta' : 'Presidente', colSpan: 3, border: ESQUERDA}, '', '',
+                            {text: presidente.nome, colSpan: 7, border: NENHUM}, '', '', '', '', '', '',
                         ],
                         [
-                            {text: relator.funcao === "RELATOR" ? 'Relator' : 'Relatora', colSpan: 2, border: ESQUERDA}, '',
-                            {text: relator.nome, colSpan: 8, border: NENHUM}, '', '', '', '', '', '', '',
+                            {text: relator.funcao === "RELATOR" ? 'Relator' : 'Relatora', colSpan: 3, border: ESQUERDA}, '', '',
+                            {text: relator.nome, colSpan: 7, border: NENHUM}, '', '', '', '', '', '',
                         ],
                         [
-                            {text: especialista.length === 1 ? 'Especialista' : 'Especialistas', colSpan: 2, border: ESQUERDA}, '',
-                            {text: especialista.map(e => e.nome).join('\n'), colSpan: 8, border: NENHUM}, '', '', '', '', '', '', '',
+                            {text: especialista.length === 1 ? 'Especialista' : 'Especialistas', colSpan: 3, border: ESQUERDA}, '', '',
+                            {text: especialista.map(e => e.nome).join('\n'), colSpan: 7, border: NENHUM}, '', '', '', '', '', '',
                         ],
                         [
-                            {text: jurista.length === 1 ? 'Jurista' : 'Juristas', colSpan: 2, border: ESQUERDA, marginBottom: 7}, '',
-                            {text: jurista.map(e => e.nome).join('\n'), colSpan: 8, border: NENHUM}, '', '', '', '', '', '', '',
+                            {text: jurista.length === 1 ? 'Jurista' : 'Juristas', colSpan: 3, border: ESQUERDA, marginBottom: 7}, '', '',
+                            {text: jurista.map(e => e.nome).join('\n'), colSpan: 7, border: NENHUM}, '', '', '', '', '', '',
                         ],
                         [
                             {text: 'Horário', colSpan: 2, alignment: 'center', fillColor},
