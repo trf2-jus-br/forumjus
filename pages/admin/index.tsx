@@ -7,11 +7,12 @@ function Admin(){
         '/db',
         '/comite',
         '/enunciado',
-        '/participante',
+        '/proponente',
         '/ocupacao',
         '/ambiente',
         '/arquivo',
-        '/calendario'
+        '/calendario',
+        '/membro',
     ].sort(
         (a, b) => a > b ? 1 : -1
     );

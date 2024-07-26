@@ -8,7 +8,7 @@ interface Props {
 
 function Comissao (props: Props){
     return <CRUD 
-        nome='Participantes' 
+        nome='Proponente' 
         colunas={[
             {nome: "ID", banco: "attendee_id", largura: 1, exibir: true},
             {nome: "Jornada", banco: "forum_id", largura: 1, exibir: true},
