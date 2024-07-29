@@ -68,7 +68,7 @@ export const handler = async function ({req, res, db} : API) {
     if(proponente){
         if(proponente.attendee_email !== data.attendeeEmail || proponente.attendee_document !== data.attendeeDocument){
             const data = moment(proponente.attendee_timestamp).format("DD/MM/YYYY HH:mm"); 
-            throw `E-mail ou CPF divergem do registro anterior (${data}). Caso precise altera-los entre em contato: ${db.ambiente.EMAIL_ORGANIZACAO} ou ${db.ambiente.TELEFONE_ORGANIZACAO}.`;
+            throw `E-mail ou CPF divergem do registro anterior (${data}). Caso precise alterá-los entre em contato: ${db.ambiente.EMAIL_ORGANIZACAO} ou ${db.ambiente.TELEFONE_ORGANIZACAO}.`;
         }
 
         const enunciados = await EnunciadoDAO.listarPorProponente(db, proponente.attendee_id);
