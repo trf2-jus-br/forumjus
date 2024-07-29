@@ -42,8 +42,8 @@ const EmailNotificarDivergencia = (ambiente:Ambiente, enunciados : Enunciado[], 
             
             ${cronograma(ambiente)}
 
-            <p style="text-indent: 30px;">Enviamos anexo o Regulamento da Jornada, aprovado pela Portaria nº ${ambiente.REGULAMENTO_PORTARIA}, que, nos ${ambiente.REGULAMENTO_CAPITULOS_DESTACADOS}, esclarece os procedimentos para discussão e votação das proposições de enunciados nas Comissões Temáticas e na Sessão Plenária.</p>
-            <p style="text-indent: 30px;">Em caso de dúvida, entre em contato através do e-mail <a href="mailto:${ambiente.EMAIL_ORGANIZACAO}">${ambiente.EMAIL_ORGANIZACAO}</a> ou do telefone ${ambiente.TELEFONE_ORGANIZACAO}.</p>
+            <p style="text-indent: 30px;">Enviamos anexo o Regimento da Jornada, aprovado pela Portaria nº ${ambiente.REGULAMENTO_PORTARIA}, que, nos ${ambiente.REGULAMENTO_CAPITULOS_DESTACADOS}, esclarece os procedimentos para discussão e votação das proposições de enunciados nas Comissões Temáticas e na Sessão Plenária.</p>
+            <p style="text-indent: 30px;">Em caso de dúvida, entre em contato através de <a href="mailto:${ambiente.EMAIL_ORGANIZACAO}">${ambiente.EMAIL_ORGANIZACAO}</a> ou do telefone ${ambiente.TELEFONE_ORGANIZACAO}.</p>
 
             <p style="text-indent: 30px; font-weight: bold;">Solicitamos que responda este e-mail indicando o recebimento do mesmo e a qual Comissão Temática deseja integrar impreterivelmente até o dia ${ambiente.DATA_LIMITE_ESCOLHA_COMISSAO}.</p>
 

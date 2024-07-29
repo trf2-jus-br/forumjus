@@ -61,8 +61,8 @@ const EmailNotificarAdmissao = (ambiente: Ambiente, enunciados : Enunciado[], no
             <p style="text-indent: 30px;">O evento acontecerá ${ambiente.LOCAL_EVENTO}</p>
             <p>Segue abaixo o cronograma:</p>
             ${ cronograma(ambiente)}
-            <p style="text-indent: 30px;">Enviamos anexo o Regulamento da Jornada, aprovado pela Portaria nº ${ambiente.REGULAMENTO_PORTARIA}, que, nos ${ambiente.REGULAMENTO_CAPITULOS_DESTACADOS}, esclarece os procedimentos para discussão e votação das proposições de enunciados nas Comissões Temáticas e na Sessão Plenária.</p>
-            <p style="text-indent: 30px;">Em caso de dúvida, entre em contato através do e-mail <a href="mailto:${ambiente.EMAIL_ORGANIZACAO}">${ambiente.EMAIL_ORGANIZACAO}</a> ou do telefone ${ambiente.TELEFONE_ORGANIZACAO}.</p>
+            <p style="text-indent: 30px;">Enviamos anexo o Regimento da Jornada, aprovado pela Portaria nº ${ambiente.REGULAMENTO_PORTARIA}, que, nos ${ambiente.REGULAMENTO_CAPITULOS_DESTACADOS}, esclarece os procedimentos para discussão e votação das proposições de enunciados nas Comissões Temáticas e na Sessão Plenária.</p>
+            <p style="text-indent: 30px;">Em caso de dúvida, entre em contato através de <a href="mailto:${ambiente.EMAIL_ORGANIZACAO}">${ambiente.EMAIL_ORGANIZACAO}</a> ou do telefone ${ambiente.TELEFONE_ORGANIZACAO}.</p>
 
             <p style="text-indent: 30px; font-weight: bold;">Solicitamos que responda este e-mail indicando o recebimento do mesmo.</p>
 
