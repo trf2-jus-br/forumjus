@@ -72,7 +72,7 @@ export default {
 
             if(!rejeitado){
                 anexos.push({
-                    filename: 'regulamento.pdf',
+                    filename: 'regimento.pdf',
                     content: bufferRegulamento
                 });
             }
