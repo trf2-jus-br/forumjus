@@ -75,9 +75,9 @@ export const handler = async function ({req, res, db} : API) {
 
         if(enunciados.length + data.statement.length > 3){
             //limite de 3 propostas.
-            const numeroExtenso = (numero: number) => numero == 1 ? 'uma proposta' : `${numero == 2 ? 'duas' : 'três'} propostas`;
+            const numeroExtenso = (numero: number) => numero == 1 ? 'uma' : `${numero == 2 ? 'duas' : 'três'}`;
 
-            throw `Solicitação não atendida, pois ultrapassa o limite de 3 (três) propostas. Já existem ${enunciados.length} (${numeroExtenso(enunciados.length)}) neste CPF.`;
+            throw `Solicitação não atendida, pois ultrapassa o limite de três propostas. Já ${enunciados.length === 1 ? "existe" : "existem"} ${numeroExtenso(enunciados.length)} neste CPF.`;
         }
 
         //Adequa o e-mail, uma vez que não altera os dados do proponente:
