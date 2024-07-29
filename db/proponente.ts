@@ -29,6 +29,15 @@ interface RequisicaoCadastro {
     statement_text: string
     attendee_timestamp?: string;
     attendee_document?: string;
+
+    occupation_id?: number,
+    attendee_name?: string,
+    attendee_chosen_name?: string,
+    attendee_phone?: string,
+    attendee_affiliation?: string,
+    attendee_disability?: string,
+    attendee_acceptance_datetime?: string,
+    attendee_rejection_datetime?: string,
 }
 
 class ProponenteDAO{

@@ -180,8 +180,6 @@ export default function Create() {
   const aguardando = moment(inscricoes?.inicio) > moment();
   const encerrada = moment(inscricoes?.fim) < moment();
 
-  console.log(moment(inscricoes?.fim), aguardando, encerrada)
-
   if(!inscricoes || aguardando || encerrada)
     return <Layout>
       <h1 className='mb-4'>Formulário de inscrição de proposta(s) de enunciado(s)</h1>

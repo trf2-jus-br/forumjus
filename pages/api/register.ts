@@ -79,6 +79,25 @@ export const handler = async function ({req, res, db} : API) {
 
             throw `Solicitação não foi atendida, pois ultrapassaria o limite de propostas. Há ${numeroExtenso(enunciados.length)} registradas e solicitou a inclusão de mais ${numeroExtenso(data.statement.length)}.`;
         }
+
+        //Adequa o e-mail, uma vez que não altera os dados do proponente:
+        data.attendeeChosenName = proponente.attendee_chosen_name;
+        data.attendeeAffiliation = proponente.attendee_affiliation;
+        data.attendeeDisability = proponente.attendee_disability;
+
+        //@ts-ignore : Está tipado errado...
+        data.attendeeDisabilityYN = proponente.attendee_disability != null;
+        data.attendeeDocument = proponente.attendee_document;
+        data.attendeeEmail = proponente.attendee_email;
+        data.attendeeEmailConfirmation = proponente.attendee_email;
+        data.attendeeName = proponente.attendee_name;
+
+        // campos não são utilizados e devem ser removidos do sistema!
+        data.attendeeOccupationAffiliation = undefined;
+        data.attendeeOccupationOther = undefined;
+
+        data.attendeeOccupationId = proponente.occupation_id.toString();
+        data.attendeePhone = proponente.attendee_phone;
     }
 
     // Salva no banco de dados as informações do proponente e cada enunciado.
