@@ -29,13 +29,13 @@ function PrivacyPolicy(props, ref){
                 Dados pessoais são coletados, armazenados e processados com o objetivo de viabilizar a realização do evento, dentre as ações realizadas estão:
                 <ul>
                     <li>Realizar as adaptações necessárias, para garantir a inclusão de todos;</li>
-                    <li>Contactar os participamentes;</li>
-                    <li>Realizar as votações</li>
-                    <li>Organizar a realização da Jornada</li>
+                    <li>Contactar os participantes;</li>
+                    <li>Realizar as votações;</li>
+                    <li>Organizar a realização da Jornada;</li>
                 </ul>
             </p>
             <h6>Termo de uso</h6>
-            <p style={{marginLeft:20}}>Eu autorizo o armazenamento e o processamento dos dados pessoais informados acima, de acordo com as exigências da Lei nº. 13.709/18 - Lei Geral de Proteção de Dados Pessoais, para as finalidades da {ambiente.NOME}</p>
+            <p style={{marginLeft:20}}>Eu autorizo o armazenamento e o processamento dos dados pessoais informados acima, de acordo com as exigências da Lei nº. 13.709/18 - Lei Geral de Proteção de Dados Pessoais, para as finalidades da {ambiente.NOME}.</p>
         </Modal.Body>
     </Modal>
 }
