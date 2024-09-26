@@ -67,8 +67,11 @@ function Caderno (props){
             
             gerarCaderno(ambiente,inscricoes, comites, 'Caderno da Jornada', false, ocultarJustificativas)
         }catch(err){
-            console.log(err);
-            // A função carregarInscricoes já notifica o usuário.
+            exibirNotificacao({
+                titulo: "Não foi possível abrir o caderno.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
         }
     }
 
@@ -82,8 +85,11 @@ function Caderno (props){
             
             gerarCaderno(ambiente,inscricoes, comites, 'Caderno de Propostas da Jornada', true, ocultarJustificativas)
         }catch(err){
-            console.log(err);
-            // A função carregarInscricoes já notifica o usuário.
+            exibirNotificacao({
+                titulo: "Não foi possível abrir o caderno.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
         }
     }
 
@@ -96,7 +102,11 @@ function Caderno (props){
             
             gerarCaderno(ambiente,inscricoes, comites, 'Caderno Preliminar', true, ocultarJustificativas)
         }catch(err){
-            // A função carregarInscricoes já notifica o usuário.
+            exibirNotificacao({
+                titulo: "Não foi possível abrir o caderno.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
         }
     }
 
@@ -109,7 +119,11 @@ function Caderno (props){
 
             gerarCaderno(ambiente,inscricoes, comites, 'Caderno da Jornada', true, ocultarJustificativas)
         }catch(err){
-            // A função carregarInscricoes já notifica o usuário.
+            exibirNotificacao({
+                titulo: "Não foi possível abrir o caderno.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
         }
     }
 

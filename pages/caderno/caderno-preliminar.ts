@@ -18,6 +18,10 @@ function gerarCaderno(ambiente: Ambiente, inscricoes : Inscricao[], comites: Com
 
     const comite = obterComite(inscricoes[0].committee_id);
 
+    if(!comite?.capa_proposta_recebida || !comite?.capa_proposta_plenaria){
+        throw "Capas não foram configuradas corretamente";
+    }    
+
     const pdf = pdfMake.createPdf({
         pageMargins: [30, 30, 30, 30],
         footer: (currentPage, pageCount) => ({
