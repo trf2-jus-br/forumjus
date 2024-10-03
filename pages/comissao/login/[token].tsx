@@ -34,11 +34,14 @@ function Login(props){
         return votandoGeral || votandoComissao;
     }
 
-    function definirRotaInicial(usuario){
+    function definirRotaInicial(usuario: Usuario){
         switch(usuario.funcao){
             case "ESPECIALISTA":
                 case "JURISTA":
-                    return '/inscricoes';
+                    case "COORDENADOR GERAL":
+                        case 'COORDENAÇÃO CIENTÍFICA':
+                            case 'COORDENAÇÃO EXECUTIVA':
+                                return '/inscricoes';
             
             case "PRESIDENTE":
                 case "PRESIDENTA":

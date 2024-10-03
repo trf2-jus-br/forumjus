@@ -22,7 +22,7 @@ async function listar({res, db, usuario} : API){
 
         const buffer = await QRCode.toBuffer(`${url}/comissao/login/${membros[i].token}`, {scale: 16});
 
-        arquivo.append(buffer, {name : `${membros[i].comite} - ${nome}.png`})
+        arquivo.append(buffer, {name : `${membros[i].comite || "#"} - ${nome}.png`})
     }
     
 

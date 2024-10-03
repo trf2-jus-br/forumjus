@@ -13,6 +13,7 @@ import { QRCodeSVG } from "qrcode.react";
 import QRCode from "qrcode";
 import comPermissao from "../../utils/com-permissao";
 import { retornoAPI } from "../../utils/api-retorno";
+import Membro from "./membro";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -68,8 +69,11 @@ function Membros(){
     if(!membros)
         return <></>
 
-    const membro_filtrado = membros.filter(m => m.comite === filtro || filtro == null);
+    const membro_filtrado = membros.filter(m => m.comite === filtro || m.comite == undefined || filtro == null);
 
+    const coordenadorGeral = membro_filtrado.filter(m => m.funcao === "COORDENADOR GERAL");
+    const coordenadorCientifico = membro_filtrado.filter(m => m.funcao === "COORDENAÇÃO CIENTÍFICA");
+    const coordenadorExecutivo = membro_filtrado.filter(m => m.funcao === "COORDENAÇÃO EXECUTIVA");
     const presidente = membro_filtrado.find(m => m.funcao === "PRESIDENTE" || m.funcao === "PRESIDENTA");
     const relatores = membro_filtrado.filter(m => m.funcao === "RELATOR" || m.funcao === "RELATORA");
     const especialistas = membro_filtrado.filter(m => m.funcao === "ESPECIALISTA");
@@ -178,6 +182,10 @@ function Membros(){
         */}
 
         <div className="container row text-center">
+            <Membro membros={coordenadorGeral} setMembroSelecionado={setMembroSelecionado}/>
+            <Membro membros={coordenadorCientifico} setMembroSelecionado={setMembroSelecionado}/>
+            <Membro membros={coordenadorExecutivo} setMembroSelecionado={setMembroSelecionado}/>
+
             <div className="col-lg-6 col-12 mt-5">
                 <h6>
                     {presidente.nome}
