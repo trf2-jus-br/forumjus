@@ -71,9 +71,9 @@ function Membros(){
 
     const membro_filtrado = membros.filter(m => m.comite === filtro || m.comite == undefined || filtro == null);
 
-    const coordenadorGeral = membro_filtrado.filter(m => m.funcao === "COORDENADOR GERAL");
-    const coordenadorCientifico = membro_filtrado.filter(m => m.funcao === "COORDENAÇÃO CIENTÍFICA");
-    const coordenadorExecutivo = membro_filtrado.filter(m => m.funcao === "COORDENAÇÃO EXECUTIVA");
+    const coordenacaoGeral = membro_filtrado.filter(m => m.funcao === "COORDENADOR GERAL");
+    const coordenacaoCientifico = membro_filtrado.filter(m => m.funcao === "COORDENAÇÃO CIENTÍFICA");
+    const coordenacaoExecutivo = membro_filtrado.filter(m => m.funcao === "COORDENAÇÃO EXECUTIVA");
     const presidente = membro_filtrado.find(m => m.funcao === "PRESIDENTE" || m.funcao === "PRESIDENTA");
     const relatores = membro_filtrado.filter(m => m.funcao === "RELATOR" || m.funcao === "RELATORA");
     const especialistas = membro_filtrado.filter(m => m.funcao === "ESPECIALISTA");
@@ -182,9 +182,9 @@ function Membros(){
         */}
 
         <div className="container row text-center">
-            <Membro membros={coordenadorGeral} setMembroSelecionado={setMembroSelecionado}/>
-            <Membro membros={coordenadorCientifico} setMembroSelecionado={setMembroSelecionado}/>
-            <Membro membros={coordenadorExecutivo} setMembroSelecionado={setMembroSelecionado}/>
+            <Membro funcao={coordenacaoGeral[0]?.funcao || "Cordenação Geral"} membros={coordenacaoGeral} setMembroSelecionado={setMembroSelecionado}/>
+            <Membro funcao={coordenacaoCientifico[0]?.funcao || "Cordenação Científica"} membros={coordenacaoCientifico} setMembroSelecionado={setMembroSelecionado}/>
+            <Membro funcao={coordenacaoExecutivo[0]?.funcao || "Cordenação Executiva"} membros={coordenacaoExecutivo} setMembroSelecionado={setMembroSelecionado}/>
 
             <div className="col-lg-6 col-12 mt-5">
                 <h6>
