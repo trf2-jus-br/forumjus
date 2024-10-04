@@ -41,7 +41,7 @@ export async function carregarJornadas() : Promise<Jornada[]>{
             nome: 'Jornada 3 - FOJURJ', 
             esquema: 'trfForumJus3',
             enderecos: [
-                'jornada3:8081', 'jornada3-hmg.trf2.jus.br', 'jornadafojurj.trf2.jus.br'
+                'localhost:8081', 'jornada3-hmg.trf2.jus.br', 'jornadafojurj.trf2.jus.br'
             ]
         },
         { 
@@ -51,7 +51,7 @@ export async function carregarJornadas() : Promise<Jornada[]>{
                 'jornada2:8081', 'jornada2-hmg.trf2.jus.br',
                 
                 // A jornada atual é a 2ª Jornada.
-                'localhost:8081', 'jornada-hmg.trf2.jus.br', 'jornada.trf2.jus.br'
+                'localhost2:8081', 'jornada-hmg.trf2.jus.br', 'jornada.trf2.jus.br'
             ]
         },
         { 
