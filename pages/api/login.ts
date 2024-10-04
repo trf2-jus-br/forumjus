@@ -4,6 +4,7 @@ import xml2js from 'xml2js';
 import axios, { AxiosResponse } from "axios";
 import createHttpError from "http-errors";
 import LogDAO from "../../db/log";
+import { RecursoDAO } from "../../db/recurso";
 
 // Verifica as credenciais e obtém os dados do banco.
 async function logarCracha(db: PoolConnection, token: string) : Promise<Usuario>{
@@ -13,6 +14,8 @@ async function logarCracha(db: PoolConnection, token: string) : Promise<Usuario>
 
     if(!membro)
         throw createHttpError(403, "logarCracha: Token informada não existe.");
+
+    const recursos = await RecursoDAO.listar(db, membro.funcao);
 
     // diferencia 'MEMBRO', 'RELATOR' e 'PRESIDENTE'
     const administrador = membro.funcao === "PRESIDENTE" || membro.funcao === "PRESIDENTA"  || membro.funcao === "RELATOR" || membro.funcao === "RELATORA";
@@ -26,6 +29,7 @@ async function logarCracha(db: PoolConnection, token: string) : Promise<Usuario>
         lotacao: null,
         matricula: null,
         nome: membro.nome,
+        recursos,
         permissoes: {
             administrar_comissoes:  administrador ? [ membro.comite ] : [],
             crud: false,
@@ -87,8 +91,13 @@ async function logarSiga(db: PoolConnection, auth: string) : Promise<Usuario>{
         // Ao logar pelo siga, o usuário terá a permissão 'estatística' e
         // caso seja da COSADM terá acesso a 'CRUD'
         const COSADM = data.usuario.lotaTitularSigla === "COSADM" && process.env.SIMULAR_ASSESSORIA !== "true";
+
+        let funcao : FuncaoMembro = COSADM ? "PROGRAMADOR" : "ASSESSORIA";
+        const recursos = await RecursoDAO.listar(db, funcao);
+
         return {
-            funcao: COSADM ? "PROGRAMADOR" : "ASSESSORIA",
+            funcao,
+            recursos,
             nome: data.usuario.titularNome,
             matricula: data.usuario.titularSigla,
             lotacao: process.env.SIMULAR_ASSESSORIA === "true" ? "ASSESSORIA" : data.usuario.lotaTitularSigla,

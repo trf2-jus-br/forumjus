@@ -13,6 +13,10 @@ function Admin(){
         '/arquivo',
         '/calendario',
         '/membro',
+        '/funcao-perfil',
+        '/perfil-recurso',
+        '/perfil',
+        '/recurso'
     ].sort(
         (a, b) => a > b ? 1 : -1
     );
@@ -37,7 +41,8 @@ const e : {[key: string]: React.CSSProperties} = {
         gap: 50
     },
     card: {
-        height: 125,
+        //height: 125,
+        minWidth: '20%',
         cursor: 'pointer',
         flex: 1,
         textDecoration: 'none'

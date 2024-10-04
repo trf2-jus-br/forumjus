@@ -24,7 +24,7 @@ class InscricaoDAO {
         const { votar_comissoes } = await PermissaoDAO.carregar(db, usuario);
 
         // analisa as permissões do usuário.
-        const eh_geral = usuario.funcao === "PROGRAMADOR" || usuario.funcao === "ASSESSORIA";
+        const eh_geral = usuario.recursos['pages/inscricoes#exibirTodas']; //usuario.funcao === "PROGRAMADOR" || usuario.funcao === "ASSESSORIA";
         const sql = eh_geral ? SQL_GERAL : SQL_ESPECIFICO;
         const params = eh_geral ? [] : votar_comissoes
 

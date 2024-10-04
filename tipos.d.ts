@@ -80,7 +80,7 @@ interface Usuario {
     nome: string;
     matricula: string,
     lotacao: string,
-
+    recursos: {[key: string]: boolean},
     permissoes: {
         administrar_comissoes: number [],
         crud: boolean,

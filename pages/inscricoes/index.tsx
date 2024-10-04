@@ -41,9 +41,9 @@ function Inscricoes (props){
     const { api, usuario, exibirNotificacao, ambiente } = usarContexto();
 
 
-    async function carregarComissoes(){
-        const exibirTodas = usuario.funcao === "PROGRAMADOR" || usuario.funcao === "ASSESSORIA";
+    const exibirTodas = usuario.recursos['pages/inscricoes#exibirTodas'];//usuario.funcao === "PROGRAMADOR" || usuario.funcao === "ASSESSORIA";
 
+    async function carregarComissoes(){
         try{
             let {data} = await api.get<DetalheComite[]>("/api/comite?detalhes=true");
 
@@ -122,7 +122,7 @@ function Inscricoes (props){
             </Breadcrumb>
 
 
-            {filtro != null && usuario.permissoes.estatistica &&
+            {filtro != null && exibirTodas &&
                 <Form.Select size='sm' value={filtro} style={{width: '40%'}} onChange={(e)=> setFiltro(parseInt(e.target.value))}>
                     <option value={-1}>TODOS</option>
                     {comites?.map( (c, i) => <option key={c.committee_id} value={c.committee_id}>{c.committee_id}. {c.committee_name}</option>)}
