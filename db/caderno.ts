@@ -25,7 +25,7 @@ class CadernoDAO {
             INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
             INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
             WHERE committee_id = ? OR isnull(?)
-            ORDER BY statement.statement_id ASC;`
+            ORDER BY committee_id ASC, statement.statement_id ASC;`
 
         const [resultado] = await db.query(SQL, [comissao, comissao]);
 
