@@ -127,6 +127,10 @@ function Caderno (props){
         }
     }
 
+    const todos : Partial<Comite> = {
+        committee_id: null,
+        committee_name: 'TODOS'
+    };
 
     return <Layout>
         <div className='d-flex align-items-start justify-content-between'>
@@ -136,7 +140,7 @@ function Caderno (props){
         </div>
         
         <div className='d-flex justify-content-center' >
-            <Tooltip mensagem='aprovados na votação geral'>
+        <Tooltip mensagem='aprovados na votação geral'>
                 <Button onClick={abrirAprovadosVotacaoGeral}>
                     <FontAwesomeIcon icon={faFileCircleCheck} />
                     <span style={{marginLeft: 10}}>Caderno da Jornada</span>
@@ -158,7 +162,7 @@ function Caderno (props){
                 </tr>
             </thead>
             <tbody>
-                {comites?.map( c => <tr key={c.committee_id}>
+                {[todos, ...comites]?.map( c => <tr key={c.committee_id}>
                     <td>{c.committee_name}</td>
                     <td className='text-center' >
                         <Tooltip mensagem='Todas Inscrições' posicao='bottom'>

@@ -10,7 +10,7 @@ enum CADERNO{
 
 async function caderno({req, res, usuario, db} : API){
     const nivel = parseInt(req.query.nivel);
-    const comissao = parseInt(req.query.comissao);
+    const comissao = parseInt(req.query.comissao) || null;
 
     if(nivel === CADERNO.TODOS)
         return CadernoDAO.cadernoTodasInscricoes(db, usuario, comissao);

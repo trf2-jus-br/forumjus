@@ -24,10 +24,10 @@ class CadernoDAO {
             FROM statement
             INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
             INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
-            WHERE committee_id = ?
+            WHERE committee_id = ? OR isnull(?)
             ORDER BY statement.statement_id ASC;`
 
-        const [resultado] = await db.query(SQL, [comissao]);
+        const [resultado] = await db.query(SQL, [comissao, comissao]);
 
         return resultado as Enunciado[];        
     }
@@ -48,10 +48,10 @@ class CadernoDAO {
             FROM statement
             INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
             INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
-            WHERE committee_id = ? AND admitido = 1
+            WHERE (committee_id = ? OR isnull(?))  AND admitido = 1
             ORDER BY codigo ASC;`
 
-        const [resultado] = await db.query(SQL, [comissao]);
+        const [resultado] = await db.query(SQL, [comissao, comissao]);
 
         return resultado as Enunciado[];        
     }
