@@ -20,7 +20,7 @@ function Caderno (props){
     const [comites, setComites] = useState<Comite[]>([]);
     const [ocultarJustificativas, setOcultarJustificativas] = useState<boolean>(false);
 
-    const { api, exibirNotificacao, ambiente } = usarContexto();
+    const { api, exibirNotificacao, ambiente, usuario } = usarContexto();
 
     async function carregarComissoes(){
         api.get<Comite[]>("/api/comite")
@@ -132,6 +132,10 @@ function Caderno (props){
         committee_name: 'TODOS'
     };
 
+    const exibirTodas = usuario.recursos['pages/inscricoes#exibirTodas'];//usuario.funcao === "PROGRAMADOR" || usuario.funcao === "ASSESSORIA";
+
+    const comissoesExibidas = exibirTodas ? [todos, ...comites] : comites;
+
     return <Layout>
         <div className='d-flex align-items-start justify-content-between'>
             <Breadcrumb>
@@ -162,26 +166,30 @@ function Caderno (props){
                 </tr>
             </thead>
             <tbody>
-                {[todos, ...comites]?.map( c => <tr key={c.committee_id}>
+                {comissoesExibidas?.map( c => <tr key={c.committee_id}>
                     <td>{c.committee_name}</td>
                     <td className='text-center' >
-                        <Tooltip mensagem='Todas Inscrições' posicao='bottom'>
-                            <FontAwesomeIcon 
-                                onClick={() => abrirTodasInscricoesRecebidas(c.committee_id)}
-                                color='#009' 
-                                style={{cursor: 'pointer', marginRight: 10}} 
-                                icon={faFile} 
-                            />
-                        </Tooltip>
+                        {
+                            (exibirTodas || usuario.permissoes.votar_comissoes.indexOf(c.committee_id) !== -1 ) && <>
+                            <Tooltip mensagem='Todas Inscrições' posicao='bottom'>
+                                <FontAwesomeIcon 
+                                    onClick={() => abrirTodasInscricoesRecebidas(c.committee_id)}
+                                    color='#009' 
+                                    style={{cursor: 'pointer', marginRight: 10}} 
+                                    icon={faFile} 
+                                />
+                            </Tooltip>
 
-                        <Tooltip mensagem='Admitidos' posicao='bottom'>
-                            <FontAwesomeIcon 
-                                onClick={() => abrirAdmitidos(c.committee_id)}
-                                color='#b55e5e' 
-                                style={{cursor: 'pointer', marginRight: 10}} 
-                                icon={faFile} 
-                            />
-                        </Tooltip>
+                            <Tooltip mensagem='Admitidos' posicao='bottom'>
+                                <FontAwesomeIcon 
+                                    onClick={() => abrirAdmitidos(c.committee_id)}
+                                    color='#b55e5e' 
+                                    style={{cursor: 'pointer', marginRight: 10}} 
+                                    icon={faFile} 
+                                />
+                            </Tooltip>
+                        </>}
+                        
 
                         <Tooltip mensagem='Aprovados na comissão' posicao='bottom'>
                             <FontAwesomeIcon 
