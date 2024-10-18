@@ -35,7 +35,7 @@ function ModalJustificativa(props, ref){
         </Modal.Header>
         <Modal.Body>
             <Form.Control as="textarea" maxLength={512} rows="10" value={justificativa} onChange={({target}) => setJustificativa(target.value)} />
-            <Form.Text className="text-muted text-end d-block mb-3">Justificatique a decisão em até 512 caracteres.</Form.Text>
+            <Form.Text className="text-muted text-end d-block mb-3">Justifique a decisão em até 512 caracteres.</Form.Text>
         </Modal.Body>
         <Modal.Footer>
             <Button variant="secondary" onClick={cancelar}>Cancelar</Button>
