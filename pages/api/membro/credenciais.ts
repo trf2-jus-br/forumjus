@@ -19,11 +19,7 @@ async function listar({req, res, db, usuario} : API){
     const forwarded_host = req.headers["x-forwarded-host"]; // "jornada-hmg.trf2.jus.br",
     const host = req.headers["host"];
 
-    //return JSON.stringify(req.headers, null, 3);
-
     const url = forwarded_host ? `${https}://${forwarded_host}` : host;
-
-    return url;
 
     for(let i = 0; i < membros.length; i++){
         const indice = (i + 1).toString().padStart(3, "0");
