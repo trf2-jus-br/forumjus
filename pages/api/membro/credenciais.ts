@@ -5,7 +5,7 @@ import MembroDAO from "../../../db/membro";
 import archiver from "archiver";
 import accents from 'remove-accents';
 
-async function listar({res, db, usuario} : API){
+async function listar({req, res, db, usuario} : API){
     
     if(usuario?.funcao !== "ASSESSORIA" && usuario?.funcao !== "PROGRAMADOR")
         throw createHttpError.BadRequest(`${usuario?.funcao} não tem permissão para baixar as credenciais.`) ;
@@ -14,7 +14,16 @@ async function listar({res, db, usuario} : API){
 
     const arquivo = archiver("zip");
 
-    const url = process.env.HOMOLOGACAO === "true" ? "https://jornada-hmg.trf2.jus.br" : "https://jornada.trf2.jus.br";
+
+    const https = req.headers["x-forwarded-scheme"]; // "https",
+    const forwarded_host = req.headers["x-forwarded-host"]; // "jornada-hmg.trf2.jus.br",
+    const host = req.headers["host"];
+
+    //return JSON.stringify(req.headers, null, 3);
+
+    const url = forwarded_host ? `${https}://${forwarded_host}` : host;
+
+    return url;
 
     for(let i = 0; i < membros.length; i++){
         const indice = (i + 1).toString().padStart(3, "0");
