@@ -7,7 +7,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 
 
-function gerarCaderno(ambiente: Ambiente, inscricoes : Inscricao[], comites: Comite[], titulo: string, preliminar: boolean, ocultarJustificativa: boolean){
+function gerarCaderno(ambiente: Ambiente, inscricoes : Inscricao[], comites: Comite[], titulo: string, preliminar: boolean, ocultarJustificativa: boolean, gerarBlob?: boolean){
     function url(img){
         return {url: `${window.location.origin}/api/uploads/${img}`};
     }
@@ -110,7 +110,16 @@ function gerarCaderno(ambiente: Ambiente, inscricoes : Inscricao[], comites: Com
         }
     })
 
-    pdf.open();
+    if(gerarBlob === true){
+        return new Promise((resolve, reject)=>{
+            pdf.getBlob((blob)=>{
+                resolve(blob);
+            })
+        })
+    }else{
+        pdf.open();
+
+    }
 }
 
 export default gerarCaderno;

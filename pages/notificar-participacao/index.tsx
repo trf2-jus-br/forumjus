@@ -5,6 +5,7 @@ import { usarContexto } from '../../contexto';
 import Tooltip from '../../components/tooltip';
 import comPermissao from '../../utils/com-permissao';
 import { retornoAPI } from '../../utils/api-retorno';
+import gerarCaderno from '../caderno/caderno-preliminar';
 
 interface Proponente {
     nome : string,
@@ -14,11 +15,57 @@ interface Proponente {
     committee_id: number,
 }
 
+enum CADERNO{
+    TODOS = -1,
+    ADMITIDO = 0,
+    PRIMEIRA_VOTACAO = 1,
+    SEGUNDA_VOTACAO = 2,
+}
+
 function NotificarParticipacao(){
     const [proponentes, setProponentes] = useState<Proponente[][]>([]);
 
-    const {api, exibirNotificacao} = usarContexto();
+    const {api, exibirNotificacao, ambiente} = usarContexto();
     
+    async function carregarComissoes(){
+        try{
+            const {data} = await api.get<Comite[]>("/api/comite")
+            return data;
+        }catch(err){
+            throw "Não foi possível carregar as comissões.";
+        }
+    }
+
+    async function carregarInscricoes(nivel: CADERNO, comissao?: number){
+        try{
+            const {data} = await api.get<Inscricao[]>(`/api/caderno?nivel=${nivel}&comissao=${comissao}`)
+            return data;
+        }catch(err){
+            throw "Não foi possível carregar as inscrições.";
+        }
+    }
+
+    async function abrirCadernoAdmitidos(comissao: number, comites: Comite[]){
+        try{
+            const inscricoes = await carregarInscricoes(CADERNO.ADMITIDO, comissao);
+            
+            if(inscricoes.length === 0)
+                throw 'Caderno indisponível';
+            
+            const blob = await gerarCaderno(ambiente,inscricoes, comites, 'Caderno Preliminar', true, false, true) as Blob;
+
+            const fileCaderno = new File([blob], "caderno-1.pdf", {type: "application/pdf" });
+
+            return fileCaderno;
+        }catch(err){
+            exibirNotificacao({
+                titulo: "Não foi possível abrir o caderno.",
+                texto: retornoAPI(err),
+                tipo: "ERRO"
+            })
+        }
+    }
+
     async function carregar(){
         try{
             const {data} = await api.get<Proponente[]>("/api/proponente");
@@ -47,11 +94,40 @@ function NotificarParticipacao(){
         }
     }
 
+    // Antes de notificar os proponentes, salva os pdf's dos cadernos no servidor.
+    // Isto porque os cadernos são gerados no cliente, e os e-mails no servidor.
     async function notificar(e){
         e.preventDefault();
 
         try{
-            await api.post("/api/proponente/notificar")
+            // carrega todos as comissões.
+            const comites = await carregarComissoes();
+
+            // define o objeto que irá conter a relação entre comissão e caderno.
+            const cadernos = {};
+
+            for(let comite of comites){
+                const formData = new FormData();
+
+                // cria o blob do pdf do caderno
+                const fileCaderno = await abrirCadernoAdmitidos(comite.committee_id, comites);
+                formData.append(`valor`, fileCaderno);
+
+                // salva o arquivo no servidor
+                const {data} = await api.post("/api/arquivo", formData, {
+                    headers: {
+                        'Content-Type': `multipart/form-data`,
+                    }
+                });
+
+                // guarda qual arquivo corresponde a cada comissão.
+                cadernos[comite.committee_id] = data;
+            }
+
+            // manda o servidor notificar os proponentes.
+            await api.post("/api/proponente/notificar", {
+                cadernos
+            });
             
             exibirNotificacao({
                 texto: "E-mails enviados com sucesso!"

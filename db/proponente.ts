@@ -40,6 +40,10 @@ interface RequisicaoCadastro {
     attendee_rejection_datetime?: string,
 }
 
+type ComissaoCaderno = {
+    [key: string] : string
+};
+
 class ProponenteDAO{
     static async criar(db: PoolConnection, data: RequisicaoCadastro){
         // Verifica se o usuário já existe no banco de dados.
@@ -108,7 +112,7 @@ class ProponenteDAO{
         return resultado as Proponente[];
     }
 
-    static async notificar(db: PoolConnection, usuario: Usuario){
+    static async notificar(db: PoolConnection, usuario: Usuario, cadernos: ComissaoCaderno){
         // verifica as credênciais
         if(usuario.funcao !== "ASSESSORIA" && usuario.funcao !== "PROGRAMADOR")
             throw createHttpError.BadRequest(`${usuario.funcao} não tem permissão para acessar a listagem de proponentes.`);
@@ -154,8 +158,9 @@ class ProponenteDAO{
         for(let i = 0; i < listagem.length; i++){
             if(emails_bloqueados.indexOf(listagem[i].email.trim()) === -1){
                 await mailer.notificarProponente(
-                    db, 
+                    db,
                     listagem[i].email, 
+                    cadernos, 
                     listagem[i].enunciados, 
                     listagem[i].enunciados_reprovados, 
                     `${listagem[i].nome}<br/>${listagem[i].email}`

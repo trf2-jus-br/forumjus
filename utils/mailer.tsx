@@ -7,6 +7,13 @@ import EmailNotificarRejeicao from "./template-email/notificar-rejeicao";
 import EmailNotificarDivergencia from './template-email/notificar-divergencia';
 import { ArquivoDAO } from '../db/arquivo';
 
+import type { MailOptions } from 'nodemailer/lib/json-transport';
+import Mail from 'nodemailer/lib/mailer';
+
+type ComissaoCaderno = {
+    [key: string] : string
+};
+
 const options = {
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
@@ -23,7 +30,7 @@ export default {
 
     transporter: nodemailer.createTransport(options),
 
-    send(message) {
+    send(message : Mail.Options) {
         return new Promise((resolve, reject)=>{
             this.transporter.sendMail(message, (err, info) => {
                 if (err) {
@@ -36,11 +43,11 @@ export default {
         });
     },
 
-    async notificarProponente(db: PoolConnection, email: string, enunciados: any[], enunciados_reprovados: any[], nome: string){
+    async notificarProponente(db: PoolConnection, email: string, cadernos: ComissaoCaderno, enunciados: any[], enunciados_reprovados: any[], nome: string){
         try{
             const {ambiente} = db;
             
-            const admitido = enunciados.length !== 0 && enunciados.every(e => e.committee_id === enunciados[0].committee_id); 
+            const admitidoExatamenteUmaComissao = enunciados.length !== 0 && enunciados.every(e => e.committee_id === enunciados[0].committee_id); 
             const rejeitado = enunciados.length === 0; 
 
             let bufferSaia, bufferRegulamento;
@@ -59,17 +66,18 @@ export default {
                     (await ArquivoDAO.listar(db, ambiente.REGULAMENTO)).caminho    
                 )
             }catch(err){
-                throw "Não foi possível carregar o 'Banner'."
+                throw "Não foi possível carregar o 'REGULAMENTO'."
             }
 
 
-            let anexos = [{
+            let anexos : Mail.Attachment[] = [{
                 filename: 'image.png',
                 content: bufferSaia.toString("base64"),
                 cid: 'imagem',
                 encoding: 'base64'
             }];
 
+            // REGRA: só envia anexos para os proponentes admitidos.
             if(!rejeitado){
                 anexos.push({
                     filename: 'regimento.pdf',
@@ -77,12 +85,34 @@ export default {
                 });
             }
 
+            // REGRA: só anexa o caderno, caso o proponente tenha sido admitido em exatamente uma comissão.
+            if(admitidoExatamenteUmaComissao){
+                try{
+                    // obtém o uuid do pdf, baseado na comissão.
+                    const uuid = cadernos[ enunciados[0].committee_id ];
+
+                    // busca no banco de dados, o caminho do pdf
+                    const arquivo = await ArquivoDAO.listar(db, uuid);
+
+                    // carrega o pdf.
+                    const bufferCaderno = await fs.readFile(arquivo.caminho);
+
+                    // adiciona a lista de anexos.
+                    anexos.push({
+                        filename: 'caderno.pdf',
+                        content: bufferCaderno
+                    });
+                }catch(err){
+                    throw "Não foi possível carregar o 'Caderno'."
+                }
+            }
+
             this.send({
                 from: ambiente.EMAIL_ORGANIZACAO,
                 to: email.trim(),
                 cc: process.env.SMTP_BCC === 'false' ? undefined : ambiente.EMAIL_ORGANIZACAO,
                 subject: `${ambiente.NOME}`,
-                html: admitido ? EmailNotificarAdmissao(ambiente, enunciados, nome) : rejeitado ? EmailNotificarRejeicao(ambiente, enunciados_reprovados, nome) : EmailNotificarDivergencia(ambiente, enunciados, nome),
+                html: admitidoExatamenteUmaComissao ? EmailNotificarAdmissao(ambiente, enunciados, nome) : rejeitado ? EmailNotificarRejeicao(ambiente, enunciados_reprovados, nome) : EmailNotificarDivergencia(ambiente, enunciados, nome),
                 attachments: anexos
             });
         }catch(err){
