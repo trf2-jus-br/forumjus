@@ -2,6 +2,7 @@ import createHttpError from "http-errors";
 import PermissaoDAO from "./permissao";
 import CalendarioDAO from "./calendario";
 import { EstadoVotacao, EstadoJornada } from "../utils/enums";
+import PresencaDAO from "./presenca";
 
 class VotacaoDAO {
 
@@ -148,7 +149,11 @@ class VotacaoDAO {
         // Define qual tela deve ser apresentada: Bem-Vindo, Encerramento ou Votação.
         const estadoJornada = await VotacaoDAO.estadoJornada(db, votacao_geral != null, comissao);
             
+        // informa se o usuário registrou a presença
+        const presencaRegistrada = await PresencaDAO.usuarioPresente(db, enunciados[0].votacao, usuario);
+
         return {
+            presencaRegistrada,
             aprovado: enunciados[0].aprovado,
             quorum: enunciados[0].quorum,
             votacao: enunciados[0].votacao,

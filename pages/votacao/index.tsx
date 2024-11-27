@@ -5,7 +5,7 @@ import Layout from "../../components/layout";
 import { useEffect, useState } from "react";
 import { usarContexto } from "../../contexto";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleCheck, faCircleXmark, faClock, faStopwatch, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCircleCheck, faCircleExclamation, faCircleXmark, faClock, faStopwatch, faUser } from "@fortawesome/free-solid-svg-icons";
 import comRestricao from '../../utils/com-restricao';
 import { retornoAPI } from '../../utils/api-retorno';
 import Abertura from './abertura';
@@ -132,6 +132,23 @@ function Votacao({telao}: Props){
         </Layout>
     }
     
+
+    if(!telao && votacao?.presencaRegistrada === false){
+        return <Layout fluid cabecalho={<Cabecalho/>}>
+            <Modal show={true} centered>
+                <Modal.Body style={{ 
+                    justifyContent: "center",
+                    display: "flex",
+                    flexDirection: "column",
+                    textAlign: "center",
+                }}>
+                    <FontAwesomeIcon fontSize={60} className="m-1" color={'#900'} icon={faCircleExclamation}/>
+                    <div style={{fontSize: 20, marginTop: 10, marginBottom: 5, fontWeight: 600}}>Para votar</div>
+                    <div>Registre sua presença</div>                
+                </Modal.Body>
+            </Modal>
+        </Layout>
+    }
 
     return <Layout fluid cabecalho={<Cabecalho/>}>
         {votacao === null && <Abertura />}

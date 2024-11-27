@@ -186,6 +186,7 @@ interface Proponente {
     texto : string;
     quorum: number;
     comissao : string;
+    presencaRegistrada: boolean;
     votos : {
         id: number,
         nome: string, 

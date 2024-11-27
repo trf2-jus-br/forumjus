@@ -1,3 +1,4 @@
+import PresencaDAO from "../../../db/presenca";
 import VotacaoDAO from "../../../db/votacao";
 import { apiHandler, apiNegadaAo, apiPermitidaAo } from "../../../utils/apis";
 
@@ -9,6 +10,13 @@ async function listar({usuario, db}: API){
 
 async function votar({req, usuario, db}: API){
     const {favoravel, votacao} = req.body;
+
+    // informa se o usuário registrou a presença
+    const presencaRegistrada = await PresencaDAO.usuarioPresente(db, votacao, usuario);
+
+    if(!presencaRegistrada){
+        throw "Para votar, registre sua presença";
+    }
 
     return await VotacaoDAO.votar(db, usuario, votacao, favoravel)
 }
