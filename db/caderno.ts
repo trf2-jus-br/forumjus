@@ -88,11 +88,11 @@ class CadernoDAO {
             INNER JOIN attendee ON attendee.attendee_id = statement.attendee_id
             INNER JOIN occupation ON occupation.occupation_id = attendee.occupation_id
             INNER JOIN votacao_detalhada_2 ON votacao_detalhada_2.enunciado = statement_id
-            WHERE evento = 'VOTACAO POR COMISSAO' AND aprovado AND statement.committee_id = ?;`
+            WHERE evento = 'VOTACAO POR COMISSAO' AND aprovado AND  (statement.committee_id = ? OR isnull(?));`
 
         const SQL = nivel == CADERNO.PRIMEIRA_VOTACAO ? SQL_ESPECIFICO : SQL_GERAL;
 
-        const params = comissao ? [comissao] : [];
+        const params = comissao ? [comissao, comissao] : [];
 
         const [resultado] = await db.query(SQL, params);
 
