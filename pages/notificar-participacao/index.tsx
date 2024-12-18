@@ -22,6 +22,13 @@ enum CADERNO{
     SEGUNDA_VOTACAO = 2,
 }
 
+function url(img){
+    if(!img)
+        throw "Capas não foram configuradas corretamente";
+
+    return {url: `${window.location.origin}/api/uploads/${img}`};
+}
+
 function NotificarParticipacao(){
     const [proponentes, setProponentes] = useState<Proponente[][]>([]);
 
@@ -52,7 +59,24 @@ function NotificarParticipacao(){
             if(inscricoes.length === 0)
                 throw 'Caderno indisponível';
             
-            const blob = await gerarCaderno(ambiente,inscricoes, comites, 'Caderno Preliminar', true, false, true) as Blob;
+            const comite = comites.find(c => c.committee_id === comissao);
+            const capa = url(comite.capa_proposta_admitida || ambiente.CAPA_GENERICA_CADERNO);
+
+            const blob = await gerarCaderno({
+                ambiente,
+                inscricoes,
+                comites, 
+                titulo: 'Caderno Preliminar', 
+                preliminar: true, 
+                exibir: {
+                    justificativas: true,
+                    cargos: false,
+                    datas: false,
+                    nomes: false
+                },
+                gerarBlob: true,
+                capa
+            }) as Blob;
 
             const fileCaderno = new File([blob], "caderno-1.pdf", {type: "application/pdf" });
 

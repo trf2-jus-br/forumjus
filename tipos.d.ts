@@ -34,6 +34,7 @@ interface Ambiente {
     REGULAMENTO_CAPITULOS_DESTACADOS: string;
     DATA_LIMITE_ESCOLHA_COMISSAO: string;
     CRONOGRAMA_JSON : string;
+    CAPA_GENERICA_CADERNO: string;
 }
 
 interface UsuarioSiga {

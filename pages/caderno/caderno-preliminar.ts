@@ -6,21 +6,26 @@ import moment from "moment";
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 
+interface Config {
+    ambiente: Ambiente, 
+    inscricoes : Inscricao[], 
+    comites: Comite[], 
+    titulo: string, 
+    preliminar: boolean, 
+    exibir : {
+        justificativas: boolean,
+        nomes: boolean,
+        cargos: boolean,
+        datas: boolean,
+    },
+    gerarBlob?: boolean,
+    capa: {url: string}
+}
 
-function gerarCaderno(ambiente: Ambiente, inscricoes : Inscricao[], comites: Comite[], titulo: string, preliminar: boolean, ocultarJustificativa: boolean, gerarBlob?: boolean){
-    function url(img){
-        return {url: `${window.location.origin}/api/uploads/${img}`};
-    }
-
+function gerarCaderno({ambiente, inscricoes, comites, titulo, preliminar, exibir, gerarBlob, capa, } : Config){
     function obterComite(id : number){
         return comites.find(c => c.committee_id === id);
     }
-
-    const comite = obterComite(inscricoes[0].committee_id);
-
-    if(!comite?.capa_proposta_recebida || !comite?.capa_proposta_plenaria){
-        throw "Capas não foram configuradas corretamente";
-    }    
 
     const pdf = pdfMake.createPdf({
         pageMargins: [30, 30, 30, 30],
@@ -30,7 +35,7 @@ function gerarCaderno(ambiente: Ambiente, inscricoes : Inscricao[], comites: Com
         }),
         content: [
             {
-                image: preliminar ? 'capa_proposta_recebida' : 'capa_proposta_plenaria',
+                image: 'capa',
                 width: 595,
                 margin: -30
             },
@@ -71,7 +76,7 @@ function gerarCaderno(ambiente: Ambiente, inscricoes : Inscricao[], comites: Com
                 } ],
             ]
 
-            if(!ocultarJustificativa){
+            if(exibir.justificativas){
                 body.push([  {
                     text: "Justificativa",
                     fontSize: 11,
@@ -83,7 +88,21 @@ function gerarCaderno(ambiente: Ambiente, inscricoes : Inscricao[], comites: Com
                 body.push([ {text: e.statement_justification.replaceAll('\n\n\n', '\n').replaceAll('\n\n','\n'), marginLeft: 20, marginBottom: 10, preserveLeadingSpaces: true, alignment: "justify", lineHeight: 1.25} ],)
             }
 
-            body.push([ { text: `${moment(e.attendee_timestamp).format("DD/MM/YYYY")}`, alignment: "right", marginTop: 1, fontSize:10} ])
+
+            if(exibir.nomes){
+                body.push([ { text: e.attendee_name, alignment: "right", bold:true, marginTop: 1}  ])
+            }
+               
+            if(exibir.cargos){
+                if(e.occupation_name !== "Outros")
+                    body.push([ { text: e.occupation_name, alignment: "right", marginTop: 1}  ],)
+
+                if(e.attendee_affiliation?.trim()?.length)
+                    body.push([ { text: e.attendee_affiliation, alignment: "right", marginTop: 1}  ]);
+            }
+            
+            if(exibir.datas)
+                body.push([ { text: `${moment(e.attendee_timestamp).format("DD/MM/YYYY")}`, alignment: "right", marginTop: 1, fontSize:10} ])
 
 
 
@@ -103,10 +122,7 @@ function gerarCaderno(ambiente: Ambiente, inscricoes : Inscricao[], comites: Com
             })
         ],
         images: {
-            capa_proposta_recebida: url(comite.capa_proposta_recebida),
-            capa_proposta_admitida: url(comite.capa_proposta_admitida || comite.capa_proposta_recebida),
-            capa_proposta_comissao: url(comite.capa_proposta_comissao || comite.capa_proposta_recebida),
-            capa_proposta_plenaria: url(comite.capa_proposta_plenaria),
+            capa
         }
     })
 

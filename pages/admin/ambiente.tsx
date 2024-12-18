@@ -17,6 +17,7 @@ function Comissao (props: Props){
         linhas={[
             {coluna: "valor", identificador_nome: "nome", identificador_valor: "BANNER", tipo: "Arquivo"},
             {coluna: "valor", identificador_nome: "nome", identificador_valor: "REGULAMENTO", tipo: "Arquivo"},
+            {coluna: "valor", identificador_nome: "nome", identificador_valor: "CAPA_GENERICA_CADERNO", tipo: "Arquivo"},
             {coluna: "valor", identificador_nome: "nome", identificador_valor: "CRONOGRAMA_JSON", tipo: "TextArea"},
         ]}
         api="/api/crud?tabela=configuracao&nome_id=id"

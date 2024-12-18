@@ -8,6 +8,7 @@ import Tooltip from '../../components/tooltip';
 import gerarCaderno from './caderno-preliminar';
 import comRestricao from '../../utils/com-restricao';
 import { retornoAPI } from '../../utils/api-retorno';
+import CheckBox from './checkbox';
 
 enum CADERNO{
     TODOS = -1,
@@ -16,11 +17,26 @@ enum CADERNO{
     SEGUNDA_VOTACAO = 2,
 }
 
+
+function url(img){
+    if(!img)
+        throw "Capas não foram configuradas corretamente";
+
+    return {url: `${window.location.origin}/api/uploads/${img}`};
+}
+
 function Caderno (props){
     const [comites, setComites] = useState<Comite[]>([]);
-    const [ocultarJustificativas, setOcultarJustificativas] = useState<boolean>(false);
+    const [exibirJustificativas, setOcultarJustificativas] = useState<boolean>(false);
+    const [exibirNomes, setOcultarNome] = useState<boolean>(false);
+    const [exibirDatas, setOcultarData] = useState<boolean>(false);
+    const [exibirCargos, setOcultarCargo] = useState<boolean>(false);
 
     const { api, exibirNotificacao, ambiente, usuario } = usarContexto();
+
+    function obterComite(committee_id: number | null){
+        return comites.find(c => c.committee_id === committee_id);
+    }
 
     async function carregarComissoes(){
         api.get<Comite[]>("/api/comite")
@@ -58,14 +74,30 @@ function Caderno (props){
     }, [])
 
 
-    async function abrirAprovadosVotacaoGeral(comissao: number){
+    async function abrirAprovadosPlenaria(comissao: number){
         try{
             const inscricoes = await carregarInscricoes(CADERNO.SEGUNDA_VOTACAO, comissao);
            
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
-            gerarCaderno(ambiente,inscricoes, comites, 'Caderno da Jornada', false, ocultarJustificativas)
+            const comite = obterComite(comissao);
+            const capa = url(comite?.capa_proposta_plenaria || ambiente.CAPA_GENERICA_CADERNO);
+
+            gerarCaderno({
+                ambiente,
+                inscricoes, 
+                comites, 
+                titulo: 'Caderno da Jornada', 
+                preliminar: false, 
+                exibir : {
+                    cargos: exibirCargos,
+                    datas: exibirDatas,
+                    justificativas: exibirJustificativas,
+                    nomes: exibirNomes
+                },
+                capa
+            });
         }catch(err){
             exibirNotificacao({
                 titulo: "Não foi possível abrir o caderno.",
@@ -83,7 +115,24 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
-            gerarCaderno(ambiente,inscricoes, comites, 'Caderno de Propostas da Jornada', true, ocultarJustificativas)
+
+            const comite = obterComite(comissao);
+            const capa = url(comite?.capa_proposta_recebida || ambiente.CAPA_GENERICA_CADERNO);
+
+            gerarCaderno({
+                ambiente,
+                inscricoes, 
+                comites, 
+                titulo: 'Caderno de Propostas da Jornada',
+                preliminar: true, 
+                exibir : {
+                    cargos: exibirCargos,
+                    datas: exibirDatas,
+                    justificativas: exibirJustificativas,
+                    nomes: exibirNomes
+                },
+                capa
+            });
         }catch(err){
             exibirNotificacao({
                 titulo: "Não foi possível abrir o caderno.",
@@ -100,7 +149,23 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
             
-            gerarCaderno(ambiente,inscricoes, comites, 'Caderno Preliminar', true, ocultarJustificativas)
+            const comite = obterComite(comissao);
+            const capa = url(comite?.capa_proposta_admitida || ambiente.CAPA_GENERICA_CADERNO);
+
+            gerarCaderno({
+                ambiente,
+                inscricoes, 
+                comites, 
+                titulo: 'Caderno Preliminar', 
+                preliminar: true, 
+                exibir : {
+                    cargos: exibirCargos,
+                    datas: exibirDatas,
+                    justificativas: exibirJustificativas,
+                    nomes: exibirNomes
+                },
+                capa,
+            });
         }catch(err){
             exibirNotificacao({
                 titulo: "Não foi possível abrir o caderno.",
@@ -117,7 +182,23 @@ function Caderno (props){
             if(inscricoes.length === 0)
                 return exibirNotificacao({titulo: 'Caderno Jornada', texto: 'Caderno indisponível', tipo: 'ERRO'});
 
-            gerarCaderno(ambiente,inscricoes, comites, 'Caderno da Jornada', true, ocultarJustificativas)
+            const comite = obterComite(comissao);
+            const capa = url(comite?.capa_proposta_comissao || ambiente.CAPA_GENERICA_CADERNO);
+            
+            gerarCaderno({
+                ambiente,
+                inscricoes, 
+                comites, 
+                titulo: 'Caderno da Jornada',
+                preliminar: true, 
+                exibir : {
+                    cargos: exibirCargos,
+                    datas: exibirDatas,
+                    justificativas: exibirJustificativas,
+                    nomes: exibirNomes
+                },
+                capa
+            })
         }catch(err){
             exibirNotificacao({
                 titulo: "Não foi possível abrir o caderno.",
@@ -145,7 +226,7 @@ function Caderno (props){
         
         <div className='d-flex justify-content-center' >
         <Tooltip mensagem='aprovados na votação geral'>
-                <Button onClick={abrirAprovadosVotacaoGeral}>
+                <Button onClick={abrirAprovadosPlenaria}>
                     <FontAwesomeIcon icon={faFileCircleCheck} />
                     <span style={{marginLeft: 10}}>Caderno da Jornada</span>
                 </Button>
@@ -157,12 +238,13 @@ function Caderno (props){
                 <tr>
                     <th>Comissão</th>
                     <th>
-            <label className='d-flex flex-row justify-content-center'>
-                <Form.Check style={{paddingRight: 10}}>
-                    <Form.Check.Input type="checkbox" checked={ocultarJustificativas} onChange={(v) => setOcultarJustificativas(v.target.checked)}/>
-                </Form.Check>
-                Ocultar justificativas
-            </label></th>
+                        <div className='d-flex w-100' style={{gap: 10}}>
+                            <CheckBox titulo='Justificativas' valor={exibirJustificativas} onChange={setOcultarJustificativas} />
+                            <CheckBox titulo='Nomes' valor={exibirNomes} onChange={setOcultarNome} />
+                            <CheckBox titulo='Cargos' valor={exibirCargos} onChange={setOcultarCargo} />
+                            <CheckBox titulo='Datas' valor={exibirDatas} onChange={setOcultarData} />
+                        </div>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -205,7 +287,7 @@ function Caderno (props){
                                 style={{cursor: 'pointer'}} 
                                 color='#990' 
                                 icon={faFileCircleCheck} 
-                                onClick={() => abrirAprovadosVotacaoGeral(c.committee_id)}
+                                onClick={() => abrirAprovadosPlenaria(c.committee_id)}
                             />
                         </Tooltip>
                     </td>
