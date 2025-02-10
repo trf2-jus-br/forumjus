@@ -11,7 +11,7 @@ export default function Home() {
       <div className="px-4 py-5 my-5 text-center">
         <div className="col-lg-6 mx-auto">
         <img className='w-100' src={`/api/uploads/${ambiente.BANNER}`} />
-          <p className="lead mb-4 mt-4">Teste Sistema desenvolvido para receber inscrição de proposta(s) de enunciado(s) para a {ambiente.NOME}</p>
+          <p className="lead mb-4 mt-4">Sistema desenvolvido para receber inscrição de proposta(s) de enunciado(s) para a {ambiente.NOME}</p>
 
           <p className="lead mb-4 mt-4">Para mais informações, visite o <a href={ambiente.PORTAL_LINK} target='_blank' rel="noopener">{ambiente.PORTAL}</a> e leia o <a href="#regimento" onClick={()=> regimentoRef.current.show()}>Regimento da Jornada</a>.</p>
           <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
