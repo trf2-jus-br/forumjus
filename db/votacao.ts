@@ -266,11 +266,16 @@ class VotacaoDAO {
                             SET fim = now(), status = ${EstadoVotacao.FINALIZADO}
                             WHERE T.max_id = votacao.id;`
 
+                            
         const SQL_POR_COMISSAO = 
             `UPDATE votacao
-                INNER JOIN statement on votacao.enunciado = statement_id
+                JOIN (
+                    SELECT max(id) as max_id FROM votacao 
+                    JOIN statement ON statement_id = votacao.enunciado
+                    WHERE committee_id = ?
+                ) as T
                 SET votacao.fim = now(), status = ${EstadoVotacao.FINALIZADO}
-                WHERE committee_id = ?;`
+                WHERE id = T.max_id;`
 
         const SQL = por_comissao ? SQL_POR_COMISSAO : SQL_GERAL;
         const params = por_comissao ? permissoes.administrar_comissoes : [];

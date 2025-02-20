@@ -10,3 +10,9 @@ export enum EstadoJornada {
     VOTACAO = 2,
     ENCERRAMENTO = 3
 }
+
+export enum TipoVoto {
+    CONTRA = 0,
+    FAVOR = 1,
+    ABSTENCAO = 2,
+}

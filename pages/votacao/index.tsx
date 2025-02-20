@@ -11,9 +11,8 @@ import { retornoAPI } from '../../utils/api-retorno';
 import Abertura from './abertura';
 import Cabecalho from './cabecalho';
 import Encerramento from './encerramento';
-import Carregamento from './carregamento';
 
-import {EstadoJornada, EstadoVotacao} from '../../utils/enums';
+import {EstadoJornada, EstadoVotacao, TipoVoto} from '../../utils/enums';
 import Grafico from './grafico';
 
 interface Props {
@@ -34,7 +33,7 @@ function formatarData(tempoEmSegundos: number){
 
 function Votacao({telao}: Props){
     const [votacao, setVotacao] = useState<Votacao>(undefined);
-    const [votoUsuario, setVotoUsuario] = useState(null);
+    const [votoUsuario, setVotoUsuario] = useState<TipoVoto>(null);
     const [processandoVoto, setProcessandoVoto] = useState(false);
     const [visibilidade, setVisibilidade] = useState<Visibilidade>('oculto');
     const [obrigado, setExibirEncerramento] = useState(false);
@@ -86,7 +85,7 @@ function Votacao({telao}: Props){
         }
     }
 
-    async function votar(favoravel: boolean){
+    async function votar(favoravel: TipoVoto){
         // impede que o usuário clique 10 vezes no botão.
         if(processandoVoto || votoUsuario !== null)
             return;
@@ -98,7 +97,7 @@ function Votacao({telao}: Props){
                 votacao: votacao.votacao,
                 favoravel,
             })
-            setVotoUsuario(favoravel ? 1 : 0);
+            setVotoUsuario(favoravel);
         }catch(err){
             exibirNotificacao({
                 titulo: "Não foi possível processar o seu pedido.",
@@ -118,8 +117,9 @@ function Votacao({telao}: Props){
         }
     }, [votacao, visibilidade])
 
-    const votos_contrarios = votacao?.votos?.filter(({voto}) => voto === 0)?.length || 0;
-    const votos_favoraveis = votacao?.votos?.filter(({voto}) => voto === 1)?.length || 0;
+    const votos_contrarios = votacao?.votos?.filter(({voto}) => voto === TipoVoto.CONTRA)?.length || 0;
+    const votos_favoraveis = votacao?.votos?.filter(({voto}) => voto === TipoVoto.FAVOR)?.length || 0;
+    const abstencoes_explicitas = votacao?.votos?.filter(({voto}) => voto === TipoVoto.ABSTENCAO)?.length || 0;
 
     const estadoVotacao = votacao?.estadoVotacao;
     const barraCronometro = votacao?.inicio_defesa >= 0 && votacao?.cronometro !== 0 ?  votacao.inicio_defesa / votacao.cronometro : 0;
@@ -168,7 +168,7 @@ function Votacao({telao}: Props){
                         </div>
                         :
                         <>
-                            {telao && <span style={{fontSize: 18}} className="p-2">{ votos_contrarios + votos_favoraveis } / {votacao.quorum}</span>}
+                            {telao && <span style={{fontSize: 18}} className="p-2">{ votos_contrarios + votos_favoraveis + abstencoes_explicitas } / {votacao.quorum}</span>}
                         </>
                     }
                 </div>
@@ -261,23 +261,15 @@ function Votacao({telao}: Props){
             
             {
                 !telao && (
-                    <div className="d-flex w-100 justify-content-between" style={{position:'fixed', bottom:'0', padding: '1rem'}}>
-                        <Button 
-                            className={estadoVotacao === EstadoVotacao.VOTACAO ? 'opacity-100' : 'opacity-0'} 
-                            variant="danger" 
-                            style={{width: 'calc(50% - 0.5rem)'}} 
-                            onClick={()=> votar(false)}
-                        >
-                            Contra
-                        </Button>
-                        <Button 
-                            className={estadoVotacao === EstadoVotacao.VOTACAO ? 'opacity-100' : 'opacity-0'} 
-                            variant="success" 
-                            style={{width: 'calc(50% - 0.5rem)'}} 
-                            onClick={()=> votar(true)}
-                        >
-                            A favor
-                        </Button>
+                    <div className="d-flex w-100 justify-content-between flex-wrap" style={{
+                        position:'fixed', 
+                        bottom:'0', 
+                        padding: '1rem',
+                        opacity: estadoVotacao === EstadoVotacao.VOTACAO ? 100 : 0
+                    }}>
+                        <Button variant="secondary" className='w-100 mb-1' onClick={()=> votar(TipoVoto.ABSTENCAO)}>Abstenção</Button>
+                        <Button variant="danger" style={{width: 'calc(50% - 0.5rem)'}} onClick={()=> votar(TipoVoto.CONTRA)}>Contra</Button>
+                        <Button variant="success" style={{width: 'calc(50% - 0.5rem)'}} onClick={()=> votar(TipoVoto.FAVOR)}>A favor</Button>
                     </div>
                 )
             }

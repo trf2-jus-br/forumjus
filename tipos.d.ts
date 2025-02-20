@@ -1,5 +1,6 @@
 type EstadoVotacao = import('./utils/enums').EstadoVotacao;
 type EstadoJornada = import('./utils/enums').EstadoJornada;
+type TipoVoto = import('./utils/enums').TipoVoto;
 
 type AxiosInstance = import('axios').AxiosInstance;
 type PoolConnection = import('mysql2/promise').PoolConnection & { ambiente?: Ambiente };
@@ -191,7 +192,7 @@ interface Proponente {
     votos : {
         id: number,
         nome: string, 
-        voto: 0 | 1 | null
+        voto: TipoVoto
     }[];
 }
 
