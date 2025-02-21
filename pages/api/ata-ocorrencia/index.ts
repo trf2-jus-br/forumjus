@@ -4,7 +4,7 @@ import { apiHandler, apiPermitidaAo } from "../../../utils/apis";
 async function inicio_fim_trabalhos(db: PoolConnection, comite: number | string) : Promise<{inicio: string, fim: string}>{
     const SQL_GERAL = `SELECT 
                     time(min(inicio)) as inicio, 
-                    time(min(fim)) as fim 
+                    time(max(fim)) as fim 
                 FROM 
                     votacao_detalhada_2 
                 WHERE evento = 'VOTAÇÃO GERAL';`
@@ -12,7 +12,7 @@ async function inicio_fim_trabalhos(db: PoolConnection, comite: number | string)
 
         const SQL_POR_COMISSAO = `SELECT 
                                     time(min(inicio)) as inicio, 
-                                    time(min(fim)) as fim 
+                                    time(max(fim)) as fim 
                                 FROM 
                                     votacao_detalhada_2 
                                 WHERE evento = 'VOTAÇÃO POR COMISSÃO' AND committee_id = ?;`
