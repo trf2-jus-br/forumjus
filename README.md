@@ -39,3 +39,14 @@ Procedimento para implantação:
 
   - Opcionalmente, restringir os emails que são aceitos como administrador:
     - ADMIN_EMAIL_REGEX=@empresa.com.br$ 
+
+
+
+- Links úteis:
+-- /assessoria/login
+
+
+
+
+
+- Configurações 

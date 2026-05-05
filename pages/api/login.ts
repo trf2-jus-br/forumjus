@@ -93,7 +93,7 @@ async function logarSiga(db: PoolConnection, auth: string) : Promise<Usuario>{
         const LOTACOES_PERMITIDAS = ['COSADM', 'SESAMO', 'SESSPJ', 'COSIGP'];
         const EM_LOTACAO_PERMITIDA = LOTACOES_PERMITIDAS.indexOf(data.usuario.lotaTitularSigla) !== -1;
         const SUPER_ADM = EM_LOTACAO_PERMITIDA && process.env.SIMULAR_ASSESSORIA !== "true";
-        console.log(data.usuario);
+        
         let funcao : FuncaoMembro = SUPER_ADM ? "PROGRAMADOR" : "ASSESSORIA";
         const recursos = await RecursoDAO.listar(db, funcao);
 
