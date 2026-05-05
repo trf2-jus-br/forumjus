@@ -89,10 +89,12 @@ async function logarSiga(db: PoolConnection, auth: string) : Promise<Usuario>{
             throw createHttpError(403, "Usuário sem permissão para acessar o sistema. Verifique a propriedade 'FORUMJUS' no SIGA GI.");
 
         // Ao logar pelo siga, o usuário terá a permissão 'estatística' e
-        // caso seja da COSADM terá acesso a 'CRUD'
-        const COSADM = data.usuario.lotaTitularSigla === "COSADM" && process.env.SIMULAR_ASSESSORIA !== "true";
-
-        let funcao : FuncaoMembro = COSADM ? "PROGRAMADOR" : "ASSESSORIA";
+        // caso seja da SUPER_ADM terá acesso a 'CRUD'
+        const LOTACOES_PERMITIDAS = ['COSADM', 'SESAMO', 'SESSPJ', 'COSIGP'];
+        const EM_LOTACAO_PERMITIDA = LOTACOES_PERMITIDAS.indexOf(data.usuario.lotaTitularSigla) !== -1;
+        const SUPER_ADM = EM_LOTACAO_PERMITIDA && process.env.SIMULAR_ASSESSORIA !== "true";
+        console.log(data.usuario);
+        let funcao : FuncaoMembro = SUPER_ADM ? "PROGRAMADOR" : "ASSESSORIA";
         const recursos = await RecursoDAO.listar(db, funcao);
 
         return {
@@ -104,7 +106,7 @@ async function logarSiga(db: PoolConnection, auth: string) : Promise<Usuario>{
             permissoes : {
                 administrar_comissoes: [],
                 votar_comissoes: [],
-                crud: COSADM,
+                crud: SUPER_ADM,
                 estatistica: true,
             }
         };

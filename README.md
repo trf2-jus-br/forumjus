@@ -7,7 +7,8 @@ Funcionalidades:
 
 Procedimento para implantação:
 
-- Disponibilizar um banco de dados MySQL e executar o script migration-001.sql.
+- Disponibilizar um banco de dados MySQL.
+- Criar os schemas: ver arquivo migracoes/esquemas.ts
 
 - Configurar as propriedades de ambiente:
 
