@@ -1,7 +1,7 @@
 import type { NextApiRequest } from 'next';
 import type { QueryRunner } from 'typeorm';
 
-type Esquema = "trfForumJus3" | "trfForumJus2" | "trfForumJus";
+type Esquema = "trfForumJus4" | "trfForumJus3" | "trfForumJus2" | "trfForumJus";
 
 interface Jornada {
     nome: string;
@@ -37,6 +37,13 @@ export async function carregarEsquema(req: NextApiRequest) : Promise<string> {
 
 export async function carregarJornadas() : Promise<Jornada[]>{
     return [
+         { 
+            nome: 'Jornada 4 - Vitaliciamento', 
+            esquema: 'trfForumJus4',
+            enderecos: [
+                'localhost:8081', 'jornada3-hmg.trf2.jus.br', 'vitaliciamento.trf2.jus.br'
+            ]
+        },
         { 
             nome: 'Jornada 3 - FOJURJ', 
             esquema: 'trfForumJus3',
