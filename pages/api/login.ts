@@ -85,8 +85,8 @@ async function logarSiga(db: PoolConnection, auth: string) : Promise<Usuario>{
         ); 
         
         // verifica se o usuário tem permissão.
-        if(permissao?.FORUMJUS !== "Pode")
-            throw createHttpError(403, "Usuário sem permissão para acessar o sistema. Verifique a propriedade 'FORUMJUS' no SIGA GI.");
+        //if(permissao?.FORUMJUS !== "Pode")
+        //    throw createHttpError(403, "Usuário sem permissão para acessar o sistema. Verifique a propriedade 'FORUMJUS' no SIGA GI.");
 
         // Ao logar pelo siga, o usuário terá a permissão 'estatística' e
         // caso seja da SUPER_ADM terá acesso a 'CRUD'
