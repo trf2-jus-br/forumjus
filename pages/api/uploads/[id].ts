@@ -7,6 +7,11 @@ async function download({res, req, db} : API){
 
     const arquivo = await ArquivoDAO.listar(db, id as string);
 
+    if (!arquivo) {
+        console.log(`Arquivo ${id} não encontrado no banco de dados.`);
+        return; 
+    }
+
     const stat = fs.statSync(arquivo.caminho)
 
     res.writeHead(200, {
