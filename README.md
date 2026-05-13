@@ -148,14 +148,14 @@ https://www.4devs.com.br/gerador_de_cpf - gera cpf para informar na simulação 
 
 ### Para criar novo Migration (arquivo com script de BD para preparar BD para uso do app)
 - Cria novo arquivo de Migration
-  - SE CONTAINR JÁ ESTIVER RODANDO[^1], EXECUTAR EM OUTRO TERMINAL: docker compose exec app npm run migration:create --migration 
-  - SE CONTAINER ESTIVER PARADO: docker compose run --rm app npm run migration:create --migration
+  - Se container já estiver rodando[^1], executar em outro terminal: `docker compose exec app npm run migration:create --migration`
+  - Se container estiver parado: `docker compose run --rm app npm run migration:create --migration`
 - Preencher arquivo criado com o script necessário
 - Executar a nova migration criada (pois a configuração, em index.ts, migrationsRun:false, TypeORM não fará nada com as suas migrations automaticamente ao iniciar a aplicação)
-  - SE CONTAINR JÁ ESTIVER RODANDO[^1], EXECUTAR EM OUTRO TERMINAL: docker compose exec app npm run migrate-env  
-  - SE CONTAINER ESTIVER PARADO: docker compose run --rm app npm run migrate-env 
+  - Com o container rodando (para iniciar o container executar `docker compose up`[^1]), e executar em outro terminal `docker compose exec app npm run migrate-env`
+  
 
-[^1]: PARA INICIAR/RODAR O CONTAINER docker compose up.
+[^1]: PARA INICIAR/RODAR O CONTAINER `docker compose up`.
 
 ### Comandos mais utilizados
 ```
