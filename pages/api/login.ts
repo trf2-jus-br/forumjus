@@ -84,15 +84,29 @@ async function logarSiga(db: PoolConnection, auth: string) : Promise<Usuario>{
             acesso['soap:Envelope']['soap:Body'][0]['ns2:acessoResponse'][0]['return'][0]
         ); 
         
-        // verifica se o usuário tem permissão.
+        // ******************************* Importante: ************************************************
+        // como o acesso à funcionalidade de permissão no SIGA-GI não está mais permitida para a COSADM, 
+        // a permissão de acesso ao sistema está sendo controlada através da lotação do usuário.
+        // ********************************************************************************************
+
+        // verifica se o usuário tem permissão.        
         //if(permissao?.FORUMJUS !== "Pode")
         //    throw createHttpError(403, "Usuário sem permissão para acessar o sistema. Verifique a propriedade 'FORUMJUS' no SIGA GI.");
 
-        // Ao logar pelo siga, o usuário terá a permissão 'estatística' e
-        // caso seja da SUPER_ADM terá acesso a 'CRUD'
-        const LOTACOES_PERMITIDAS = ['COSADM', 'SESAMO', 'SESSPJ', 'COSIGP'];
-        const EM_LOTACAO_PERMITIDA = LOTACOES_PERMITIDAS.indexOf(data.usuario.lotaTitularSigla) !== -1;
-        const SUPER_ADM = EM_LOTACAO_PERMITIDA && process.env.SIMULAR_ASSESSORIA !== "true";
+        // ???? Ao logar pelo siga, o usuário terá a permissão 'estatística' ???? (confirmar)
+
+        // caso seja da SUPER_ADM terá acesso a 'CRUD', que permite configurar o sistema, até o momento somente servidores da STI
+        const LOTACOES_PERMITIDAS_SUPER_ADM = ['COSADM', 'SESAMO', 'SESSPJ', 'COSIGP']; 
+        const EM_LOTACAO_PERMITIDA_SUPER_ADM = LOTACOES_PERMITIDAS_SUPER_ADM.indexOf(data.usuario.lotaTitularSigla) !== -1;
+        const SUPER_ADM = EM_LOTACAO_PERMITIDA_SUPER_ADM && process.env.SIMULAR_ASSESSORIA !== "true";
+
+        // incluir lotações dos servidores com acesso de administrador geral, 
+        // servidores da equipe que utilizará o sistema como assessoria, ou seja, com acesso a todas as comissões, mas sem acesso a 'CRUD'
+        const LOTACOES_PERMITIDAS_ADM = []; 
+        const EM_LOTACAO_PERMITIDA_ADM = LOTACOES_PERMITIDAS_ADM.indexOf(data.usuario.lotaTitularSigla) !== -1;
+
+        if(!EM_LOTACAO_PERMITIDA_ADM && !SUPER_ADM)
+            throw createHttpError(403, "Usuário sem permissão para acessar o sistema.");
         
         let funcao : FuncaoMembro = SUPER_ADM ? "PROGRAMADOR" : "ASSESSORIA";
         const recursos = await RecursoDAO.listar(db, funcao);
