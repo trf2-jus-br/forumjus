@@ -2,6 +2,17 @@
 
 Fórumjus é um sistema desenvolvido para auxiliar em Fóruns e Jornadas no âmbito do Tribunal Regional Federal da 2&ordf; Região.
 
+# Pendências
+- [x] Procedimento criação ambiente local Desenvolvimento
+- [x] Testar em PC zerado o procedimento criação ambiente local Desenvolvimento
+- [ ] Descrever as demais funcionalides
+- [ ] Finalizar preparação do sistema para uso em Evento / ver questões como receber acesso ao BD / receber acesso para atualização em homologação / criação da url a ser utilizada pelo evento, o schema/database a ser criado para ser utilizado pelo evento, e sua configuração. Muito provavelmente juntar na seção preparação do sistema para uso em Evento
+- [ ] Detalhar com informações mais práticas o Procedimento para implantação (utilizar o pdf enviado pelo Walace)
+- [ ] Melhor descrição das tarefas executadas e adaptações feitas no fluxo padrão da Jornada da Presidência, para utilização no evento da EMARF
+- [ ] Descrição sucinta das tarefas executadas no apoio aos eventos Jornada na Presidência, que em tese é o conteúdo da seção "Utilização do Sistema"
+- [ ] Incluir no Procedimento ciração ambiente local Desenvolvimento, descrição no terminal quando o bd e o app foram bem inicializados e estão disponíveis -- exemplo informação esperada no console quando o banco foi iniciado e estiver disponível
+db-1  | 2026-05-12T21:04:21.017954Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.4.2'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL. 
+Para edição do Readme.me utilizar instruções de https://docs.github.com/pt/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax 
 
 - [Fórumjus](#fórumjus)
   - [Funcionalidades](#funcionalidades)
@@ -25,14 +36,21 @@ Fórumjus é um sistema desenvolvido para auxiliar em Fóruns e Jornadas no âmb
     - [No formato do Vitaliciamento da EMARF](#no-formato-do-vitaliciamento-da-emarf)
     - [No formato das Jornadas da Presidência](#no-formato-das-jornadas-da-presidência)
 
-
 ## Funcionalidades
 - Cadastro de participantes e seus enunciados, protegido por reCaptcha.
 
-## Procedimento para implantação
+## Preparação do sistema para uso em Evento
+- Ver [Procedimento para implantação](#procedimento-para-implantação)
+- Fazer as configurações referentes ao Evento
+  - Logar como Programador, ver em [Perfis de Utilização](#perfis-de-utilização)
+  - No item de menu Administração, acessar "/ambiente"
+  - Definir
+    - nome do evento
+    - logo do evento   
+  - 
 
+## Procedimento para implantação
 - Disponibilizar um banco de dados MySQL.
-- Criar os schemas: ver arquivo migracoes/esquemas.ts
 
 - Configurar as propriedades de ambiente:
 
@@ -74,12 +92,19 @@ Fórumjus é um sistema desenvolvido para auxiliar em Fóruns e Jornadas no âmb
 - Instalar Dependências
 - Clonar Projeto https://github.com/trf2-jus-br/forumjus
 - Abrir projeto no VSC
+- Copiar arquivo exemplo.env e renomear o arquivo copiado para .env
 - Iniciar MySQL
   - No terminal do VS Code 
     - `docker compose up db`
 - Criar os schemas utilizados
   - Em cliente MySQL, acessar com usuário 'root', utilizando a senha definida, nesta ordem de prioridade: docker-compose.yml (MYSQL_ROOT_PASSWORD), .env (MYSQL_PASSWORD)
-  - Executar: 
+  - Se ao tentar acessar o banco de dados, ocorrer o erro "Public Key Retrieval is not allowed"
+    - Quick Fix in DBeaver: You can resolve this by adjusting the connection's driver properties:
+    - Open Connection Settings: Right-click your connection in the Database Navigator and select Edit Connection.
+    - Navigate to Driver Properties: Go to the Driver properties tab (next to the "Main" tab).
+    - Update Property: Find the property named allowPublicKeyRetrieval and change its value to TRUE.
+    -Note: If you don't see it, right-click the properties list and choose Add new property to manually add it.
+  - Após conectar ao banco, executar: 
   ```
   CREATE SCHEMA trfForumJus;
   CREATE SCHEMA trfForumJus2;
@@ -87,46 +112,47 @@ Fórumjus é um sistema desenvolvido para auxiliar em Fóruns e Jornadas no âmb
   CREATE SCHEMA trfForumJus4;
   ```
   - No terminal do VS Code
-    - Ctrl + C (2 ou mais vezes)
+    - Ctrl + C (1 ou mais vezes)
 - Executar o sistema
   - No terminal do VS Code
     - `docker compose down`
     - `docker compose up`
   - Acessar http://localhost:8081/
-- Acessar sistema com permissão Assessoria (acesso administrativo)
-  - autorização para módulo adm (assessoria e programador)
+
+## Utilização do Sistema
+
+### Perfis de Utilização
+- Presidente/Relator
+  - Logado como Assessoria ou Programador, em Membros, obter url de presidente ou relator, clicando no ícone ao lado de presidente/relator e copiando url de acesso deste perfil
+  - Acessar a url de acesso de presidente/relator
+- Membro de Comissão (Proponente)
+- Assessoria
+  - http://localhost:8081/assessoria/login 
+- Programador (além do menu da assessoria, possui link "Administração" com crud das tabelas do BD do sistema)
+  - Pré-requisito: possuir autorização para perfil assessoria como programador 
     - ~~No SIGA-GI, permissão em "FORUMJUS: Sistema I Jornada de Direitos Humanos e Fundamentais" para a matrícula/lotação https://siga.jfrj.jus.br/siga/app/gi/acesso/listar~~ [^3]
-    - No arquivo .env, SIMULAR_ASSESSORIA=false
+    - Lotação do programador precisa constar na variável [`const LOTACOES_PERMITIDAS_SUPER_ADM`](pages/api/login.ts)
+    - [`SIMULAR_ASSESSORIA=false`](.env)
   - Acessar http://localhost:8081/assessoria/login
     
 [^3]: alterado no commit https://github.com/trf2-jus-br/forumjus/commit/af4717d9b70f898563cb7e339f00eab72f11c7ca
 
-## Uso do Sistema
-
-### Perfis de Acesso Principais
-- Presidente
-- Membro de Comissão (Proponente)
-- ADM http://localhost:8081/assessoria/login   ???Confirmar???
-- Programador http://localhost:8081/assessoria/login
-
 ### Fases do Evento suportadas pelo Sistema
 - Página com Resumo das Fases http://localhost:8081/ajuda
-- Inscrição: pessoa envia proposições
-  - Na página pública, clicar em "Inscrição"
+- Inscrição/Envio de Enunciados: pessoa envia proposições/enunciados
+  - Na página pública, http://localhost:8081/, clicar em "Inscrição"
 - Homologação: comissão admite/rejeita proposições
-  - Acessar como presidente ou relator
-  - Logado como Assessoria, em Membros, obter url de presidente ou relator, clicando no ícone ao lado de presidente/relator e copiando url de acesso deste perfil
-  - Acessar a url de acesso de presidente/relator
-- No menu, escolher opção "Membros".  Abrirá página 
-- Votação por Comissão: comissão vota proposições
-  -  
-- Emissão de Cadernos 
-  - 
+  - Acessar como presidente ou relator, ver [Perfis de Utilização](#perfis-de-utilização)
+- Votação na Comissão: Comissões votam proposições, que serão votadas na Plenária
+- Votação na Plenária: Plenária vota proposições aprovadas nas Comissões
+- Emissão de Cadernos
+
+### Possíveis Erros
+- ~~ao acessar http://localhost:8081/inscricoes, apresenta erro "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?' at line 5"~~ [^2]
+[^2]: corrigido no commit https://github.com/trf2-jus-br/forumjus/commit/d15923370a75c3be32f1b42e21d7aeb9a86ed5f0 
+
 
 ## Informações Importantes para Suporte e Desenvolvimento
-
-### configurar sistema para o evento
-- 
 
 ### urls relevantes da app
 - http://localhost:8081/assessoria/login acesso assessoria e programador
@@ -145,6 +171,9 @@ Fórumjus é um sistema desenvolvido para auxiliar em Fóruns e Jornadas no âmb
 ### Ferramentas auxiliares para teste
 https://www.lipsum.com/ - gera texto, sugerido para a justificativa
 https://www.4devs.com.br/gerador_de_cpf - gera cpf para informar na simulação de proponente
+
+
+## Alterações no Código ou no Banco de Dados do Sistema
 
 ### Para criar novo Migration (arquivo com script de BD para preparar BD para uso do app)
 - Cria novo arquivo de Migration
@@ -177,11 +206,9 @@ wsl --list
 
 
 
-## Erros previstos
-- ~~ao acessar http://localhost:8081/inscricoes, apresenta erro "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?' at line 5"~~ [^2]
-[^2]: corrigido no commit https://github.com/trf2-jus-br/forumjus/commit/d15923370a75c3be32f1b42e21d7aeb9a86ed5f0 
 
-## Eventos Suportados pelo Sistema
+
+## Histórico de Eventos Suportados pelo Sistema
 
 ### Encontro Nacional de Juízas e Juízes Federais em Vitaliciamento. EMARF, 7 e 8 Maio/2026
 Contatos/Pessoas/Equipes Envolvidas: Juiz Vladmir Vitovsky/ servidora Márcia Dias Bezerra
