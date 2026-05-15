@@ -2,10 +2,11 @@
 
 Fórumjus é um sistema desenvolvido para auxiliar em Fóruns e Jornadas no âmbito do Tribunal Regional Federal da 2&ordf; Região.
 
-# Pendências
+Pendências
 - [x] Procedimento criação ambiente local Desenvolvimento
 - [x] Testar em PC zerado o procedimento criação ambiente local Desenvolvimento
-- [ ] Descrever as demais funcionalides
+- [x] Descrever as demais funcionalides
+- [ ] ver a descrição de [^5]
 - [ ] Finalizar preparação do sistema para uso em Evento / ver questões como receber acesso ao BD / receber acesso para atualização em homologação / criação da url a ser utilizada pelo evento, o schema/database a ser criado para ser utilizado pelo evento, e sua configuração. Muito provavelmente juntar na seção preparação do sistema para uso em Evento
 - [ ] Detalhar com informações mais práticas o Procedimento para implantação (utilizar o pdf enviado pelo Walace)
 - [ ] Melhor descrição das tarefas executadas e adaptações feitas no fluxo padrão da Jornada da Presidência, para utilização no evento da EMARF
@@ -16,28 +17,39 @@ Para edição do Readme.me utilizar instruções de https://docs.github.com/pt/g
 
 - [Fórumjus](#fórumjus)
   - [Funcionalidades](#funcionalidades)
+  - [Preparação do sistema para uso em Evento](#preparação-do-sistema-para-uso-em-evento)
   - [Procedimento para implantação](#procedimento-para-implantação)
   - [Procedimento criação ambiente local Desenvolvimento](#procedimento-criação-ambiente-local-desenvolvimento)
-  - [Uso do Sistema](#uso-do-sistema)
-    - [Perfis de Acesso Principais](#perfis-de-acesso-principais)
+  - [Utilização do Sistema](#utilização-do-sistema)
+    - [Perfis de Utilização](#perfis-de-utilização)
     - [Fases do Evento suportadas pelo Sistema](#fases-do-evento-suportadas-pelo-sistema)
+    - [Possíveis Erros](#possíveis-erros)
+    - [Pré-requisitos para uso do sistema em Eventos](#pré-requisitos-para-uso-do-sistema-em-eventos)
+      - [No formato do Vitaliciamento da EMARF](#no-formato-do-vitaliciamento-da-emarf)
+      - [No formato das Jornadas da Presidência](#no-formato-das-jornadas-da-presidência)
+    - [Histórico de Eventos Suportados pelo Sistema](#histórico-de-eventos-suportados-pelo-sistema)
+      - [Encontro Nacional de Juízas e Juízes Federais em Vitaliciamento. EMARF, 7 e 8 Maio/2026](#encontro-nacional-de-juízas-e-juízes-federais-em-vitaliciamento-emarf-7-e-8-maio2026)
+      - [Jornadas da Presidência](#jornadas-da-presidência)
   - [Informações Importantes para Suporte e Desenvolvimento](#informações-importantes-para-suporte-e-desenvolvimento)
-    - [configurar sistema para o evento](#configurar-sistema-para-o-evento)
     - [urls relevantes da app](#urls-relevantes-da-app)
     - [Código fonte/artefatos importantes configurações BD](#código-fonteartefatos-importantes-configurações-bd)
     - [Ferramentas auxiliares para teste](#ferramentas-auxiliares-para-teste)
+    - [Comandos de console mais utilizados](#comandos-de-console-mais-utilizados)
+  - [Alterações no Código ou no Banco de Dados do Sistema](#alterações-no-código-ou-no-banco-de-dados-do-sistema)
     - [Para criar novo Migration (arquivo com script de BD para preparar BD para uso do app)](#para-criar-novo-migration-arquivo-com-script-de-bd-para-preparar-bd-para-uso-do-app)
-    - [Comandos mais utilizados](#comandos-mais-utilizados)
-  - [Erros previstos](#erros-previstos)
-  - [Eventos Suportados pelo Sistema](#eventos-suportados-pelo-sistema)
-    - [Encontro Nacional de Juízas e Juízes Federais em Vitaliciamento. EMARF, 7 e 8 Maio/2026](#encontro-nacional-de-juízas-e-juízes-federais-em-vitaliciamento-emarf-7-e-8-maio2026)
-    - [Jornadas da Presidência](#jornadas-da-presidência)
-  - [Pré-requisitos para uso do sistema em Eventos](#pré-requisitos-para-uso-do-sistema-em-eventos)
-    - [No formato do Vitaliciamento da EMARF](#no-formato-do-vitaliciamento-da-emarf)
-    - [No formato das Jornadas da Presidência](#no-formato-das-jornadas-da-presidência)
+
+
 
 ## Funcionalidades
-- Cadastro de participantes e seus enunciados, protegido por reCaptcha.
+- Cadastro de participantes e seus enunciados, pelos próprios participante, protegido por reCaptchas
+- Homologação dos enunciados para participar das Comissões
+- Votação dos enunciados em Comissões
+- Votação na Plenária Geral dos enunciados aprovados nas Comisões
+- Geração de QR-Code para cada participante votar
+- Emissão de Cadernos dos Enunciados
+- Emissão de Atas de Ocorrências
+- Notificação dos Participantes por E-mail
+- Gerenciamento dos Dados pela Aplicação através de CRUDs das tabelas do BD (pGelos técnicos da TI)
 
 ## Preparação do sistema para uso em Evento
 - Ver [Procedimento para implantação](#procedimento-para-implantação)
@@ -97,7 +109,7 @@ Para edição do Readme.me utilizar instruções de https://docs.github.com/pt/g
   - No terminal do VS Code 
     - `docker compose up db`
 - Criar os schemas utilizados
-  - Em cliente MySQL, acessar com usuário 'root', utilizando a senha definida, nesta ordem de prioridade: docker-compose.yml (MYSQL_ROOT_PASSWORD), .env (MYSQL_PASSWORD)
+  - Em cliente MySQL, acessar com usuário 'root', utilizando a senha definida, nesta ordem de prioridade: [`MYSQL_ROOT_PASSWORD` em docker-compose.yml](/docker-compose.yml), [`MYSQL_PASSWORD` em .env](/.env)
   - Se ao tentar acessar o banco de dados, ocorrer o erro "Public Key Retrieval is not allowed"
     - Quick Fix in DBeaver: You can resolve this by adjusting the connection's driver properties:
     - Open Connection Settings: Right-click your connection in the Database Navigator and select Edit Connection.
@@ -131,8 +143,8 @@ Para edição do Readme.me utilizar instruções de https://docs.github.com/pt/g
 - Programador (além do menu da assessoria, possui link "Administração" com crud das tabelas do BD do sistema)
   - Pré-requisito: possuir autorização para perfil assessoria como programador 
     - ~~No SIGA-GI, permissão em "FORUMJUS: Sistema I Jornada de Direitos Humanos e Fundamentais" para a matrícula/lotação https://siga.jfrj.jus.br/siga/app/gi/acesso/listar~~ [^3]
-    - Lotação do programador precisa constar na variável [`const LOTACOES_PERMITIDAS_SUPER_ADM`](pages/api/login.ts)
-    - [`SIMULAR_ASSESSORIA=false`](.env)
+    - Lotação do programador precisa constar na variável [`const LOTACOES_PERMITIDAS_SUPER_ADM` em pages/api/login.ts](pages/api/login.ts)
+    - [`SIMULAR_ASSESSORIA=false` em .env](.env)
   - Acessar http://localhost:8081/assessoria/login
     
 [^3]: alterado no commit https://github.com/trf2-jus-br/forumjus/commit/af4717d9b70f898563cb7e339f00eab72f11c7ca
@@ -146,10 +158,69 @@ Para edição do Readme.me utilizar instruções de https://docs.github.com/pt/g
 - Votação na Comissão: Comissões votam proposições, que serão votadas na Plenária
 - Votação na Plenária: Plenária vota proposições aprovadas nas Comissões
 - Emissão de Cadernos
+- Emissão de Atas de Ocorrências
+- Notificação dos Participantes por E-mail
 
 ### Possíveis Erros
 - ~~ao acessar http://localhost:8081/inscricoes, apresenta erro "You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '?' at line 5"~~ [^2]
 [^2]: corrigido no commit https://github.com/trf2-jus-br/forumjus/commit/d15923370a75c3be32f1b42e21d7aeb9a86ed5f0 
+
+### Pré-requisitos para uso do sistema em Eventos
+
+#### No formato do Vitaliciamento da EMARF
+- Para a equipe gestora do Evento
+  - Fornecer a STI as informações e arquivos a serem lançados no sistema (nome,logo,datas,etc...)
+    - detalhes do evento, no menu Administração, em "/ambiente"
+    - datas dos eventos (inscrições, homologação, votaões), no menu Administração, em "/calendario"
+  - Impressão de crachás com QR Code para acesso pelos proponentes/votantes
+  - Pessoas da equipe gestora do Evento para dar suporte suporte aos usuários votantes, presidente e assessor
+  - Receber instruções da STI para as pessoas que utilizarão o sistema
+  - Solicitar à STI:
+    - Notebook para uso do presidente/assessor, para as Votações
+    - (opcional) Notebook para apresentar o "telão" das sessões de votação, para melhor acompanhamento do presidente/assessor
+    - WiFi estável, todos os usuários do sistema precisam estar conectados no sistema
+    - Técnico da TI para suporte a erros no sistema
+    - Técnico de TI para suporte aos notebooks, wifi e demais recursos de TI do evento
+
+#### No formato das Jornadas da Presidência
+
+
+### Histórico de Eventos Suportados pelo Sistema
+
+#### Encontro Nacional de Juízas e Juízes Federais em Vitaliciamento. EMARF, 7 e 8 Maio/2026
+Contatos/Pessoas/Equipes Envolvidas: Juiz Vladmir Vitovsky/servidora Márcia Dias Bezerra
+
+Pedido sistema para permitir em 3 oficinas não simultâneas, que os enunciados enviados previamente fossem votados (aprovado/rejeitado/abstenção) eletronicamente pelos participantes, com a apresentação do resultado da votação em telão, após o encerramento da votação de cada enunciado.
+2 dias de evento, de 9h às 19h. Pedido suporte para que fossem lançados previamente os enunciados de cada uma das 3 oficinas. Os enunciados foram enviados por arquivos texto. 
+Os votantes foram cadastrados diretamente no BD após ser enviada pela EMARf uma planilha Excel com nomes dos participantes, juízes em vitaliciamento. 
+- Criado novo schema no BD
+  - Foi criado novo schema, texto do chamado: "trfForumJus4 em produção e homologação, e os usuários de sistema, já criados anteriormente, deverão ter privilégios de consulta e alteração de dados nesse novo database" https://chamados.trf2.jus.br/front/ticket.form.php?id=2026020832
+- Solicitada url para utilizado do sistema pelo evento
+  - Criada url https://vitaliciamento.trf2.jus.br/ 
+- Alterado código fonte para mapear url para o schema: ver [commit 9cf96f1ca5b624a6597422d3ef18e32eddbf4cde](https://github.com/trf2-jus-br/forumjus/commit/9cf96f1ca5b624a6597422d3ef18e32eddbf4cde)
+- Executado, pelo Walace, tarefa no orc, para enviar novo código para homolgação
+- Solicitada publicação, para SEGSAP, em produção do código alterado.
+- Foi necessária algum ajuste no ambiente de produção, pela SEGSAP, para corrigir erro, salvo engano, no envio de imagens ou arquivos para o sistema.
+- Lançamentos de informações diretamente no BD
+  - Foi obtido acesso de escrita no BD de produção.
+  - Lançadas informações básicas do evento, pelo sistema, em Administração /ambiente
+  - Criadas 3 Comissões.
+  - Foram criados scripts para inserir os enunciados em uma cada uma das 3 comissões (Nas Jornadas, salvo engano, os enunciados eram lançados pelos próprios proponnetes utilizando o sistema.)
+  - Foram lançados direto no BD os participantes informados na planilha Excel, na Oficina 1
+  - Walace homologou os enunciados **(confirmar se fez pelo sistema, item de menu Admissão do sistema, ou direto pelo BD)**
+  - Walace simulou relator da comissão e aprovou os enunciados para a votação Geral [^5], para que durante o evento não fosse necessário registrar a presença dos votantes em cada uma das 3 oficinas (especialmente por que não foram impressos crachás com QR-Code dos juízes) **(confirmar se fez pelo sistema [^5], ou direto pelo BD)**
+- No evento, como não houve tempo hábil para impressão de crachãs com nomes e QR-Code dos juizes:
+  - na chegada dos juízes Djalma ou Walace, utilizava a página de Presença, simulando acesso de presidente/assessor, e escolhendo na combo de juízes cada juiz.
+  - após registro de presença, a servidora da Emarf, ou Walace e Djalma, apresentavam aos juízes seu QR-Codes, procurando seus nomes na lista de membros da Oficina 1. Quando o juíz lia o QR-Code ele recebia e abria uma url com seu identificador no sistema, para poder votar. Informado aos juízes que deveriam guardar a url para votar em cada uma das oficinas.
+- Durante cada oficina, os enunciados eram projetados no telão, apresentando a página votação, que já estava aberta no PC que projeta no telão.
+- Quando o juiz dirigente da oficina, na página de controle da votação, iniciava a votação do enunciado, na página de votação dos participantes era apresentada, na parte inferior, botões para aprovar/negar/abestnção.  Em tempo real era apresentado no telão os votos efetuados.
+- Quando o juiz dirigente da oficina, na página de controle da votação, terminava a votação do enunciado, era apresentado o resultado no telão, e gráfico de pizza com percentuais de aprovação,negação e abstenção.
+- Walace enviou ao dr. Vladimir os cadernos de votação dos enunciados. Ele perguntou se poderia colocar o logo enviado anteriormente. Walace sugeriu ao Dr. Vladimir solicitar à gráfica fazer os ajustes necessários.
+  
+[^5]: descrever os itens alterados em Administração /ambiente, e como usou a página de votação da comissão, ou se lançou direto no BD. 
+
+
+#### Jornadas da Presidência
 
 
 ## Informações Importantes para Suporte e Desenvolvimento
@@ -172,6 +243,17 @@ Para edição do Readme.me utilizar instruções de https://docs.github.com/pt/g
 https://www.lipsum.com/ - gera texto, sugerido para a justificativa
 https://www.4devs.com.br/gerador_de_cpf - gera cpf para informar na simulação de proponente
 
+### Comandos de console mais utilizados
+```
+docker compose up                 executa o sisema (primeiro inicializa o bd e depois o app)
+docker compose down               
+docker compose up db              executa somente o bd
+docker compose up db --build
+
+git add .
+git commit -m ""
+git push
+```
 
 ## Alterações no Código ou no Banco de Dados do Sistema
 
@@ -183,68 +265,13 @@ https://www.4devs.com.br/gerador_de_cpf - gera cpf para informar na simulação 
 - Executar a nova migration criada (pois a configuração, em index.ts, migrationsRun:false, TypeORM não fará nada com as suas migrations automaticamente ao iniciar a aplicação)
   - Com o container rodando (para iniciar o container executar `docker compose up`[^1]), e executar em outro terminal `docker compose exec app npm run migrate-env`
   
+ ver [Comandos de console mais utilizados](#comandos-de-console-mais-utilizados)
 
 [^1]: PARA INICIAR/RODAR O CONTAINER `docker compose up`.
 
-### Comandos mais utilizados
-```
-docker compose up
-docker compose up db
-docker compose up db --build
-docker compose down
-
-git add .
-git commit -m ""
-git push
-
-docker status
-docker ps
-docker info
-
-wsl --list
-```
 
 
 
 
 
-## Histórico de Eventos Suportados pelo Sistema
 
-### Encontro Nacional de Juízas e Juízes Federais em Vitaliciamento. EMARF, 7 e 8 Maio/2026
-Contatos/Pessoas/Equipes Envolvidas: Juiz Vladmir Vitovsky/ servidora Márcia Dias Bezerra
-
-Pedido. Sistema para permitir em 3 oficinas, que os enunciados enviados previamente, fossem votados (aprovado/rejeitado/    ) eletronicamente pelos participantes, com o resultado aprovado após o encerramento da votação.
-
-2 dias de evento, de 9h às 19h. Pedido suporte para que fossem lançados previamente os enunciados de cada uma das 3 oficinas. Os enunciados foram enviados por arquivos texto. 
-Os votantes foram cadastrados diretamente no BD após ser enviada pela EMARf uma planilha Excel com nomes dos participantes, juízes em vitaliciamento. 
-Relação dos 
-
-Durante cada oficina os enunciados serão votados, onde cada 
-
-- Criado novo schema no BD
-  - Foi criado novo schema:  trfForumJus4 em produção e homologação, e os usuários de sistema, já criados anteriormente, deverão ter privilégios de consulta e alteração de dados nesse novo database. exemplo: https://chamados.trf2.jus.br/front/ticket.form.php?id=2026020832
-
-- Solicitada url para utilizado do sistema pelo evento
-  - Criada url https://vitaliciamento.trf2.jus.br/ 
-
-- Alterado código fonte para mapear url para o schema: ver commit 9cf96f1ca5b624a6597422d3ef18e32eddbf4cde
-
-- Lançamentos de informações diretamente no BD
-  - Foi obtido acesso de escrita no BD de produção.
-  - Foram criados scripts para inserir os enunciados (Nas Jornadas, salvo engano, os enunciados eram lançados pelos próprios proponnetes utilizando o sistema.)
-
-### Jornadas da Presidência
-
-## Pré-requisitos para uso do sistema em Eventos
-
-### No formato do Vitaliciamento da EMARF
-- Notebook para uso do presidente/assessor, das Fases de Homologação e Votação
-- (opcional) Notebook para apresentar o "telão" das sessões de votação, para melhor acompanhamento do presidente/assessor
-- WiFi estável, todos os usuários do sistema precisam estar conectados no sistema
-- Impressão de crachás com QR Code para acesso pelos proponentes/votantes
-- Treinamento de pessoas da equipe gestora do evento para dar suporte aos usuários votantes, presidente e assessor
-- Pessoas da equipe gestora do Evento para dar suporte suporte aos usuários votantes, presidente e assessor
-- Técnico da TI para suporte a erros no sistema
-- Técnico de TI para suporte aos notebooks, wifi e demais recursos de TI do evento
-
-### No formato das Jornadas da Presidência
